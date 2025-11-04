@@ -1,0 +1,17 @@
+{% extends 'index.html' %}
+{% block content %}
+<h2>Maak je TrailTribe-profiel</h2>
+<form method="POST">
+  <label>Naam:</label>
+  <input type="text" name="name" required>
+
+  <label>Leeftijd:</label>
+  <input type="number" name="age" required>
+
+  <label>Belangrijkste interesses:</label>
+  <input type="text" name="interests" placeholder="bv. natuur, cultuur, avontuur">
+
+  <button type="submit">Volgende</button>
+</form>
+{% endblock %}
+
