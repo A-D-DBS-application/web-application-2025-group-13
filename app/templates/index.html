@@ -1,4 +1,14 @@
 <!DOCTYPE html>
+
+<nav>
+  <a href="{{ url_for('home') }}">Home</a> |
+  <a href="{{ url_for('intake') }}">Intake</a> |
+  <a href="{{ url_for('about') }}">Over ons</a> |
+  
+  
+</nav>
+<hr>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,10 +16,24 @@
     <title>Trailtribe</title>
 </head>
 <body>
-    <h1>Welcome to Trailtribe!</h1>
-    <p>Your adventure starts here.</p>
+    <h1>Groepsreizen die écht matchen</h1>
+    <p>Geen standaardpakketten, maar een op maat gemaakte
+     droomreis met een groep gelijkgestemden. We starten bij jou. </p>
 
-    <a href="{{ url_for('about') }}">Ga naar Over ons</a>
+    <h2>Hoe werkt het?</h2>
+    <ol>
+        <li>Maak je profiel aan</li>
+        <li>Beantwoord een uitgebreide intake</li>
+        <li>Wij matchen je met de perfecte reisgroep</li>
+         gebaseerd op jouw persoonlijkheid, interesses en budget</li>
+        <li>Ontvang je reis match</li>
+    </ol>
 
+    <h2>Waarom TrailTribe?</h2>
+    <ul>
+    <li>🌍 Reizen met gelijkgestemden</li>
+    <li>💬 Eerlijke prijzen en transparante matching</li>
+    <li>🧭 Unieke bestemmingen afgestemd op jou</li>
+    </ul>
 </body>
     

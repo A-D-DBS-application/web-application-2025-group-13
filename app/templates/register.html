@@ -1,17 +1,35 @@
-{% extends 'index.html' %}
-{% block content %}
-<h2>Maak je TrailTribe-profiel</h2>
-<form method="POST">
+<!DOCTYPE html>
+<nav>
+  <div>
+    <a href="{{ url_for('home') }}">Home</a>
+    <a href="{{ url_for('about') }}">Over ons</a>
+    <a href="{{ url_for('intake') }}">Intake</a>
+  </div>
+  <a href="{{ url_for('register') }}" class="profile-btn">Profiel aanmaken</a>
+</nav>
+
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Profiel aanmaken - TrailTribe</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+<h2>Maak je profiel aan</h2>
+<form method="POST" action="/register">
   <label>Naam:</label>
   <input type="text" name="name" required>
 
-  <label>Leeftijd:</label>
-  <input type="number" name="age" required>
+  <label>E-mail:</label>
+  <input type="email" name="email" required>
 
-  <label>Belangrijkste interesses:</label>
-  <input type="text" name="interests" placeholder="bv. natuur, cultuur, avontuur">
+  <label>Wachtwoord:</label>
+  <input type="password" name="password" required>
 
-  <button type="submit">Volgende</button>
+  <button type="submit">Registreren</button>
 </form>
-{% endblock %}
+
+</body>
+</html>
 

@@ -1,4 +1,6 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for, session
+from supabase import create_client, Client
+import os
 
 app = Flask(__name__)
 
@@ -12,6 +14,9 @@ def home():
 def about():
     return render_template('about.html')
 
+@app.route('/intake')
+def intake():
+    return render_template('intake.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

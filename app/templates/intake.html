@@ -1,22 +1,43 @@
-<h2>Mini-intake voor {{ traveler.name }}</h2>
-<form method="POST">
-  <label>Wat typeert jou het meest?</label>
-  <select name="personality" required>
+<!DOCTYPE html>
+<nav>
+  <a href="{{ url_for('home') }}">Home</a> |
+  <a href="{{ url_for('intake') }}">Intake</a> |
+  <a href="{{ url_for('about') }}">Over ons</a> |
+  
+</nav>
+<hr>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Intake - TrailTribe</title>
+</head>
+<body>
+
+  
+  <h1>Start jouw intake</h1>
+  <p>Beste reiziger, beantwoord enkele korte vragen zodat we je beter kunnen matchen.</p>
+
+  <form method="POST" action="/submit-intake">
+    <label>Wat is je voorkeursbestemming?</label><br>
+    <input type="text" name="destination" required><br><br>
+    
+     <label>Wat typeert jou het meest?</label>
+    <select name="personality" required>
     <option value="">-- Kies je vibe --</option>
     <option value="avontuurlijk">Avontuurlijk 🌋</option>
     <option value="ontspannen">Ontspannen 🌴</option>
     <option value="cultureel">Cultureel 🏛️</option>
     <option value="sociaal">Sociaal 🤝</option>
-  </select>
+    </select>
+    
+    <label>Budget:</label>
+    <input type="text" name="budget" placeholder="bv. 1000-1500€" required>
 
-  <label>Budget:</label>
-  <input type="text" name="budget" placeholder="bv. 1000-1500€" required>
+    <label>Wat is je reisperiode?</label><br>
+    <input type="text" name="travel_period" required><br><br>
 
-  <label>Reisperiode:</label>
-  <input type="text" name="travel_period" placeholder="bv. juli 2025" required>
-
-  <label>Voorkeursbestemming:</label>
-  <input type="text" name="destination" placeholder="bv. Italië, Spanje" required>
+    <button type="submit">Verstuur</button>
+  </form>
 
   <button type="submit">Bekijk mijn match</button>
 </form>
