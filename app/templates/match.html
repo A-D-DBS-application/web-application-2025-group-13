@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>🎉 Je TrailTribe Match!</h2>
+<p>Hey {{ traveler.name }} ({{ traveler.age }} jaar)</p>
+<p>Op basis van je profiel past je het best bij:</p>
+
+<h3>{{ match }}</h3>
+
+<p>Interesses: {{ traveler.interests }}</p>
+<p>Persoonlijkheid: {{ traveler.personality }}</p>
+<p>Budget: {{ traveler.budget }}</p>
+<p>Reisperiode: {{ traveler.travel_period }}</p>
+<p>Bestemming: {{ traveler.destination }}</p>
+
+<a href="{{ url_for('index') }}"><button>Terug naar start</button></a>
+{% endblock %}
