@@ -1,0 +1,25 @@
+{% extends 'index.html' %}
+{% block content %}
+<h2>Mini-intake voor {{ traveler.name }}</h2>
+<form method="POST">
+  <label>Wat typeert jou het meest?</label>
+  <select name="personality" required>
+    <option value="">-- Kies je vibe --</option>
+    <option value="avontuurlijk">Avontuurlijk 🌋</option>
+    <option value="ontspannen">Ontspannen 🌴</option>
+    <option value="cultureel">Cultureel 🏛️</option>
+    <option value="sociaal">Sociaal 🤝</option>
+  </select>
+
+  <label>Budget:</label>
+  <input type="text" name="budget" placeholder="bv. 1000-1500€" required>
+
+  <label>Reisperiode:</label>
+  <input type="text" name="travel_period" placeholder="bv. juli 2025" required>
+
+  <label>Voorkeursbestemming:</label>
+  <input type="text" name="destination" placeholder="bv. Italië, Spanje" required>
+
+  <button type="submit">Bekijk mijn match</button>
+</form>
+{% endblock %}
