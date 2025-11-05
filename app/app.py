@@ -1,13 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-from supabase import create_client, Client
 import os
 
 app = Flask(__name__)
+@app.route('/register')
+def register():
+    return render_template('register.html')
 
-# route = welke URL iemand bezoekt
 @app.route('/')
 def home():
-    # toon index.html
     return render_template('index.html')
 
 @app.route('/about')
@@ -17,6 +17,10 @@ def about():
 @app.route('/intake')
 def intake():
     return render_template('intake.html')
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

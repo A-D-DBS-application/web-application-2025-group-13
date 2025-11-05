@@ -1,31 +1,81 @@
 <!DOCTYPE html>
 
-<nav>
-  <a href="{{ url_for('home') }}">Home</a> |
-  <a href="{{ url_for('intake') }}">Intake</a> |
-  <a href="{{ url_for('about') }}">Over ons</a> |
-  
-  
-</nav>
-<hr>
-
-<html lang="en">
+<html lang="nl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trailtribe</title>
+    <title>Trailtribe -- home </title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: white;
+        color: black;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 100vh;
+        text-align: center;
+        margin: 0;
+        margin-top: 80px;
+      }
+      nav {
+        background-color: blue;
+        padding: 10px;
+        border-radius: 5px;
+        width: 100%;
+        text-align: left;
+        position: fixed;
+        top: 0;
+        left: 0;
+      }
+      nav a {
+        color: white;
+        text-decoration: none;
+        margin: 0 10px;
+        font-weight: bold;
+      }
+      nav a:hover {
+        text-decoration: underline;
+      }
+      h1 {
+        color: blue;
+      }
+      h2 {
+        color: blue;
+      }
+      hr {
+        margin-top: 15px;
+        margin-bottom: 20px;
+      }
+      p, h1, h2 {
+        text-align: left;
+      }
+      ol, ul {
+        text-align: center;
+        list-style-position: inside;
+      }
+    </style>
 </head>
 <body>
+    <nav>
+      <a href="{{ url_for('home') }}">Home</a> |
+      <a href="{{ url_for('intake') }}">Intake</a> |
+      <a href="{{ url_for('about') }}">Over ons</a> |
+        <a href="{{ url_for('login') }}">Login</a> |
+    </nav>
+    <hr>
+
     <h1>Groepsreizen die écht matchen</h1>
     <p>Geen standaardpakketten, maar een op maat gemaakte
      droomreis met een groep gelijkgestemden. We starten bij jou. </p>
 
-    <h2>Hoe werkt het?</h2>
+    <h2>Hoe werkt het?jj</h2>
     <ol>
         <li>Maak je profiel aan</li>
         <li>Beantwoord een uitgebreide intake</li>
         <li>Wij matchen je met de perfecte reisgroep</li>
-         gebaseerd op jouw persoonlijkheid, interesses en budget</li>
+         gebaseerd op jouw persoonlijkheid, interesses en budget.</li>
         <li>Ontvang je reis match</li>
     </ol>
 
@@ -37,3 +87,4 @@
     </ul>
 </body>
     
+</html>

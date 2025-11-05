@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>TrailTribe - Login</title>
+</head>
+<body>
+  <nav>
+    <a href="{{ url_for('home') }}">Home</a> |
+    <a href="{{ url_for('intake') }}">Intake</a> |
+    <a href="{{ url_for('about') }}">Over ons</a> |
+    <a href="{{ url_for('login') }}">Login</a> |
+  </nav>
+  <hr>
+
+  <h1>Login</h1>
+  <form action="{{ url_for('login') }}" method="post">
+    <label for="email">E-mailadres:</label>
+    <input type="email" id="email" name="email" required>
+
+    <label for="password">Wachtwoord:</label>
+    <input type="password" id="password" name="password" required>
+
+    <button type="submit">Inloggen</button>
+  </form>
+  <p><a href="{{ url_for('register') }}">Nog geen account? Registreren</a></p>
+</body>
+</html>
