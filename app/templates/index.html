@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trailtribe -- home </title>
+    <title>Trailtribe -- home</title>
+
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -19,8 +19,9 @@
         margin: 0;
         margin-top: 80px;
       }
+
       nav {
-        background-color: blue;
+        background-color: #007B7F;
         padding: 10px;
         border-radius: 5px;
         width: 100%;
@@ -29,62 +30,135 @@
         top: 0;
         left: 0;
       }
+
       nav a {
         color: white;
         text-decoration: none;
         margin: 0 10px;
         font-weight: bold;
       }
+
       nav a:hover {
         text-decoration: underline;
       }
-      h1 {
-        color: blue;
+
+      h1, h2 {
+        color: #007B7F;
       }
-      h2 {
-        color: blue;
-      }
+
       hr {
         margin-top: 15px;
         margin-bottom: 20px;
       }
-      p, h1, h2 {
+
+      /* --- Introductie gecentreerd --- */
+      .intro {
+        text-align: center; /* centreren over kader */
+        max-width: 600px;
+        margin: 0 auto 20px auto;
+      }
+
+      .intro h1 {
+        font-size: 2em;
+        margin-bottom: 0.4em;
+      }
+
+      .intro p {
+        font-size: 1.1em;
+        color: #333;
+        white-space: normal; /* laat de tekst afbreken op kleinere schermen */
+        text-align: center; /* gecentreerd over het kader */
+        margin: 0 auto;
+      }
+
+      /* --- Kadersectie --- */
+      .kader {
+        border: 3px solid #007B7F;
+        border-radius: 10px;
+        padding: 20px;
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #f7ffff;
         text-align: left;
       }
-      ol, ul {
+
+      .kader h2 {
+        color: #007B7F;
         text-align: center;
-        list-style-position: inside;
+      }
+
+      /* --- Emoji-lijst stijl --- */
+      .emoji-list {
+        list-style: none;
+        padding-left: 0;
+        margin-left: 0;
+      }
+
+      .emoji-list li {
+        margin: 10px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-align: left;
+      }
+
+      .emoji-list li span {
+        min-width: 25px;
+        text-align: center;
+        font-size: 1.3em;
+      }
+
+      
+      .reasons {
+        list-style: none; 
+        text-align: left; /* lijnt de emoji-lijst links uit */
+        max-width: 600px;
+        padding-left: 0;
+        margin-left: 0;
+      }
+
+      .reasons li {
+        margin: 10px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
       }
     </style>
 </head>
+
 <body>
     <nav>
       <a href="{{ url_for('home') }}">Home</a> |
       <a href="{{ url_for('intake') }}">Intake</a> |
       <a href="{{ url_for('about') }}">Over ons</a> |
-        <a href="{{ url_for('login') }}">Login</a> |
+      <a href="{{ url_for('login') }}">Login</a> |
     </nav>
+
     <hr>
 
-    <h1>Groepsreizen die écht matchen</h1>
-    <p>Geen standaardpakketten, maar een op maat gemaakte
-     droomreis met een groep gelijkgestemden. We starten bij jou. </p>
+    <!-- Introductie -->
+    <div class="intro">
+      <h1>Groepsreizen die écht matchen</h1>
+      <p>Geen standaardpakketten, maar een op maat gemaakte droomreis met een groep gelijkgestemden. We starten bij jou!</p>
+    </div>
 
-    <h2>Hoe werkt het?</h2>
-    <ol>
-        <li>Maak je profiel aan</li>
-        <li>Beantwoord een uitgebreide intake</li>
-        <li>Wij matchen je met de perfecte reisgroep</li>
-         gebaseerd op jouw persoonlijkheid, interesses en budget.</li>
-        <li>Ontvang je reis match</li>
-    </ol>
+    <!-- Kadersectie -->
+    <div class="kader">
+      <h2>Zo begint jouw reis</h2>
+      <ul class="emoji-list">
+        <li><span>💻</span>Maak je profiel aan</li>
+        <li><span>🕹️</span>Beantwoord een uitgebreide intake</li>
+        <li><span>💚</span>Wij matchen je met de perfecte reisgroep gebaseerd op jouw persoonlijkheid, interesses en budget</li>
+        <li><span>📍</span>Ontvang je reis match</li>
+      </ul>
+    </div>
 
+    <!-- Waarom TrailTribe -->
     <h2>Waarom TrailTribe?</h2>
-    <ul>
-    <li>🌍 Reizen met gelijkgestemden</li>
-    <li>💬 Eerlijke prijzen en transparante matching</li>
-    <li>🧭 Unieke bestemmingen afgestemd op jou</li>
+    <ul class="reasons">
+      <li>🌍 Reizen met gelijkgestemden</li>
+      <li>💬 Eerlijke prijzen en transparante matching</li>
+      <li>🧭 Unieke bestemmingen afgestemd op jou</li>
     </ul>
 </body>
-    
 </html>
