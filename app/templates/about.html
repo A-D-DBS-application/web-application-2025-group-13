@@ -1,34 +1,100 @@
 <!DOCTYPE html>
-<nav>
-  <a href="{{ url_for('home') }}">Home</a> |
-  <a href="{{ url_for('intake') }}">Intake</a> |
-  <a href="{{ url_for('about') }}">Over ons</a> |
-  <a href="{{ url_for('login') }}">Login</a> |
-  
-</nav>
-<hr>
-<html  lang = "nl">
+<html lang="nl">
 <head>
   <meta charset="UTF-8">
   <title>TrailTribe - Over ons</title>
+  <style>
+    /* Algemeen */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: white;
+      color: black;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      text-align: left; /* hele pagina links uitlijnen */
+      padding-top: 80px; /* ruimte voor navbar */
+    }
+
+    /* Navigatie */
+    nav {
+      background-color: #007B7F;
+      padding: 10px 20px;
+      border-radius: 5px;
+      width: 100%;
+      text-align: left;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 100;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 10px;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    hr {
+      margin-top: 15px;
+      margin-bottom: 20px;
+    }
+
+    /* Kader voor content */
+    .content-box {
+      background-color: #f7ffff;
+      border: 2px solid #007B7F;
+      border-radius: 10px;
+      padding: 30px;
+      max-width: 800px;
+      width: 90%;
+      margin-bottom: 40px;
+    }
+
+    h1, h2 {
+      color: #007B7F;
+      text-align: left; /* titels links uitlijnen */
+    }
+
+    p {
+      text-align: left;
+      line-height: 1.6;
+    }
+
+    ul {
+      text-align: left;
+      padding-left: 20px;
+      list-style: none; /* puntjes weg */
+    }
+  </style>
 </head>
 <body>
-  <h1>Over TrailTribe</h1>
-  <p>Wij matchen reizigers met gelijkaardige interesses.</p>
-  
-  <h2>Ons Team</h2>
-  <ul>
-    <li>Alice - Oprichter & CEO</li>
-    <li>Bob - CTO</li>
-    <li>Charlie - Marketing Manager</li>
-  </ul>
-  
-  <h2>Onze Missie</h2>
-  <p>Bij TrailTribe geloven we dat de 
-    beste reizen beginnen met de juiste mensen.
-    Daarom matchen wij reizigers op basis van persoonlijkheid
-    , interesses en budget.</p>
-  
+  <nav>
+    <a href="{{ url_for('home') }}">Home</a> |
+    <a href="{{ url_for('intake') }}">Intake</a> |
+    <a href="{{ url_for('about') }}">Over ons</a> |
+    <a href="{{ url_for('login') }}">Login</a> |
+  </nav>
+  <hr>
 
+  <div class="content-box">
+    <h1>Over TrailTribe</h1>
+    <p>Wij matchen reizigers met gelijkaardige interesses en zorgen dat je een reiservaring beleeft die echt bij jou past!</p>
+    
+    <h2>Ons Team</h2>
+    <ul>
+      <li>Alice - Oprichter & CEO</li>
+      <li>Bob - CTO</li>
+      <li>Charlie - Marketing Manager</li>
+    </ul>
+
+    <h2>Onze Missie</h2>
+    <p>Bij TrailTribe geloven we dat de beste reizen beginnen met de juiste mensen. Daarom matchen wij reizigers op basis van persoonlijkheid, interesses en budget!</p>
+  </div>
 </body>
 </html>
