@@ -1,149 +1,165 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trailtribe -- home</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Trailtribe -- home</title>
+<style>
+  
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background-image:url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80');
+    background-size:cover;
+    background-position:center;
+    filter:blur(6px) brightness(0.9);
+    z-index:-1;
+  }
 
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: white;
-        color: black;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        min-height: 100vh;
-        text-align: center;
-        margin: 0;
-        margin-top: 80px;
-      }
+  
+  body{
+    font-family: Arial, sans-serif;
+    color: black;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    min-height:100vh;
+    text-align:center;
+    margin:0;
+    margin-top:80px;
+  }
 
-      nav {
-        background-color: #007B7F;
-        padding: 10px;
-        border-radius: 5px;
-        width: 100%;
-        text-align: left;
-        position: fixed;
-        top: 0;
-        left: 0;
-      }
+  nav{
+    background-color:#007B7F;
+    padding:10px;
+    border-radius:5px;
+    width:100%;
+    text-align:left;
+    position:fixed;
+    top:0;
+    left:0;
+  }
 
-      nav a {
-        color: white;
-        text-decoration: none;
-        margin: 0 10px;
-        font-weight: bold;
-      }
+  nav a{
+    color:white;
+    text-decoration:none;
+    margin:0 10px;
+    font-weight:bold;
+  }
 
-      nav a:hover {
-        text-decoration: underline;
-      }
+  nav a:hover{
+    text-decoration:underline;
+  }
 
-      h1, h2 {
-        color: #007B7F;
-      }
+  h1, h2{
+    color:#007B7F; 
+  }
 
-      hr {
-        margin-top: 15px;
-        margin-bottom: 20px;
-      }
+  hr{
+    margin-top:15px;
+    margin-bottom:20px;
+  }
 
-      /* --- Introductie gecentreerd --- */
-      .intro {
-        text-align: center; /* centreren over kader */
-        max-width: 600px;
-        margin: 0 auto 20px auto;
-      }
 
-      .intro h1 {
-        font-size: 2em;
-        margin-bottom: 0.4em;
-      }
+  .hoofd-kader{
+    border: 3px solid #007B7F;
+    border-radius: 15px;
+    padding: 40px;
+    max-width: 800px;
+    margin: 40px auto;
+    background-color: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(4px);
+  }
 
-      .intro p {
-        font-size: 1.1em;
-        color: #333;
-        white-space: normal; /* laat de tekst afbreken op kleinere schermen */
-        text-align: center; /* gecentreerd over het kader */
-        margin: 0 auto;
-      }
 
-      /* --- Kadersectie --- */
-      .kader {
-        border: 3px solid #007B7F;
-        border-radius: 10px;
-        padding: 20px;
-        max-width: 600px;
-        margin: 20px auto;
-        background-color: #f7ffff;
-        text-align: left;
-      }
+  .sectie {
+    max-width: 600px;
+    margin: 0 auto;
+  }
 
-      .kader h2 {
-        color: #007B7F;
-        text-align: center;
-      }
+  .scheidingslijn {
+    border: none;
+    border-top: 1px solid rgba(0, 123, 127, 0.4);
+    width: 85%; /* laat ruimte tussen lijn en kader */
+    margin: 30px auto;
+  }
 
-      /* --- Emoji-lijst stijl --- */
-      .emoji-list {
-        list-style: none;
-        padding-left: 0;
-        margin-left: 0;
-      }
+  
+  .intro{
+    text-align:center;
+    margin-bottom: 10px;
+  }
 
-      .emoji-list li {
-        margin: 10px 0;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        text-align: left;
-      }
+  .intro h1{
+    font-size:2em;
+    margin-bottom:0.4em;
+  }
 
-      .emoji-list li span {
-        min-width: 25px;
-        text-align: center;
-        font-size: 1.3em;
-      }
+  .intro p{
+    font-size:1.1em;
+    color:#333;
+  }
 
-      
-      .reasons {
-        list-style: none; 
-        text-align: left; /* lijnt de emoji-lijst links uit */
-        max-width: 600px;
-        padding-left: 0;
-        margin-left: 0;
-      }
+  
+  .emoji-list{
+    list-style:none;
+    padding-left:0;
+    margin-left:0;
+    text-align:left;
+  }
 
-      .reasons li {
-        margin: 10px 0;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-    </style>
+  .emoji-list li{
+    margin:10px 0;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+
+  .emoji-list li span{
+    min-width:25px;
+    text-align:center;
+    font-size:1.3em;
+  }
+
+
+  .reasons{
+    list-style:none;
+    text-align:left;
+    max-width:600px;
+    padding-left:0;
+    margin-left:auto;
+    margin-right:auto;
+  }
+
+  .reasons li{
+    margin:10px 0;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+</style>
 </head>
-
 <body>
-    <nav>
-      <a href="{{ url_for('home') }}">Home</a> |
-      <a href="{{ url_for('intake') }}">Intake</a> |
-      <a href="{{ url_for('about') }}">Over ons</a> |
-      <a href="{{ url_for('login') }}">Login</a> |
-    </nav>
+  <nav>
+    <a href="{{ url_for('home') }}">Home</a> |
+    <a href="{{ url_for('intake') }}">Intake</a> |
+    <a href="{{ url_for('about') }}">Over ons</a> |
+    <a href="{{ url_for('login') }}">Login</a> |
+  </nav>
 
-    <hr>
+  <hr>
 
-    <!-- Introductie -->
-    <div class="intro">
+  <div class="hoofd-kader">
+    <div class="sectie intro">
       <h1>Groepsreizen die écht matchen</h1>
       <p>Geen standaardpakketten, maar een op maat gemaakte droomreis met een groep gelijkgestemden. We starten bij jou!</p>
     </div>
 
-    <!-- Kadersectie -->
-    <div class="kader">
+    <hr class="scheidingslijn">
+
+    <div class="sectie">
       <h2>Zo begint jouw reis</h2>
       <ul class="emoji-list">
         <li><span>💻</span>Maak je profiel aan</li>
@@ -153,12 +169,16 @@
       </ul>
     </div>
 
-    <!-- Waarom TrailTribe -->
-    <h2>Waarom TrailTribe?</h2>
-    <ul class="reasons">
-      <li>🌍 Reizen met gelijkgestemden</li>
-      <li>💬 Eerlijke prijzen en transparante matching</li>
-      <li>🧭 Unieke bestemmingen afgestemd op jou</li>
-    </ul>
+    <hr class="scheidingslijn">
+
+    <div class="sectie">
+      <h2>Waarom TrailTribe?</h2>
+      <ul class="reasons">
+        <li>🌍 Reizen met gelijkgestemden</li>
+        <li>💬 Eerlijke prijzen en transparante matching</li>
+        <li>🧭 Unieke bestemmingen afgestemd op jou</li>
+      </ul>
+    </div>
+  </div>
 </body>
 </html>
