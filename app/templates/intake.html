@@ -2,45 +2,324 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Intake - TrailTribe</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif; background-color: white; color: black;
+      margin: 0; display: flex; flex-direction: column; align-items: center;
+      justify-content: flex-start; min-height: 100vh; text-align: center;
+      padding-top: 80px;
+    }
+    nav {
+      background-color: #007B7F; padding: 10px; border-radius: 5px; width: 100%;
+      text-align: left; position: fixed; top: 0; left: 0; z-index: 1000;
+    }
+    nav a { color: white; text-decoration: none; margin: 0 10px; font-weight: bold; }
+    h1 { color: #007B7F; margin-bottom: 0.3em; }
+    p { color: #333; margin-top: 0; margin-bottom: 20px; }
+
+    form {
+      background-color: #b1dad8; padding: 25px 20px; border-radius: 10px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1); max-width: 900px; width: 95%;
+      margin: 20px auto; text-align: left; border: 3px solid #007B7F;
+    }
+    label { font-weight: bold; display: block; margin-top: 15px; }
+    input, select {
+      width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 15px;
+      border: 1px solid #007B7F; border-radius: 5px; display: block;
+    }
+    button {
+      background-color: #007B7F; color: white; border: none; padding: 10px 20px;
+      border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px;
+      width: 100%;
+    }
+    button:hover { background-color: #005f63; }
+
+    /* picker */
+    .date-range-picker { border: 1px dashed rgba(0,123,127,0.6); padding: 12px; border-radius: 8px; background: rgba(255,255,255,0.6); }
+    .drp-controls { display:flex; gap:10px; align-items:center; justify-content:space-between; margin-bottom:10px; flex-wrap:wrap; }
+    .drp-summary { font-size: 0.95rem; color: #004d4f; font-weight: bold; }
+    .picker-header { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+    .month-view { max-width: 360px; margin: 8px auto; background: white; border-radius:8px; padding:8px; border:1px solid #e0e0e0; }
+    .month-title { text-align:center; color:#007B7F; font-weight:700; margin-bottom:6px; }
+    .nav-btn { background:transparent; border:1px solid #007B7F; color:#007B7F; padding:6px 8px; border-radius:6px; cursor:pointer; }
+    .weekdays { display:grid; grid-template-columns: repeat(7, 1fr); font-size:0.78rem; color:#666; text-align:center; margin-bottom:6px; }
+    .days { display:grid; grid-template-columns: repeat(7, 1fr); gap:4px; text-align:center; }
+    .day { padding:8px 6px; border-radius:6px; cursor:pointer; font-size:0.9rem; user-select:none; }
+    .day.disabled { color:#c0c0c0; cursor:default; background:transparent; }
+    .day:hover:not(.disabled) { background: rgba(0,123,127,0.06); }
+    .day.start { background: linear-gradient(90deg,#007B7F,#00a89b); color:white; font-weight:bold; }
+    .day.end { background: linear-gradient(90deg,#00a89b,#007B7F); color:white; font-weight:bold; }
+    .day.in-range { background: rgba(0,123,127,0.12); color:#004d4f; }
+    .ranges-list { margin-top:10px; }
+    .range-item { background:#fff; border:1px solid rgba(0,0,0,0.06); padding:8px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+    .small { font-size:0.9rem; color:#333; }
+    .remove-btn { background:transparent; border:1px solid #ff6b6b; color:#ff6b6b; padding:6px 8px; border-radius:6px; cursor:pointer; }
+    @media (max-width:720px) { .month-view { width: 100%; } .day { padding:6px 4px; } }
+  </style>
 </head>
 <body>
+
 <nav>
   <a href="{{ url_for('home') }}">Home</a> |
   <a href="{{ url_for('intake') }}">Intake</a> |
   <a href="{{ url_for('about') }}">Over ons</a> |
   <a href="{{ url_for('login') }}">Login</a> |
-  
 </nav>
+
 <hr>
 
-  <h1>Start jouw intake</h1>
-  <p>Beste reiziger, beantwoord enkele korte vragen zodat we je beter kunnen matchen.</p>
+<h1>Start jouw intake</h1>
+<p>Beste reiziger, beantwoord enkele korte vragen zodat we je beter kunnen matchen!</p>
 
-  <form method="POST" action="/submit-intake">
-    <label>Wat is je voorkeursbestemming?</label><br>
-    <input type="text" name="destination" required><br><br>
-    
-     <label>Wat typeert jou het meest?</label>
-    <select name="personality" required>
+<form method="POST" action="/submit-intake" id="intakeForm">
+  <label>Wat is jouw droombestemming?</label>
+  <input type="text" name="destination" required>
+
+  <label>Wat typeert jou het meest?</label>
+  <select name="personality" required>
     <option value="">-- Kies je vibe --</option>
     <option value="avontuurlijk">Avontuurlijk 🌋</option>
     <option value="ontspannen">Ontspannen 🌴</option>
     <option value="cultureel">Cultureel 🏛️</option>
     <option value="sociaal">Sociaal 🤝</option>
-    </select>
-    
-    <label>Budget:</label>
-    <input type="text" name="budget" placeholder="bv. 1000-1500€" required>
+    <option value="extravert">Extravert🎉</option>
+    <option value="introvert">Introvert🙈</option>
+    <option value="'ambivert">Ambivert🦎</option>
+  </select>
 
-    <label>Wat is je reisperiode?</label><br>
-    <input type="text" name="travel_period" required><br><br>
+  <label>Budget:</label>
+  <input type="text" name="budget" placeholder="bv. 1000-1500€" required>
 
-    <button type="submit">Verstuur</button>
-  </form>
+  <label>Wat is je reisperiode? (meerdere periodes mogelijk)</label>
 
-  <button type="submit">Bekijk mijn match</button>
+  <div class="date-range-picker" id="dateRangePicker" aria-labelledby="drpLabel">
+    <div class="drp-controls">
+      <div class="drp-summary" id="drpSummary">Selecteer een begin -en eind-datum.</div>
+      <div class="drp-actions">
+        <button type="button" id="clearSelectionBtn" class="nav-btn">Wis huidige selectie</button>
+        <button type="button" id="addRangeBtn" class="nav-btn" disabled>Voeg periode toe</button>
+      </div>
+    </div>
+
+    <div class="month-view" id="monthView" role="region" aria-label="Kalender maand">
+      <div class="picker-header">
+        <button type="button" id="prevMonth" class="nav-btn">&lt; Vorige</button>
+        <div class="month-title" id="monthTitle">Maand Jaar</div>
+        <button type="button" id="nextMonth" class="nav-btn">Volgende &gt;</button>
+      </div>
+
+      <div class="weekdays" aria-hidden="true">
+        <div>ma</div><div>di</div><div>wo</div><div>do</div><div>vr</div><div>za</div><div>zo</div>
+      </div>
+
+      <div class="days" id="daysGrid"></div>
+    </div>
+
+
+    <div class="ranges-list" id="rangesList" aria-live="polite"></div>
+  </div>
+
+  <!-- verborgen velden die bij submit meegaan; worden dynamisch ingevuld als arrays -->
+  <div id="hiddenRangesContainer"></div>
+
+  <button type="submit">Verstuur</button>
 </form>
+
+<script>
+(function(){
+  const startBound = new Date(2026,0,1); // 1 Nov 2025
+  const endBound = new Date(2026,11,31);  // 31 Dec 2026
+
+  const daysGrid = document.getElementById('daysGrid');
+  const monthTitle = document.getElementById('monthTitle');
+  const prevBtn = document.getElementById('prevMonth');
+  const nextBtn = document.getElementById('nextMonth');
+
+  const drpSummary = document.getElementById('drpSummary');
+  const clearSelectionBtn = document.getElementById('clearSelectionBtn');
+  const addRangeBtn = document.getElementById('addRangeBtn');
+  const rangesList = document.getElementById('rangesList');
+  const hiddenRangesContainer = document.getElementById('hiddenRangesContainer');
+
+  let viewYear = startBound.getFullYear();
+  let viewMonth = startBound.getMonth(); // month index 0-11
+  let selectedStart = null;
+  let selectedEnd = null;
+  let ranges = []; // array of {start: Date, end: Date, id: number}
+  let nextRangeId = 1;
+
+  // helpers
+  function fmtISO(d){ return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+  function sameDay(a,b){ return a && b && a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
+  function fmtRead(d){ return d.toLocaleDateString('nl-NL',{ day:'numeric', month:'short', year:'numeric' }); }
+
+  function clampMonthYear(y,m){
+    // if before startBound's month -> clamp
+    const firstOfView = new Date(y,m,1);
+    const lastOfView = new Date(y,m+1,0);
+    if (lastOfView < startBound) {
+      return [startBound.getFullYear(), startBound.getMonth()];
+    }
+    if (firstOfView > endBound) {
+      return [endBound.getFullYear(), endBound.getMonth()];
+    }
+    return [y,m];
+  }
+
+  function renderMonth(){
+    [viewYear, viewMonth] = clampMonthYear(viewYear, viewMonth);
+    monthTitle.textContent = new Date(viewYear, viewMonth, 1).toLocaleDateString('nl-NL', { month:'long', year:'numeric' });
+    // enable/disable nav
+    const prevMonthLastDay = new Date(viewYear, viewMonth, 0); // last day of previous month
+    const nextMonthFirstDay = new Date(viewYear, viewMonth+1, 1);
+    prevBtn.disabled = (prevMonthLastDay < startBound);
+    nextBtn.disabled = (nextMonthFirstDay > endBound);
+
+    daysGrid.innerHTML = '';
+    // first weekday offset (Monday-based)
+    const firstWeekdayJS = new Date(viewYear, viewMonth, 1).getDay();
+    const offset = (firstWeekdayJS + 6) % 7;
+    for (let i=0;i<offset;i++){
+      const el = document.createElement('div'); el.className = 'day disabled'; daysGrid.appendChild(el);
+    }
+    const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
+    for (let d=1; d<=daysInMonth; d++){
+      const date = new Date(viewYear, viewMonth, d);
+      const dayEl = document.createElement('div');
+      dayEl.className = 'day';
+      dayEl.tabIndex = 0;
+      dayEl.dataset.date = fmtISO(date);
+      dayEl.textContent = d;
+
+      if (date < startBound || date > endBound) {
+        dayEl.classList.add('disabled'); dayEl.tabIndex = -1;
+      } else {
+        dayEl.addEventListener('click', ()=> onDayClick(date));
+        dayEl.addEventListener('keydown', (e)=> { if (e.key==='Enter' || e.key===' ') { e.preventDefault(); onDayClick(date); }});
+      }
+      daysGrid.appendChild(dayEl);
+    }
+
+    updateDayClasses();
+  }
+
+  function onDayClick(date){
+    if (!selectedStart || (selectedStart && selectedEnd)) {
+      selectedStart = date;
+      selectedEnd = null;
+      drpSummary.textContent = 'Start geselecteerd: ' + fmtRead(selectedStart) + '. Kies nu de einddatum.';
+      addRangeBtn.disabled = true;
+    } else {
+      // set end and if needed swap
+      if (date < selectedStart) {
+        selectedEnd = selectedStart;
+        selectedStart = date;
+      } else {
+        selectedEnd = date;
+      }
+      // create a new range and add to ranges array
+      addRange(selectedStart, selectedEnd);
+      // reset selection for next range
+      selectedStart = null;
+      selectedEnd = null;
+      drpSummary.textContent = 'Periode toegevoegd. Klik een nieuwe start-datum om nog een periode toe te voegen.';
+    }
+    updateDayClasses();
+  }
+
+  function addRange(s,e){
+    // create object and push
+    const r = { id: nextRangeId++, start: new Date(s.getFullYear(), s.getMonth(), s.getDate()), end: new Date(e.getFullYear(), e.getMonth(), e.getDate()) };
+    ranges.push(r);
+    renderRangesList();
+    updateHiddenInputs();
+  }
+
+  function renderRangesList(){
+    rangesList.innerHTML = '';
+    if (ranges.length === 0) {
+      rangesList.innerHTML = '<div class="small" style="margin-top:6px;">Nog geen periodes toegevoegd.</div>';
+      return;
+    }
+    ranges.forEach(r=>{
+      const div = document.createElement('div'); div.className = 'range-item';
+      const txt = document.createElement('div'); txt.innerHTML = `<strong>${fmtRead(r.start)}</strong> — <strong>${fmtRead(r.end)}</strong>`;
+      const remove = document.createElement('button'); remove.type='button'; remove.className='remove-btn'; remove.textContent='Verwijder';
+      remove.addEventListener('click', ()=> { ranges = ranges.filter(x=>x.id!==r.id); renderRangesList(); updateHiddenInputs(); renderMonth(); });
+      div.appendChild(txt); div.appendChild(remove);
+      rangesList.appendChild(div);
+    });
+  }
+
+  function updateHiddenInputs(){
+    hiddenRangesContainer.innerHTML = '';
+    // create paired arrays travel_start[] and travel_end[]
+    ranges.forEach((r, idx)=>{
+      const inStart = document.createElement('input'); inStart.type='hidden'; inStart.name='travel_start[]'; inStart.value = fmtISO(r.start);
+      const inEnd = document.createElement('input'); inEnd.type='hidden'; inEnd.name='travel_end[]'; inEnd.value = fmtISO(r.end);
+      hiddenRangesContainer.appendChild(inStart); hiddenRangesContainer.appendChild(inEnd);
+    });
+  }
+
+  function updateDayClasses(){
+    const dayEls = daysGrid.querySelectorAll('.day');
+    dayEls.forEach(el=>{
+      el.classList.remove('start','end','in-range');
+      if (el.classList.contains('disabled')) return;
+      const d = new Date(el.dataset.date + 'T00:00:00');
+      // mark selected start / end
+      if (selectedStart && sameDay(d, selectedStart)) el.classList.add('start');
+      if (selectedEnd && sameDay(d, selectedEnd)) el.classList.add('end');
+      if (selectedStart && selectedEnd && d > selectedStart && d < selectedEnd) el.classList.add('in-range');
+
+      // mark existing ranges
+      ranges.forEach(r=>{
+        if (d >= r.start && d <= r.end) {
+          // if start or end of a stored range, mark accordingly unless already selected styling
+          if (sameDay(d, r.start)) el.classList.add('start');
+          else if (sameDay(d, r.end)) el.classList.add('end');
+          else el.classList.add('in-range');
+        }
+      });
+    });
+
+    // enable addRangeBtn only if both selectedStart and selectedEnd (but in our flow we auto-add on second click)
+    addRangeBtn.disabled = !(selectedStart && selectedEnd);
+  }
+
+  // external controls
+  prevBtn.addEventListener('click', ()=> { viewMonth--; const cl = clampMonthYear(viewYear, viewMonth); viewYear = cl[0]; viewMonth = cl[1]; renderMonth(); });
+  nextBtn.addEventListener('click', ()=> { viewMonth++; const cl = clampMonthYear(viewYear, viewMonth); viewYear = cl[0]; viewMonth = cl[1]; renderMonth(); });
+
+  clearSelectionBtn.addEventListener('click', ()=> { selectedStart = null; selectedEnd = null; drpSummary.textContent = 'Selectie gewist. Klik een begin-datum.'; updateDayClasses(); });
+  addRangeBtn.addEventListener('click', ()=> {
+    if (selectedStart && selectedEnd) {
+      addRange(selectedStart, selectedEnd);
+      selectedStart = null; selectedEnd = null;
+      drpSummary.textContent = 'Periode toegevoegd.';
+      updateDayClasses();
+    }
+  });
+
+  // when submitting, ensure at least one period exists
+  document.getElementById('intakeForm').addEventListener('submit', function(e){
+    if (ranges.length === 0) {
+      e.preventDefault();
+      alert('Voeg minimaal één reisperiode toe (kies start en einde).');
+      return false;
+    }
+    // otherwise form will submit with travel_start[] and travel_end[] fields
+  });
+
+  // initial render
+  renderMonth();
+  renderRangesList();
+
+})();
+</script>
+
 </body>
 </html>
