@@ -1,184 +1,49 @@
 <!DOCTYPE html>
+
 <html lang="nl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Trailtribe -- home</title>
-<style>
-  
-  body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    background-image:url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80');
-    background-size:cover;
-    background-position:center;
-    filter:blur(6px) brightness(0.9);
-    z-index:-1;
-  }
-
-  
-  body{
-    font-family: Arial, sans-serif;
-    color: black;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:flex-start;
-    min-height:100vh;
-    text-align:center;
-    margin:0;
-    margin-top:80px;
-  }
-
-  nav{
-    background-color:#007B7F;
-    padding:10px;
-    border-radius:5px;
-    width:100%;
-    text-align:left;
-    position:fixed;
-    top:0;
-    left:0;
-  }
-
-  nav a{
-    color:white;
-    text-decoration:none;
-    margin:0 10px;
-    font-weight:bold;
-  }
-
-  nav a:hover{
-    text-decoration:underline;
-  }
-
-  h1, h2{
-    color:#007B7F; 
-  }
-
-  hr{
-    margin-top:15px;
-    margin-bottom:20px;
-  }
-
-
-  .hoofd-kader{
-    border: 3px solid #007B7F;
-    border-radius: 15px;
-    padding: 40px;
-    max-width: 800px;
-    margin: 40px auto;
-    background-color: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(4px);
-  }
-
-
-  .sectie {
-    max-width: 600px;
-    margin: 0 auto;
-  }
-
-  .scheidingslijn {
-    border: none;
-    border-top: 1px solid rgba(0, 123, 127, 0.4);
-    width: 85%; /* laat ruimte tussen lijn en kader */
-    margin: 30px auto;
-  }
-
-  
-  .intro{
-    text-align:center;
-    margin-bottom: 10px;
-  }
-
-  .intro h1{
-    font-size:2em;
-    margin-bottom:0.4em;
-  }
-
-  .intro p{
-    font-size:1.1em;
-    color:#333;
-  }
-
-  
-  .emoji-list{
-    list-style:none;
-    padding-left:0;
-    margin-left:0;
-    text-align:left;
-  }
-
-  .emoji-list li{
-    margin:10px 0;
-    display:flex;
-    align-items:center;
-    gap:10px;
-  }
-
-  .emoji-list li span{
-    min-width:25px;
-    text-align:center;
-    font-size:1.3em;
-  }
-
-
-  .reasons{
-    list-style:none;
-    text-align:left;
-    max-width:600px;
-    padding-left:0;
-    margin-left:auto;
-    margin-right:auto;
-  }
-
-  .reasons li{
-    margin:10px 0;
-    display:flex;
-    align-items:center;
-    gap:10px;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trailtribe -- home </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-  <nav>
-    <a href="{{ url_for('main.home') }}">Home</a> |
-    <a href="{{ url_for('main.intake') }}">Intake</a> |
-    <a href="{{ url_for('main.about') }}">Over ons</a> |
-    <a href="{{ url_for('main.login') }}">Login</a> |
-  </nav>
+    <nav style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <a href="{{ url_for('home') }}">Home</a> |
+        <a href="{{ url_for('intake') }}">Intake</a> |
+        <a href="{{ url_for('about') }}">Over ons</a>
+      </div>
+      <div>
+        {% if session.get('user_email') %}
+          <span style="color: white; margin-right: 10px;">{{ session['user_email'] }}</span>
+          <a href="{{ url_for('logout') }}">Uitloggen</a>
+        {% else %}
+          <a href="{{ url_for('login') }}">Login</a>
+        {% endif %}
+      </div>
+    </nav>
+    <hr>
 
-  <hr>
+    <h1>Groepsreizen die écht matchen</h1>
+    <p>Geen standaardpakketten, maar een op maat gemaakte
+     droomreis met een groep gelijkgestemden. We starten bij jou. </p>
 
-  <div class="hoofd-kader">
-    <div class="sectie intro">
-      <h1>Groepsreizen die écht matchen</h1>
-      <p>Geen standaardpakketten, maar een op maat gemaakte droomreis met een groep gelijkgestemden. We starten bij jou!</p>
-    </div>
+    <h2>Hoe werkt het?</h2>
+    <ol>
+        <li>Maak je profiel aan</li>
+        <li>Beantwoord een uitgebreide intake</li>
+        <li>Wij matchen je met de perfecte reisgroep</li>
+         gebaseerd op jouw persoonlijkheid, interesses en budget.</li>
+        <li>Ontvang je reis match</li>
+    </ol>
 
-    <hr class="scheidingslijn">
-
-    <div class="sectie">
-      <h2>Zo begint jouw reis</h2>
-      <ul class="emoji-list">
-        <li><span>💻</span>Maak je profiel aan</li>
-        <li><span>🕹️</span>Beantwoord een uitgebreide intake</li>
-        <li><span>💚</span>Wij matchen je met de perfecte reisgroep gebaseerd op jouw persoonlijkheid, interesses en budget</li>
-        <li><span>📍</span>Ontvang je reis match</li>
-      </ul>
-    </div>
-
-    <hr class="scheidingslijn">
-
-    <div class="sectie">
-      <h2>Waarom TrailTribe?</h2>
-      <ul class="reasons">
-        <li>🌍 Reizen met gelijkgestemden</li>
-        <li>💬 Eerlijke prijzen en transparante matching</li>
-        <li>🧭 Unieke bestemmingen afgestemd op jou</li>
-      </ul>
-    </div>
-  </div>
+    <h2>Waarom TrailTribe?</h2>
+    <ul>
+    <li>🌍 Reizen met gelijkgestemden</li>
+    <li>💬 Eerlijke prijzen en transparante matching</li>
+    <li>🧭 Unieke bestemmingen afgestemd op jou</li>
+    </ul>
 </body>
+    
 </html>

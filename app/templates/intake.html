@@ -3,153 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <title>Intake - TrailTribe</title>
-  <style>
-    * {
-      box-sizing: border-box; 
-    }
-
-    body {
-      font-family: Arial, sans-serif;
-      background-color: white;
-      color: black;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-      text-align: center;
-      padding-top: 80px; 
-    }
-
-    nav {
-      background-color: #007B7F;
-      padding: 10px;
-      border-radius: 5px;
-      width: 100%;
-      text-align: left;
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 1000;
-    }
-
-    nav a {
-      color: white;
-      text-decoration: none;
-      margin: 0 10px;
-      font-weight: bold;
-    }
-
-    nav a:hover {
-      text-decoration: underline;
-    }
-
-    h1 {
-      color: #007B7F;
-      margin-bottom: 0.3em;
-    }
-
-    p {
-      color: #333;
-      margin-top: 0;
-      margin-bottom: 20px;
-    }
-
-    form {
-      background-color: #b1dad8; 
-      padding: 25px 20px;
-      border-radius: 10px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-      max-width: 450px;
-      width: 90%;
-      margin: 20px auto;
-      text-align: left;
-      border: 3px solid #007B7F; 
-    }
-
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 15px;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      margin-bottom: 15px;
-      border: 1px solid #007B7F;
-      border-radius: 5px;
-      display: block;
-    }
-
-    button {
-      background-color: #007B7F;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-      margin-top: 10px;
-      width: 100%; 
-    }
-
-    button:hover {
-      background-color: #005f63;
-    }
-
-    hr {
-      margin-top: 15px;
-      margin-bottom: 20px;
-      border: 1px solid #007B7F;
-      width: 90%;
-    }
-
-    /* Responsief */
-    @media (max-width: 500px) {
-      form {
-        padding: 20px 15px;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-
 <nav>
-  <a href="{{ url_for('main.home') }}">Home</a> |
-  <a href="{{ url_for('main.intake') }}">Intake</a> |
-  <a href="{{ url_for('main.about') }}">Over ons</a> |
-  <a href="{{ url_for('main.login') }}">Login</a> |
+  <a href="{{ url_for('home') }}">Home</a> |
+  <a href="{{ url_for('intake') }}">Intake</a> |
+  <a href="{{ url_for('about') }}">Over ons</a> |
+  <a href="{{ url_for('login') }}">Login</a> |
+  
 </nav>
-
 <hr>
 
-<h1>Start jouw intake</h1>
-<p>Beste reiziger, beantwoord enkele korte vragen zodat we je beter kunnen matchen!</p>
+  <h1>Start jouw intake</h1>
+  <p>Beste reiziger, beantwoord enkele korte vragen zodat we je beter kunnen matchen.</p>
 
-<form method="POST" action="/submit-intake">
-  <label>Wat is je voorkeursbestemming?</label>
-  <input type="text" name="destination" required>
-
-  <label>Wat typeert jou het meest?</label>
-  <select name="personality" required>
+  <form method="POST" action="/submit-intake">
+    <label>Wat is je voorkeursbestemming?</label><br>
+    <input type="text" name="destination" required><br><br>
+    
+     <label>Wat typeert jou het meest?</label>
+    <select name="personality" required>
     <option value="">-- Kies je vibe --</option>
     <option value="avontuurlijk">Avontuurlijk 🌋</option>
     <option value="ontspannen">Ontspannen 🌴</option>
     <option value="cultureel">Cultureel 🏛️</option>
     <option value="sociaal">Sociaal 🤝</option>
-  </select>
+    </select>
+    
+    <label>Budget:</label>
+    <input type="text" name="budget" placeholder="bv. 1000-1500€" required>
 
-  <label>Budget:</label>
-  <input type="text" name="budget" placeholder="bv. 1000-1500€" required>
+    <label>Wat is je reisperiode?</label><br>
+    <input type="text" name="travel_period" required><br><br>
 
-  <label>Wat is je reisperiode?</label>
-  <input type="text" name="travel_period" required>
+    <button type="submit">Verstuur</button>
+  </form>
 
-  <button type="submit">Verstuur</button>
+  <button type="submit">Bekijk mijn match</button>
 </form>
-
 </body>
 </html>
