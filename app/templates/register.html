@@ -15,14 +15,13 @@
       min-height: 100vh;
       text-align: center;
       margin: 0;
-      margin-top: 80px;
       background-color: #f8fafa;
     }
 
     nav {
       background-color: #007B7F;
-      padding: 10px;
-      border-radius: 5px;
+      padding: 10px 20px;
+      border-radius: 0;
       width: 100%;
       text-align: left;
       position: fixed;
@@ -31,6 +30,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-sizing: border-box;
     }
 
     nav div a {
@@ -59,20 +59,31 @@
       background-color: #e1f4f4;
     }
 
+    main {
+      width: 100%;
+      max-width: 420px;
+      margin-top: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+
     h2 {
       color: #007B7F;
-      margin-top: 40px;
+      margin-bottom: 25px;
       font-weight: bold;
     }
 
     form {
       border: 3px solid #007B7F;
       border-radius: 15px;
-      padding: 40px;
-      max-width: 400px;
-      margin: 30px auto;
-      background-color: rgba(255, 255, 255, 0.8);
+      padding: 40px 30px;
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.9);
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      box-sizing: border-box;
     }
 
     label {
@@ -85,18 +96,19 @@
 
     input {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       margin-bottom: 20px;
       border: 1px solid #ccc;
       border-radius: 8px;
       font-size: 1em;
       font-family: Arial, sans-serif;
+      box-sizing: border-box;
     }
 
     button {
       background-color: #007B7F;
       color: white;
-      padding: 10px 20px;
+      padding: 12px;
       border: none;
       border-radius: 10px;
       cursor: pointer;
@@ -104,6 +116,7 @@
       font-weight: bold;
       width: 100%;
       transition: background-color 0.2s;
+      box-sizing: border-box;
     }
 
     button:hover {
@@ -122,20 +135,21 @@
     <a href="{{ url_for('register') }}" class="profile-btn">Profiel aanmaken</a>
   </nav>
 
-  <h2>Maak je profiel aan</h2>
+  <main>
+    <h2>Maak je profiel aan</h2>
+    <form method="POST" action="/register">
+      <label for="name">Naam:</label>
+      <input type="text" id="name" name="name" required>
 
-  <form method="POST" action="/register">
-    <label for="name">Naam:</label>
-    <input type="text" id="name" name="name" required>
+      <label for="email">E-mail:</label>
+      <input type="email" id="email" name="email" required>
 
-    <label for="email">E-mail:</label>
-    <input type="email" id="email" name="email" required>
+      <label for="password">Wachtwoord:</label>
+      <input type="password" id="password" name="password" required>
 
-    <label for="password">Wachtwoord:</label>
-    <input type="password" id="password" name="password" required>
-
-    <button type="submit">Registreren</button>
-  </form>
+      <button type="submit">Registreren</button>
+    </form>
+  </main>
 
 </body>
 </html>
