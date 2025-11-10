@@ -1,161 +1,35 @@
 <!DOCTYPE html>
-<html lang="nl">
+<nav>
+  <a href="{{ url_for('home') }}">Home</a> |
+  <a href="{{ url_for('intake') }}">Intake</a> |
+  <a href="{{ url_for('about') }}">Over ons</a> |
+  <a href="{{ url_for('login') }}">Login</a> |
+  
+</nav>
+<hr>
+<html  lang = "nl">
 <head>
   <meta charset="UTF-8">
   <title>TrailTribe - Over ons</title>
-
-  <style>
-    /* Algemeen */
-    body {
-      font-family: Arial, sans-serif;
-      background-color: white;
-      color: black;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      text-align: left;
-      padding-top: 80px; /* ruimte voor navbar */
-    }
-
-    /* Navigatie */
-    nav {
-      background-color: #007B7F;
-      padding: 10px 20px;
-      border-radius: 5px;
-      width: 100%;
-      text-align: left;
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 100;
-    }
-
-    nav a {
-      color: white;
-      text-decoration: none;
-      margin: 0 10px;
-      font-weight: bold;
-    }
-
-    nav a:hover {
-      text-decoration: underline;
-    }
-
-    hr {
-      margin-top: 15px;
-      margin-bottom: 20px;
-    }
-
-    /* Kader voor content */
-    .content-box {
-      background-color: #f7ffff;
-      border: 2px solid #007B7F;
-      border-radius: 10px;
-      padding: 30px;
-      max-width: 900px;
-      width: 90%;
-      margin-bottom: 40px;
-    }
-
-    h1, h2 {
-      color: #007B7F;
-      text-align: left;
-    }
-
-    p {
-      text-align: left;
-      line-height: 1.6;
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      text-align: left;
-    }
-
-    /* Teamleden */
-    .team-list li {
-      margin-bottom: 8px;
-      text-indent: 0;
-    }
-
-    /* Redenensectie */
-    .reasons-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px 30px;
-      margin-top: 15px;
-      padding-left: 0;
-      list-style: none;
-    }
-
-    .reasons-grid li {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      line-height: 1.4;
-    }
-
-    .checkmark {
-      color: #007B7F;
-      font-weight: bold;
-    }
-
-    @media (max-width: 600px) {
-      .reasons-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-
-  <nav>
-    <a href="{{ url_for('home') }}">Home</a> |
-    <a href="{{ url_for('intake') }}">Intake</a> |
-    <a href="{{ url_for('about') }}">Over ons</a> |
-    <a href="{{ url_for('login') }}">Login</a> |
-  </nav>
-
-  <hr>
-
-  <div class="content-box">
-    <h1>Over TrailTribe</h1>
-
-    <p><strong>TrailTribe</strong> is een innovatieve app en touroperator die groepsreizen weer persoonlijk maakt. 
-    In plaats van te vertrekken van een vast reisaanbod, beginnen we bij jou: jouw interesses, persoonlijkheid, budget en reisperiode vormen het vertrekpunt. 
-    Op basis van een speelse intake en slimme matching-technologie stellen we groepen samen die écht bij elkaar passen. 
-    Zo beleef je geen standaardreis, maar een authentieke ervaring met gelijkgestemden — een reis die klopt van begin tot einde.</p>
-
-    <h2>Ons Team</h2>
-    <ul class="team-list">
-      <li>Alice — Oprichter &amp; CEO</li>
-      <li>Bob — CTO</li>
-      <li>Charlie — Marketing Manager</li>
-    </ul>
-
-    <h2>Onze Missie</h2>
-    <p>Bij TrailTribe geloven we dat de beste reizen beginnen met de juiste mensen. 
-    Daarom brengen we reizigers samen die dezelfde energie, interesses en mindset delen. 
-    Ons doel is om betekenisvolle connecties en onvergetelijke ervaringen te creëren — ver weg van massatoerisme, dicht bij wie jij echt bent.</p>
-
-    <h2>Waarom reizen met TrailTribe?</h2>
-    <ul class="reasons-grid">
-      <li><span class="checkmark">✔</span> Gepersonaliseerde groepsreizen op basis van jouw profiel</li>
-      <li><span class="checkmark">✔</span> Match met gelijkgestemde reizigers</li>
-      <li><span class="checkmark">✔</span> Geen standaardpakketten maar unieke ervaringen</li>
-      <li><span class="checkmark">✔</span> Eerlijke prijzen afgestemd op jouw budget</li>
-      <li><span class="checkmark">✔</span> Professionele organisatie & begeleiding</li>
-      <li><span class="checkmark">✔</span> Mix van vrijheid en verbondenheid tijdens je reis</li>
-      <li><span class="checkmark">✔</span> Duurzame en bewuste reisopties</li>
-      <li><span class="checkmark">✔</span> Gebruiksvriendelijke app met leuke intake</li>
-      <li><span class="checkmark">✔</span> Reizen die écht kloppen qua energie en sfeer</li>
-      <li><span class="checkmark">✔</span> Focus op plezier, groei en nieuwe connecties</li>
-    </ul>
-  </div>
+  <h1>Over TrailTribe</h1>
+  <p>Wij matchen reizigers met gelijkaardige interesses.</p>
+  
+  <h2>Ons Team</h2>
+  <ul>
+    <li>Alice - Oprichter & CEO</li>
+    <li>Bob - CTO</li>
+    <li>Charlie - Marketing Manager</li>
+  </ul>
+  
+  <h2>Onze Missie</h2>
+  <p>Bij TrailTribe geloven we dat de 
+    beste reizen beginnen met de juiste mensen.
+    Daarom matchen wij reizigers op basis van persoonlijkheid
+    , interesses en budget.</p>
+  
 
 </body>
 </html>
