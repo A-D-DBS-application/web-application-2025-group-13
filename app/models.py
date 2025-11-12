@@ -20,7 +20,7 @@ class TravelPreference(db.Model):
     budget = db.Column(db.String(50))
     periode = db.Column(db.String(50))
     persoonlijkheid = db.Column(db.String(50))
-    interesse = db.Column(db.String(100))
+    interesses = db.Column(db.String(100))
 
 class Trip(db.Model):
     __tablename__ = 'trip'
@@ -42,3 +42,14 @@ class Feedback(db.Model):
     rating = db.Column(db.Integer)
     comment = db.Column(db.Text)
     feedback_date = db.Column(db.Date)
+
+
+
+
+class Group(db.Model):
+    __tablename__ = 'group'
+    id = db.Column(db.Integer, primary_key=True)
+    match_id = db.Column(db.Integer)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    role = db.Column(db.String(50))
+    confirmed = db.Column(db.Boolean)
