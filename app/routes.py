@@ -1,24 +1,29 @@
-from flask import render_template, request, redirect, url_for, session
-from app.extensions import db
+from flask import Flask, render_template, request, redirect, url_for, session
+from app import db
 from app.models import User
 
 
 def register_routes(app):
+
     @app.route('/')
     def home():
         return render_template('index.html')
+
 
     @app.route('/about')
     def about():
         return render_template('about.html')
 
+
     @app.route('/intake')
     def intake():
         return render_template('intake.html')
 
+
     @app.route('/login')
     def login():
         return render_template('login.html')
+
 
     @app.route('/register', methods=['GET', 'POST'])
     def register():
