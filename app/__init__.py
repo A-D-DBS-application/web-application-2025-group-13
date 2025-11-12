@@ -10,8 +10,11 @@ def create_app():
 
     db.init_app(app)
 
+    from app.routes import register_routes
+    
+    register_routes(app)
+
     with app.app_context():
-        from app import routes, models
         db.create_all()  # Ensures tables exist in Supabase
 
     return app
