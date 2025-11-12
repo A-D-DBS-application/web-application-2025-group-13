@@ -7,6 +7,7 @@ class User(db.Model):
     name = db.Column(db.String(100), nullable=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     age = db.Column(db.Integer, nullable=True)
+    date = db.Column(db.Date, nullable=True)
 
     def __repr__(self):
         return f"<User {self.email}>"
@@ -14,7 +15,7 @@ class User(db.Model):
 class TravelPreference(db.Model):
     __tablename__ = 'travel_preference'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     interest_id = db.Column(db.Float)
     budget = db.Column(db.String(50))
     periode = db.Column(db.String(50))
