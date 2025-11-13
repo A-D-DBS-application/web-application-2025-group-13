@@ -1,184 +1,198 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Trailtribe -- home</title>
+{% extends "base.html" %}
+
+{% block styles %}
 <style>
-  
-  body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    background-image:url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80');
-    background-size:cover;
-    background-position:center;
-    filter:blur(6px) brightness(0.9);
-    z-index:-1;
-  }
+    /* HERO SECTIE */
+    .hero {
+        position: relative;
+        height: 500px;
+        width: 100%;
+        /* Een mooie reisfoto */
+        background-image: url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=2000&q=80');
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+        margin-bottom: 60px;
+    }
 
-  
-  body{
-    font-family: Arial, sans-serif;
-    color: black;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:flex-start;
-    min-height:100vh;
-    text-align:center;
-    margin:0;
-    margin-top:80px;
-  }
+    .hero::before {
+        content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.3); /* Iets donkerder voor leesbaarheid */
+    }
 
-  nav{
-    background-color:#007B7F;
-    padding:10px;
-    border-radius:5px;
-    width:100%;
-    text-align:left;
-    position:fixed;
-    top:0;
-    left:0;
-  }
+    .hero-content {
+        position: relative; z-index: 1; max-width: 800px; padding: 20px;
+    }
 
-  nav a{
-    color:white;
-    text-decoration:none;
-    margin:0 10px;
-    font-weight:bold;
-  }
+    .hero h1 {
+        font-size: 3.5rem; margin-bottom: 15px; text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
 
-  nav a:hover{
-    text-decoration:underline;
-  }
+    .hero p {
+        font-size: 1.4rem; margin-bottom: 35px; font-weight: 300; text-shadow: 0 1px 5px rgba(0,0,0,0.5);
+    }
 
-  h1, h2{
-    color:#007B7F; 
-  }
+    .cta-button {
+        background-color: #007B7F; color: white; padding: 15px 40px;
+        font-size: 1.2rem; font-weight: bold; text-decoration: none;
+        border-radius: 50px; transition: transform 0.2s, background 0.2s;
+        display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
 
-  hr{
-    margin-top:15px;
-    margin-bottom:20px;
-  }
+    .cta-button:hover {
+        background-color: #005f62; transform: translateY(-3px);
+    }
 
+    /* HOE HET WERKT (Verticaal Design) */
+    .section-container {
+        max-width: 800px; /* Iets smaller voor verticale lijst */
+        margin: 0 auto 80px auto;
+        padding: 0 20px;
+    }
 
-  .hoofd-kader{
-    border: 3px solid #007B7F;
-    border-radius: 15px;
-    padding: 40px;
-    max-width: 800px;
-    margin: 40px auto;
-    background-color: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(4px);
-  }
+    .section-title {
+        color: #007B7F; font-size: 2.2rem; margin-bottom: 50px; text-align: center;
+    }
 
+    .steps-stack {
+        display: flex;
+        flex-direction: column; /* Zorgt dat ze onder elkaar komen */
+        gap: 30px;
+    }
 
-  .sectie {
-    max-width: 600px;
-    margin: 0 auto;
-  }
+    .step-card {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        transition: transform 0.3s;
+        border: 1px solid rgba(0,0,0,0.03);
+        
+        /* Flexbox om icoon naast tekst te zetten */
+        display: flex; 
+        align-items: center;
+        text-align: left; 
+        gap: 25px;
+    }
 
-  .scheidingslijn {
-    border: none;
-    border-top: 1px solid rgba(0, 123, 127, 0.4);
-    width: 85%; /* laat ruimte tussen lijn en kader */
-    margin: 30px auto;
-  }
+    .step-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        border-color: #007B7F;
+    }
 
-  
-  .intro{
-    text-align:center;
-    margin-bottom: 10px;
-  }
+    .step-icon {
+        font-size: 3.5rem;
+        background-color: #f0fbfc;
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        flex-shrink: 0; /* Zorgt dat icoon niet krimpt */
+    }
 
-  .intro h1{
-    font-size:2em;
-    margin-bottom:0.4em;
-  }
+    .step-content h3 {
+        color: #333; margin: 0 0 10px 0; font-size: 1.4rem;
+    }
 
-  .intro p{
-    font-size:1.1em;
-    color:#333;
-  }
+    .step-content p {
+        color: #666; margin: 0; line-height: 1.6;
+    }
 
-  
-  .emoji-list{
-    list-style:none;
-    padding-left:0;
-    margin-left:0;
-    text-align:left;
-  }
-
-  .emoji-list li{
-    margin:10px 0;
-    display:flex;
-    align-items:center;
-    gap:10px;
-  }
-
-  .emoji-list li span{
-    min-width:25px;
-    text-align:center;
-    font-size:1.3em;
-  }
+    /* Mobiele aanpassing voor de cards */
+    @media (max-width: 600px) {
+        .step-card { flex-direction: column; text-align: center; }
+        .step-icon { margin-bottom: 15px; }
+    }
 
 
-  .reasons{
-    list-style:none;
-    text-align:left;
-    max-width:600px;
-    padding-left:0;
-    margin-left:auto;
-    margin-right:auto;
-  }
+    /* USP SECTIE (Onderaan) */
+    .usp-section {
+        background-color: #e0f7fa; padding: 60px 20px; text-align: center;
+    }
 
-  .reasons li{
-    margin:10px 0;
-    display:flex;
-    align-items:center;
-    gap:10px;
-  }
+    .usp-grid {
+        max-width: 1000px; margin: 0 auto;
+        display: flex; justify-content: center; flex-wrap: wrap; gap: 40px;
+    }
+
+    .usp-item {
+        flex: 1; min-width: 220px; max-width: 300px;
+    }
+    
+    .usp-item h4 { margin-bottom: 10px; color: #005f62; font-size: 1.2rem;}
+
 </style>
-</head>
-<body>
-  <nav>
-    <a href="{{ url_for('home') }}">Home</a> |
-    <a href="{{ url_for('intake') }}">Intake</a> |
-    <a href="{{ url_for('about') }}">Over ons</a> |
-    <a href="{{ url_for('login') }}">Login</a> |
-  </nav>
+{% endblock %}
 
-  <hr>
+{% block content %}
 
-  <div class="hoofd-kader">
-    <div class="sectie intro">
-      <h1>Groepsreizen die écht matchen</h1>
-      <p>Geen standaardpakketten, maar een op maat gemaakte droomreis met een groep gelijkgestemden. We starten bij jou!</p>
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Vind jouw reisgroep,<br>start je avontuur.</h1>
+            <p>Reizen op basis van wie jij bent. De perfecte match, de perfecte trip.</p>
+            <a href="{{ url_for('intake') }}" class="cta-button">Start Intake 🚀</a>
+        </div>
     </div>
 
-    <hr class="scheidingslijn">
+    <div class="section-container">
+        <h2 class="section-title">Hoe werkt TrailTribe?</h2>
+        
+        <div class="steps-stack">
+            
+            <div class="step-card">
+                <div class="step-icon">👤</div>
+                <div class="step-content">
+                    <h3>1. Maak een profiel</h3>
+                    <p>Geen gedoe. Meld je aan met je naam en e-mail. Binnen 1 minuut ben je klaar om te beginnen.</p>
+                </div>
+            </div>
 
-    <div class="sectie">
-      <h2>Zo begint jouw reis</h2>
-      <ul class="emoji-list">
-        <li><span>💻</span>Maak je profiel aan</li>
-        <li><span>🕹️</span>Beantwoord een uitgebreide intake</li>
-        <li><span>💚</span>Wij matchen je met de perfecte reisgroep gebaseerd op jouw persoonlijkheid, interesses en budget</li>
-        <li><span>📍</span>Ontvang je reis match</li>
-      </ul>
+            <div class="step-card">
+                <div class="step-icon">📝</div>
+                <div class="step-content">
+                    <h3>2. Doe de Intake</h3>
+                    <p>Vul onze slimme vragenlijst in. We vragen naar je budget, je favoriete festivals, en jouw persoonlijke 'travel vibe'.</p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-icon">🎯</div>
+                <div class="step-content">
+                    <h3>3. De Perfecte Match</h3>
+                    <p>Ons algoritme koppelt jou aan reizigers die écht bij je passen. Samen op avontuur, zonder zorgen.</p>
+                </div>
+            </div>
+
+        </div>
     </div>
 
-    <hr class="scheidingslijn">
-
-    <div class="sectie">
-      <h2>Waarom TrailTribe?</h2>
-      <ul class="reasons">
-        <li>🌍 Reizen met gelijkgestemden</li>
-        <li>💬 Eerlijke prijzen en transparante matching</li>
-        <li>🧭 Unieke bestemmingen afgestemd op jou</li>
-      </ul>
+    <div class="usp-section">
+        <h2 class="section-title" style="margin-bottom: 30px; font-size: 1.8rem;">Waarom TrailTribe?</h2>
+        <div class="usp-grid">
+            <div class="usp-item">
+                <h4>🌍 Unieke Bestemmingen</h4>
+                <p>Weg van de massa, naar plekken die je raken.</p>
+            </div>
+            <div class="usp-item">
+                <h4>🤝 Echte Connectie</h4>
+                <p>Reis met mensen die jouw vibe begrijpen.</p>
+            </div>
+            <div class="usp-item">
+                <h4>🔓 100% Transparant</h4>
+                <p>Eerlijke prijzen, geen verborgen kosten.</p>
+            </div>
+        </div>
     </div>
-  </div>
-</body>
-</html>
+
+    <div style="text-align: center; padding: 40px; color: #999; font-size: 0.9rem; background: #f4f7f6;">
+        &copy; 2025 TrailTribe • Samen reizen, samen beleven.
+    </div>
+
+{% endblock %}

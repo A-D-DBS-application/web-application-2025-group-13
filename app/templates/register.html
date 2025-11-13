@@ -1,155 +1,102 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Profiel aanmaken - TrailTribe</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      color: black;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-      text-align: center;
-      margin: 0;
-      background-color: #f8fafa;
-    }
+{% extends "base.html" %}
 
-    nav {
-      background-color: #007B7F;
-      padding: 10px 20px;
-      border-radius: 0;
-      width: 100%;
-      text-align: left;
-      position: fixed;
-      top: 0;
-      left: 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-sizing: border-box;
-    }
+{% block content %}
+<div style="width: 100%; min-height: calc(100vh - 80px); display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;">
 
-    nav div a {
-      color: white;
-      text-decoration: none;
-      margin: 0 10px;
-      font-weight: bold;
-    }
+    <div style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); width: 100%; max-width: 450px; text-align: center; border: 1px solid rgba(0,0,0,0.05);">
+        
+        <h1 style="color: #007B7F; margin: 0 0 10px 0;">Maak Account</h1>
+        <p style="color: #888; margin-bottom: 25px; font-size: 0.95rem;">Kies eerst je rol:</p>
 
-    nav div a:hover {
-      text-decoration: underline;
-    }
+        <form action="{{ url_for('register') }}" method="post" style="display: flex; flex-direction: column; gap: 20px;">
+            
+            <div class="role-selector" style="display: flex; gap: 15px; margin-bottom: 10px;">
+                
+                <label style="flex: 1; cursor: pointer;">
+                    <input type="radio" name="role" value="traveller" checked style="display: none;" onchange="updateRoleUI(this)">
+                    <div class="role-card active" id="card-traveller" style="
+                        padding: 15px; 
+                        border: 2px solid #007B7F; 
+                        background-color: #e0f7fa; 
+                        border-radius: 12px; 
+                        transition: 0.2s;
+                    ">
+                        <div style="font-size: 2rem;">🎒</div>
+                        <div style="font-weight: bold; color: #007B7F; margin-top: 5px;">Reiziger</div>
+                    </div>
+                </label>
 
-    .profile-btn {
-      background-color: white;
-      color: #007B7F;
-      padding: 6px 14px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-      margin-right: 15px;
-      transition: background-color 0.2s;
-    }
+                <label style="flex: 1; cursor: pointer;">
+                    <input type="radio" name="role" value="organizer" style="display: none;" onchange="updateRoleUI(this)">
+                    <div class="role-card" id="card-organizer" style="
+                        padding: 15px; 
+                        border: 2px solid #eee; 
+                        background-color: white; 
+                        border-radius: 12px; 
+                        transition: 0.2s;
+                    ">
+                        <div style="font-size: 2rem;">👔</div>
+                        <div style="font-weight: bold; color: #ccc; margin-top: 5px;">Organisator</div>
+                    </div>
+                </label>
+            </div>
 
-    .profile-btn:hover {
-      background-color: #e1f4f4;
-    }
+            <div style="text-align: left;">
+                <label style="font-weight: 600; font-size: 0.9rem; color: #444; display:block; margin-bottom: 8px;" id="nameLabel">Voornaam</label>
+                <input type="text" name="name" required placeholder="Jouw naam" style="width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem; box-sizing: border-box; outline: none;">
+            </div>
 
-    main {
-      width: 100%;
-      max-width: 420px;
-      margin-top: 120px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0 20px;
-      box-sizing: border-box;
-    }
+            <div style="text-align: left;">
+                <label style="font-weight: 600; font-size: 0.9rem; color: #444; display:block; margin-bottom: 8px;">E-mailadres</label>
+                <input type="email" name="email" required placeholder="naam@email.com" style="width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem; box-sizing: border-box; outline: none;">
+            </div>
 
-    h2 {
-      color: #007B7F;
-      margin-bottom: 25px;
-      font-weight: bold;
-    }
+            <button type="submit" style="background-color: #007B7F; color: white; padding: 15px; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 10px rgba(0,123,127,0.3);">
+                Account aanmaken
+            </button>
+        </form>
 
-    form {
-      border: 3px solid #007B7F;
-      border-radius: 15px;
-      padding: 40px 30px;
-      width: 100%;
-      background-color: rgba(255, 255, 255, 0.9);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      box-sizing: border-box;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      color: #007B7F;
-      font-weight: bold;
-      text-align: left;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 20px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1em;
-      font-family: Arial, sans-serif;
-      box-sizing: border-box;
-    }
-
-    button {
-      background-color: #007B7F;
-      color: white;
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 1em;
-      font-weight: bold;
-      width: 100%;
-      transition: background-color 0.2s;
-      box-sizing: border-box;
-    }
-
-    button:hover {
-      background-color: #00696d;
-    }
-  </style>
-</head>
-<body>
-
-  <nav>
-    <div>
-      <a href="{{ url_for('home') }}">Home</a>
-      <a href="{{ url_for('about') }}">Over ons</a>
-      <a href="{{ url_for('intake') }}">Intake</a>
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #f0f0f0; font-size: 0.95rem;">
+            Al geregistreerd? <a href="{{ url_for('login') }}" style="color: #007B7F; font-weight: bold; text-decoration: none;">Log hier in</a>
+        </div>
     </div>
-    <a href="{{ url_for('register') }}" class="profile-btn">Profiel aanmaken</a>
-  </nav>
+</div>
 
-  <main>
-    <h2>Maak je profiel aan</h2>
-    <form method="POST" action="/register">
-      <label for="name">Naam:</label>
-      <input type="text" id="name" name="name" required>
+<script>
+    function updateRoleUI(radio) {
+        // Haal de twee kaarten op
+        const cardTraveller = document.getElementById('card-traveller');
+        const cardOrganizer = document.getElementById('card-organizer');
+        const nameLabel = document.getElementById('nameLabel');
 
-      <label for="email">E-mail:</label>
-      <input type="email" id="email" name="email" required>
+        // Reset stijlen naar 'inactief'
+        const inactiveStyle = "border: 2px solid #eee; background-color: white; color: #ccc;";
+        
+        if (radio.value === 'traveller') {
+            // Activeer Reiziger
+            cardTraveller.style.borderColor = '#007B7F';
+            cardTraveller.style.backgroundColor = '#e0f7fa';
+            cardTraveller.querySelector('div:last-child').style.color = '#007B7F';
+            
+            // Deactiveer Organisator
+            cardOrganizer.style.borderColor = '#eee';
+            cardOrganizer.style.backgroundColor = 'white';
+            cardOrganizer.querySelector('div:last-child').style.color = '#ccc';
 
-      <label for="password">Wachtwoord:</label>
-      <input type="password" id="password" name="password" required>
+            nameLabel.innerText = "Voornaam";
+        } else {
+            // Activeer Organisator
+            cardOrganizer.style.borderColor = '#007B7F';
+            cardOrganizer.style.backgroundColor = '#e0f7fa';
+            cardOrganizer.querySelector('div:last-child').style.color = '#007B7F';
+            
+            // Deactiveer Reiziger
+            cardTraveller.style.borderColor = '#eee';
+            cardTraveller.style.backgroundColor = 'white';
+            cardTraveller.querySelector('div:last-child').style.color = '#ccc';
 
-      <button type="submit">Registreren</button>
-    </form>
-  </main>
-
-</body>
-</html>
+            nameLabel.innerText = "Naam Organisatie";
+        }
+    }
+</script>
+{% endblock %}

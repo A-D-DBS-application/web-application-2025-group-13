@@ -1,445 +1,440 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Intake - TrailTribe</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: Arial, sans-serif; background-color: white; color: black;
-      margin: 0; display: flex; flex-direction: column; align-items: center;
-      justify-content: flex-start; min-height: 100vh; text-align: center;
-      padding-top: 90px;
-    }
-    nav {
-      background-color: #007B7F; padding: 10px; border-radius: 5px; width: 100%;
-      text-align: left; position: fixed; top: 0; left: 0; z-index: 1000;
-    }
-    nav a { color: white; text-decoration: none; margin: 0 10px; font-weight: bold; }
-    h1 { color: #007B7F; margin-bottom: 0.3em; }
-    p { color: #333; margin-top: 0; margin-bottom: 20px; }
+{% extends "base.html" %}
 
-    .container {
-      max-width: 900px; width: 95%; margin: 20px auto; text-align: left;
+{% block styles %}
+<style>
+    /* CONTAINER & BASIS */
+    .intake-container {
+        max-width: 800px;
+        width: 95%;
+        margin: 30px auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        padding: 30px;
+        min-height: 60vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
-    .card {
-      background-color: #b1dad8; padding: 25px 20px; border-radius: 10px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.1); border: 3px solid #007B7F;
+    h2 { color: #007B7F; margin-bottom: 10px; }
+    p.desc { color: #666; margin-bottom: 25px; }
+
+    /* STAP INDICATOR (Bovenaan) */
+    .progress-bar {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        position: relative;
+    }
+    .progress-step {
+        width: 18%;
+        height: 6px;
+        background: #eee;
+        border-radius: 3px;
+        transition: background 0.3s;
+    }
+    .progress-step.active { background: #007B7F; }
+
+    /* VRAAG STYLING */
+    label.question-label {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #333;
+        display: block;
+        margin-bottom: 10px;
+        margin-top: 20px;
     }
 
-    label { font-weight: bold; display: block; margin-top: 12px; }
-    input[type="text"], select, textarea {
-      width: 100%; padding: 10px; margin-top: 6px; margin-bottom: 12px;
-      border: 1px solid #007B7F; border-radius: 5px; display: block;
+    input[type="text"], input[type="number"] {
+        width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px;
+        font-size: 1rem; box-sizing: border-box; transition: border 0.2s;
     }
-    button, .step-btn {
-      background-color: #007B7F; color: white; border: none; padding: 10px 18px;
-      border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px;
+    input:focus { border-color: #007B7F; outline: none; }
+
+    /* VISUELE SELECTIE CARDS (Radio/Checkbox vervangers) */
+    .selection-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 15px;
     }
-    button[disabled], .step-btn[disabled] { opacity: 0.6; cursor: not-allowed; }
-    .muted { color: #444; font-size: 0.95rem; }
 
-    .steps { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
-    .step-indicator { padding:6px 10px; border-radius:8px; background:#e6f6f5; color:#00605f; font-weight:700; }
-    .hidden { display:none; }
+    /* Verberg de echte checkbox/radio */
+    .hidden-input { display: none; }
 
-    /* date picker (copied/adapted) */
-    .date-range-picker { border: 1px dashed rgba(0,123,127,0.6); padding: 12px; border-radius: 8px; background: rgba(255,255,255,0.6); }
-    .drp-controls { display:flex; gap:10px; align-items:center; justify-content:space-between; margin-bottom:10px; flex-wrap:wrap; }
-    .drp-summary { font-size: 0.95rem; color: #004d4f; font-weight: bold; }
-    .picker-header { display:flex; justify-content:space-between; align-items:center; gap:10px; }
-    .month-view { max-width: 360px; margin: 8px auto; background: white; border-radius:8px; padding:8px; border:1px solid #e0e0e0; }
-    .month-title { text-align:center; color:#007B7F; font-weight:700; margin-bottom:6px; }
-    .nav-btn { background:transparent; border:1px solid #007B7F; color:#007B7F; padding:6px 8px; border-radius:6px; cursor:pointer; }
-    .weekdays { display:grid; grid-template-columns: repeat(7, 1fr); font-size:0.78rem; color:#666; text-align:center; margin-bottom:6px; }
-    .days { display:grid; grid-template-columns: repeat(7, 1fr); gap:4px; text-align:center; }
-    .day { padding:8px 6px; border-radius:6px; cursor:pointer; font-size:0.9rem; user-select:none; }
-    .day.disabled { color:#c0c0c0; cursor:default; background:transparent; }
-    .day:hover:not(.disabled) { background: rgba(0,123,127,0.06); }
-    .day.start { background: linear-gradient(90deg,#007B7F,#00a89b); color:white; font-weight:bold; }
-    .day.end { background: linear-gradient(90deg,#00a89b,#007B7F); color:white; font-weight:bold; }
-    .day.in-range { background: rgba(0,123,127,0.12); color:#004d4f; }
-    .ranges-list { margin-top:10px; }
-    .range-item { background:#fff; border:1px solid rgba(0,0,0,0.06); padding:8px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
-    .small { font-size:0.9rem; color:#333; }
-    .remove-btn { background:transparent; border:1px solid #ff6b6b; color:#ff6b6b; padding:6px 8px; border-radius:6px; cursor:pointer; }
+    /* De stijl van het kaartje */
+    .selection-card {
+        border: 2px solid #eee;
+        border-radius: 12px;
+        padding: 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: #fafafa;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+    .selection-card span.emoji { font-size: 2rem; margin-bottom: 8px; display: block; }
+    .selection-card span.text { font-weight: 600; color: #555; }
 
-    .keywords-grid { display:grid; grid-template-columns: repeat(2, 1fr); gap:10px; }
-    .keyword-box { padding:8px; background:#fff; border-radius:6px; border:1px solid rgba(0,0,0,0.06); }
+    /* Als geselecteerd */
+    .hidden-input:checked + .selection-card {
+        border-color: #007B7F;
+        background-color: #e0f7fa;
+        transform: translateY(-3px);
+        box-shadow: 0 4px 10px rgba(0,123,127,0.2);
+    }
+    .hidden-input:checked + .selection-card span.text { color: #007B7F; }
 
-    @media (max-width:720px) { .month-view { width: 100%; } .day { padding:6px 4px; } .keywords-grid { grid-template-columns: 1fr; } }
-  </style>
-</head>
-<body>
+    /* TAGS (Voor muziek etc) */
+    .tags-container { display: flex; flex-wrap: wrap; gap: 10px; }
+    .tag-label {
+        background: #f0f0f0; padding: 8px 16px; border-radius: 20px;
+        cursor: pointer; font-weight: 500; color: #555; transition: 0.2s;
+        border: 1px solid transparent;
+    }
+    .hidden-input:checked + .tag-label {
+        background: #007B7F; color: white; border-color: #005f62;
+    }
 
-<nav>
-  <a href="#">Home</a> |
-  <a href="#">Intake</a> |
-  <a href="#">Over ons</a> |
-  <a href="#">Login</a> |
-</nav>
+    /* KNOPPEN ONDERAAN */
+    .actions {
+        display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;
+    }
+    .btn { padding: 12px 25px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; font-size: 1rem; }
+    .btn-prev { background: #f0f0f0; color: #666; }
+    .btn-next { background: #007B7F; color: white; }
+    .btn:hover { opacity: 0.9; }
+    .hidden { display: none; }
 
-<div class="container">
-  <h1>Start jouw intake</h1>
-  <p>Beste reiziger, beantwoord enkele korte vragen zodat we je beter kunnen matchen!</p>
+    /* KALENDER (Behouden styling maar strakker) */
+    .date-range-picker { background: #f9f9f9; padding: 15px; border-radius: 12px; border: 1px solid #eee; }
+    .month-view { background: white; border-radius: 10px; padding: 10px; margin: 10px auto; max-width: 350px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+    .day { padding: 10px; cursor: pointer; border-radius: 5px; font-size: 0.9rem; }
+    .day:hover:not(.disabled) { background: #e0f7fa; }
+    .day.start, .day.end { background: #007B7F; color: white; }
+    .day.in-range { background: #b2dfdb; }
+    .day.disabled { color: #ccc; cursor: default; }
+    .picker-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: bold; color: #007B7F; }
+    .nav-btn { background: none; border: 1px solid #007B7F; color: #007B7F; border-radius: 5px; cursor: pointer; padding: 2px 8px; }
 
-  <form method="POST" action="/submit-intake" id="intakeForm" class="card">
+</style>
+{% endblock %}
 
-    <div class="steps" aria-hidden="true">
-      <div class="step-indicator">Stap 1 • Basis</div>
-      <div class="step-indicator">Stap 2 • Data</div>
-      <div class="step-indicator">Stap 3 • Muziek & Festivals</div>
-      <div class="step-indicator">Stap 4 • Kernwoorden</div>
-      <div class="step-indicator">Stap 5 • Review</div>
+{% block content %}
+<div class="intake-container">
+    
+    <div class="progress-bar">
+        <div class="progress-step active" id="p1"></div>
+        <div class="progress-step" id="p2"></div>
+        <div class="progress-step" id="p3"></div>
+        <div class="progress-step" id="p4"></div>
+        <div class="progress-step" id="p5"></div>
     </div>
 
-    <!-- STEP 1 -->
-    <section data-step="1" class="step">
-      <label>Wat is jouw droombestemming?</label>
-      <input type="text" name="destination" required>
+    <form method="POST" action="/submit-intake" id="intakeForm">
+        
+        <section data-step="1" class="step-section">
+            <h2>Wie ben jij? 👤</h2>
+            <p class="desc">Laten we beginnen bij de basis.</p>
+            
+            <div style="display:flex; gap:20px;">
+                <div style="flex:1;">
+                    <label class="question-label">Jouw leeftijd</label>
+                    <input type="number" name="age" placeholder="Bijv. 24" required min="18" max="99">
+                </div>
+                <div style="flex:2;">
+                    <label class="question-label">Met welke leeftijd reis je het liefst?</label>
+                    <div class="tags-container">
+                        <label><input type="checkbox" name="age_pref[]" value="18-24" class="hidden-input"><span class="tag-label">18 - 24</span></label>
+                        <label><input type="checkbox" name="age_pref[]" value="25-30" class="hidden-input"><span class="tag-label">25 - 30</span></label>
+                        <label><input type="checkbox" name="age_pref[]" value="30-40" class="hidden-input"><span class="tag-label">30 - 40</span></label>
+                        <label><input type="checkbox" name="age_pref[]" value="40+" class="hidden-input"><span class="tag-label">40+</span></label>
+                        <label><input type="checkbox" name="age_pref[]" value="Maakt niet uit" class="hidden-input"><span class="tag-label">Maakt niet uit</span></label>
+                    </div>
+                </div>
+            </div>
 
-      <label>Wat typeert jou het meest?</label>
-      <select name="personality" multiple required>
-        <option value="">-- Kies je vibe --</option>
-        <option value="avontuurlijk">Avontuurlijk 🌋</option>
-        <option value="ontspannen">Ontspannen 🌴</option>
-        <option value="cultureel">Cultureel 🏛️</option>
-        <option value="sociaal">Sociaal 🤝</option>
-        <option value="extravert">Extravert 🎉</option>
-        <option value="introvert">Introvert 🙈</option>
-        <option value="ambivert">Ambivert 🦎</option>
-      </select>
+            <label class="question-label">Jouw droombestemming</label>
+            <input type="text" name="destination" placeholder="Waar wil je héél graag heen?" required>
+        </section>
 
-      <label>Budget:</label>
-      <input type="text" name="budget" placeholder="bv. 1000-1500€" required>
+        <section data-step="2" class="step-section hidden">
+            <h2>Jouw Travel Vibe ✨</h2>
+            <p class="desc">Je mag meerdere opties kiezen!</p>
 
-      <div style="display:flex; gap:10px; margin-top:6px;">
-        <button type="button" class="step-btn" data-action="next">Volgende ►</button>
-      </div>
-    </section>
+            <label class="question-label">Hoe omschrijf je jezelf?</label>
+            <div class="selection-grid">
+                <label>
+                    <input type="checkbox" name="personality[]" value="Avontuurlijk" class="hidden-input">
+                    <div class="selection-card"><span class="emoji">🌋</span><span class="text">Avontuurlijk</span></div>
+                </label>
+                <label>
+                    <input type="checkbox" name="personality[]" value="Relaxed" class="hidden-input">
+                    <div class="selection-card"><span class="emoji">🌴</span><span class="text">Relaxed</span></div>
+                </label>
+                <label>
+                    <input type="checkbox" name="personality[]" value="Feestbeest" class="hidden-input">
+                    <div class="selection-card"><span class="emoji">🎉</span><span class="text">Feestbeest</span></div>
+                </label>
+                <label>
+                    <input type="checkbox" name="personality[]" value="Cultureel" class="hidden-input">
+                    <div class="selection-card"><span class="emoji">🏛️</span><span class="text">Cultuur</span></div>
+                </label>
+                <label>
+                    <input type="checkbox" name="personality[]" value="Foodie" class="hidden-input">
+                    <div class="selection-card"><span class="emoji">🍜</span><span class="text">Foodie</span></div>
+                </label>
+                <label>
+                    <input type="checkbox" name="personality[]" value="Natuur" class="hidden-input">
+                    <div class="selection-card"><span class="emoji">🌲</span><span class="text">Natuur</span></div>
+                </label>
+            </div>
 
-    <!-- STEP 2: date-range picker (kept from original, but isolated) -->
-    <section data-step="2" class="step hidden">
-      <label>Wat is je reisperiode? (meerdere periodes mogelijk)</label>
+            <label class="question-label">Hoe slaap je het liefst?</label>
+            <div class="tags-container">
+                <label><input type="checkbox" name="comfort[]" value="Camping" class="hidden-input"><span class="tag-label">Tentje / Camping ⛺</span></label>
+                <label><input type="checkbox" name="comfort[]" value="Hostel" class="hidden-input"><span class="tag-label">Gezellig Hostel 🎒</span></label>
+                <label><input type="checkbox" name="comfort[]" value="Airbnb" class="hidden-input"><span class="tag-label">Airbnb / Huisje 🏡</span></label>
+                <label><input type="checkbox" name="comfort[]" value="Hotel" class="hidden-input"><span class="tag-label">Hotel Luxe 🛎️</span></label>
+            </div>
+        </section>
 
-      <div class="date-range-picker" id="dateRangePicker" aria-labelledby="drpLabel">
-        <div class="drp-controls">
-          <div class="drp-summary" id="drpSummary">Selecteer een begin -en eind-datum.</div>
-          <div class="drp-actions">
-            <button type="button" id="clearSelectionBtn" class="nav-btn">Wis huidige selectie</button>
-            <button type="button" id="addRangeBtn" class="nav-btn" disabled>Voeg periode toe</button>
-          </div>
+        <section data-step="3" class="step-section hidden">
+            <h2>Wanneer & Hoeveel? 📅</h2>
+            <p class="desc">Kies je beschikbare periodes in de kalender.</p>
+
+            <div class="date-range-picker">
+                <div class="picker-header">
+                    <button type="button" id="prevMonth" class="nav-btn">&lt;</button>
+                    <span id="monthTitle">Maand</span>
+                    <button type="button" id="nextMonth" class="nav-btn">&gt;</button>
+                </div>
+                <div class="month-view">
+                    <div style="display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:0.8rem; color:#888; margin-bottom:5px;">
+                        <div>ma</div><div>di</div><div>wo</div><div>do</div><div>vr</div><div>za</div><div>zo</div>
+                    </div>
+                    <div class="days" id="daysGrid"></div>
+                </div>
+                <div style="text-align:center; margin-top:10px;">
+                    <button type="button" id="addRangeBtn" class="btn" style="background:#eee; color:#333; font-size:0.9rem; padding:8px 15px;" disabled>+ Voeg periode toe</button>
+                    <div id="rangesList" style="margin-top:10px; font-size:0.9rem; color:#007B7F;"></div>
+                </div>
+            </div>
+            <div id="hiddenRangesContainer"></div>
+
+            <label class="question-label" style="margin-top:30px;">Wat is je budget p.p.?</label>
+            <div class="tags-container">
+                <label><input type="radio" name="budget" value="Low" class="hidden-input"><span class="tag-label">€500 - €1000</span></label>
+                <label><input type="radio" name="budget" value="Medium" class="hidden-input"><span class="tag-label">€1000 - €1800</span></label>
+                <label><input type="radio" name="budget" value="High" class="hidden-input"><span class="tag-label">€1800 - €3000</span></label>
+                <label><input type="radio" name="budget" value="Luxe" class="hidden-input"><span class="tag-label">€3000+</span></label>
+            </div>
+        </section>
+
+        <section data-step="4" class="step-section hidden">
+            <h2>Muziek & Extra's 🎧</h2>
+            <p class="desc">Muziek verbindt! Waar ga jij lekker op?</p>
+
+            <label class="question-label">Favoriete Genres (Kies er meerdere)</label>
+            <div class="tags-container">
+                <label><input type="checkbox" name="music[]" value="Pop" class="hidden-input"><span class="tag-label">Pop</span></label>
+                <label><input type="checkbox" name="music[]" value="Techno" class="hidden-input"><span class="tag-label">Techno / House</span></label>
+                <label><input type="checkbox" name="music[]" value="Rock" class="hidden-input"><span class="tag-label">Rock</span></label>
+                <label><input type="checkbox" name="music[]" value="HipHop" class="hidden-input"><span class="tag-label">HipHop</span></label>
+                <label><input type="checkbox" name="music[]" value="Indie" class="hidden-input"><span class="tag-label">Indie</span></label>
+                <label><input type="checkbox" name="music[]" value="R&B" class="hidden-input"><span class="tag-label">R&B</span></label>
+                <label><input type="checkbox" name="music[]" value="Foute uur" class="hidden-input"><span class="tag-label">Het Foute Uur</span></label>
+            </div>
+
+            <label class="question-label">Welke Festivals vind je tof?</label>
+            <div class="tags-container">
+                <label><input type="checkbox" name="festival[]" value="Tomorrowland" class="hidden-input"><span class="tag-label">Tomorrowland 🧚‍♀️</span></label>
+                <label><input type="checkbox" name="festival[]" value="Werchter" class="hidden-input"><span class="tag-label">Rock Werchter 🎸</span></label>
+                <label><input type="checkbox" name="festival[]" value="Pukkelpop" class="hidden-input"><span class="tag-label">Pukkelpop 🎪</span></label>
+                <label><input type="checkbox" name="festival[]" value="Dour" class="hidden-input"><span class="tag-label">Dour 📣</span></label>
+                <label><input type="checkbox" name="festival[]" value="Geen" class="hidden-input"><span class="tag-label">Geen festivalganger</span></label>
+            </div>
+        </section>
+
+        <section data-step="5" class="step-section hidden">
+            <h2>Bijna klaar! 🚀</h2>
+            <p class="desc">Check je antwoorden even.</p>
+            
+            <div id="reviewBox" style="background:#f9f9f9; padding:20px; border-radius:10px; line-height:1.8;">
+                </div>
+        </section>
+
+        <div class="actions">
+            <button type="button" class="btn btn-prev" disabled>Vorige</button>
+            <button type="button" class="btn btn-next">Volgende</button>
+            <button type="submit" class="btn btn-next hidden" id="submitBtn">Verstuur Intake</button>
         </div>
 
-        <div class="month-view" id="monthView" role="region" aria-label="Kalender maand">
-          <div class="picker-header">
-            <button type="button" id="prevMonth" class="nav-btn">&lt; Vorige</button>
-            <div class="month-title" id="monthTitle">Maand Jaar</div>
-            <button type="button" id="nextMonth" class="nav-btn">Volgende &gt;</button>
-          </div>
-
-          <div class="weekdays" aria-hidden="true">
-            <div>ma</div><div>di</div><div>wo</div><div>do</div><div>vr</div><div>za</div><div>zo</div>
-          </div>
-
-          <div class="days" id="daysGrid"></div>
-        </div>
-
-
-        <div class="ranges-list" id="rangesList" aria-live="polite"></div>
-      </div>
-
-      <!-- verborgen velden die bij submit meegaan; worden dynamisch ingevuld als arrays -->
-      <div id="hiddenRangesContainer"></div>
-
-      <div style="display:flex; gap:8px; margin-top:8px;">
-        <button type="button" class="step-btn" data-action="prev">◄ Vorige</button>
-        <button type="button" class="step-btn" data-action="next">Volgende ►</button>
-      </div>
-    </section>
-
-    <!-- STEP 3: music + festival choices -->
-    <section data-step="3" class="step hidden">
-      <label>Wat is jouw favoriete muziekgenre?</label>
-      <select name="music_genre" required>
-        <option value="">-- Kies een genre --</option>
-        <option>Pop</option>
-        <option>Rock</option>
-        <option>Electronic / EDM</option>
-        <option>Indie / Alternative</option>
-        <option>Hip-Hop / Rap</option>
-        <option>Jazz</option>
-        <option>Folk / Singer-Songwriter</option>
-        <option>Metal</option>
-        <option>Wereldmuziek</option>
-        <option>Geen voorkeur</option>
-      </select>
-
-      <label>Welk festival zou jij kiezen in België? (max 1)</label>
-      <select name="festival_choice" required>
-        <option value="">-- Kies een festival --</option>
-        <option value="Tomorrowland">Tomorrowland (Boom) — EDM</option>
-        <option value="Rock Werchter">Rock Werchter (Werchter) — Rock / Mainstream</option>
-        <option value="Pukkelpop">Pukkelpop (Hasselt) — Eclectic / Alternative</option>
-        <option value="Dour">Dour Festival (Dour) — Eclectic, electronic</option>
-        <option value="Gentse Feesten">Gentse Feesten (Gent) — Groots stadsfestival</option>
-      </select>
-
-      <div style="display:flex; gap:8px; margin-top:8px;">
-        <button type="button" class="step-btn" data-action="prev">◄ Vorige</button>
-        <button type="button" class="step-btn" data-action="next">Volgende ►</button>
-      </div>
-    </section>
-
-    <!-- STEP 4: five keywords -->
-    <section data-step="4" class="step hidden">
-      <label>Typ 5 kernwoorden waaraan je het meest denkt bij (groeps)reizen</label>
-      <div class="keywords-grid">
-        <div class="keyword-box"><input type="text" name="keyword_1" placeholder="1. bijv. avontuur" required></div>
-        <div class="keyword-box"><input type="text" name="keyword_2" placeholder="2. bijv. gezelligheid" required></div>
-        <div class="keyword-box"><input type="text" name="keyword_3" placeholder="3. bijv. cultuur" required></div>
-        <div class="keyword-box"><input type="text" name="keyword_4" placeholder="4. bijv. natuur" required></div>
-        <div class="keyword-box" style="grid-column: 1 / -1;"><input type="text" name="keyword_5" placeholder="5. bijv. food" required></div>
-      </div>
-
-      <div style="display:flex; gap:8px; margin-top:8px;">
-        <button type="button" class="step-btn" data-action="prev">◄ Vorige</button>
-        <button type="button" class="step-btn" data-action="next">Volgende ►</button>
-      </div>
-    </section>
-
-    <!-- STEP 5: review + submit -->
-    <section data-step="5" class="step hidden">
-      <h2 style="color:#00605f;">Controleer & Verstuur</h2>
-      <div id="reviewBox" style="background:#fff;padding:12px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);"></div>
-
-      <div style="display:flex; gap:8px; margin-top:12px;">
-        <button type="button" class="step-btn" data-action="prev">◄ Vorige</button>
-        <button type="submit">Verstuur intake</button>
-      </div>
-    </section>
-
-  </form>
+    </form>
 </div>
+{% endblock %}
 
+{% block scripts %}
 <script>
 (function(){
-  // ---------- Multi-step logic ----------
-  const steps = Array.from(document.querySelectorAll('[data-step]'));
-  let active = 0;
-  function showStep(i){
-    steps.forEach((s,idx)=> s.classList.toggle('hidden', idx!==i));
-    active = i;
-    if (i===4) buildReview();
-    window.scrollTo({top:0,behavior:'smooth'});
-  }
-  showStep(0);
+  // --- STAPPEN LOGICA ---
+  const steps = Array.from(document.querySelectorAll('.step-section'));
+  const progressSteps = document.querySelectorAll('.progress-step');
+  const btnNext = document.querySelector('.btn-next');
+  const btnPrev = document.querySelector('.btn-prev');
+  const btnSubmit = document.getElementById('submitBtn');
+  let currentStep = 0;
 
-  document.body.addEventListener('click', (e)=>{
-    const btn = e.target.closest('[data-action]');
-    if (!btn) return;
-    const action = btn.dataset.action;
-    if (action === 'next') {
-      // simple validation: required inputs in current step
-      const requireds = steps[active].querySelectorAll('[required]');
-      for (const el of requireds){
-        if (!el.value.trim()) { el.focus(); alert('Vul dit veld in a.u.b.'); return; }
-      }
-      if (active < steps.length-1) showStep(active+1);
-    } else if (action === 'prev') {
-      if (active > 0) showStep(active-1);
+  function updateView(){
+    steps.forEach((s, i) => s.classList.toggle('hidden', i !== currentStep));
+    progressSteps.forEach((p, i) => p.classList.toggle('active', i <= currentStep));
+    
+    btnPrev.disabled = (currentStep === 0);
+    
+    if(currentStep === steps.length - 1){
+        btnNext.classList.add('hidden');
+        btnSubmit.classList.remove('hidden');
+        buildReview();
+    } else {
+        btnNext.classList.remove('hidden');
+        btnSubmit.classList.add('hidden');
     }
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  btnNext.addEventListener('click', () => {
+    // Simpele validatie (kijk of required velden in huidige stap zijn ingevuld)
+    const currentSection = steps[currentStep];
+    const inputs = currentSection.querySelectorAll('input[required]');
+    let valid = true;
+    inputs.forEach(inp => { if(!inp.value) valid = false; });
+    
+    if(!valid) { alert('Vul a.u.b. alle verplichte velden in.'); return; }
+    
+    if(currentStep < steps.length - 1){ currentStep++; updateView(); }
   });
 
-  // ---------- Review builder ----------
+  btnPrev.addEventListener('click', () => {
+    if(currentStep > 0){ currentStep--; updateView(); }
+  });
+
+  // --- REVIEW SAMENSTELLEN ---
   function buildReview(){
-    const form = document.getElementById('intakeForm');
-    const fd = new FormData(form);
-    const pairs = [];
-    for (const [k,v] of fd.entries()){
-      pairs.push([k,v]);
-    }
-    const box = document.getElementById('reviewBox');
-    box.innerHTML = '';
-    const ul = document.createElement('div'); ul.style.lineHeight='1.6';
-    // show grouped info
-    const show = {
-      'Droombestemming':'destination', 'Personality':'personality', 'Budget':'budget',
-      'Muziekgenre':'music_genre', 'Festival keuze':'festival_choice'
+    const fd = new FormData(document.getElementById('intakeForm'));
+    let html = '';
+    
+    // Helper om array values (checkboxes) mooi weer te geven
+    const getVals = (name) => {
+        const vals = fd.getAll(name); // pakt alle aangevinkte opties
+        return vals.length ? vals.join(', ') : '-';
     };
-    for (const title in show){
-      const val = fd.get(show[title]) || '-';
-      ul.innerHTML += `<strong>${title}:</strong> ${escapeHtml(val)}<br>`;
-    }
-    // show date ranges
+
+    html += `<strong>Leeftijd:</strong> ${fd.get('age')}<br>`;
+    html += `<strong>Leeftijdsvoorkeur:</strong> ${getVals('age_pref[]')}<br>`;
+    html += `<strong>Droombestemming:</strong> ${fd.get('destination')}<br>`;
+    html += `<br><strong>Persoonlijkheid:</strong> ${getVals('personality[]')}<br>`;
+    html += `<strong>Slaapvoorkeur:</strong> ${getVals('comfort[]')}<br>`;
+    html += `<strong>Budget:</strong> ${fd.get('budget') || '-'}<br>`;
+    
     const starts = fd.getAll('travel_start[]');
     const ends = fd.getAll('travel_end[]');
-    if (starts.length){
-      ul.innerHTML += `<br><strong>Reisperiodes:</strong><br>`;
-      for (let i=0;i<starts.length;i++){
-        ul.innerHTML += `• ${starts[i]} — ${ends[i]}<br>`;
-      }
+    if(starts.length){
+        html += `<br><strong>Reisperiodes:</strong><br>`;
+        starts.forEach((s, i) => html += `• ${s} t/m ${ends[i]}<br>`);
     }
-    // keywords
-    ul.innerHTML += `<br><strong>Kernwoorden:</strong><br>`;
-    for (let i=1;i<=5;i++){ ul.innerHTML += `• ${escapeHtml(fd.get('keyword_'+i) || '-')}<br>` }
 
-    box.appendChild(ul);
+    html += `<br><strong>Muziek:</strong> ${getVals('music[]')}<br>`;
+    html += `<strong>Festivals:</strong> ${getVals('festival[]')}<br>`;
+
+    document.getElementById('reviewBox').innerHTML = html;
   }
 
-  function escapeHtml(s){ return String(s).replace(/[&<>\"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 
-  // ---------- Date range picker (adapted from original) ----------
-  const startBound = new Date(2025,10,1); // 1 Nov 2025
-  const endBound = new Date(2026,11,31);  // 31 Dec 2026
-
+  // --- KALENDER LOGICA (ingekort maar werkend) ---
+  const startBound = new Date(2025,10,1); 
+  const endBound = new Date(2026,11,31);
   const daysGrid = document.getElementById('daysGrid');
   const monthTitle = document.getElementById('monthTitle');
-  const prevBtn = document.getElementById('prevMonth');
-  const nextBtn = document.getElementById('nextMonth');
-
-  const drpSummary = document.getElementById('drpSummary');
-  const clearSelectionBtn = document.getElementById('clearSelectionBtn');
   const addRangeBtn = document.getElementById('addRangeBtn');
   const rangesList = document.getElementById('rangesList');
-  const hiddenRangesContainer = document.getElementById('hiddenRangesContainer');
+  const hiddenRanges = document.getElementById('hiddenRangesContainer');
+  
+  let viewDate = new Date(startBound);
+  let selStart = null, selEnd = null;
+  let ranges = [];
 
-  let viewYear = startBound.getFullYear();
-  let viewMonth = startBound.getMonth(); // month index 0-11
-  let selectedStart = null;
-  let selectedEnd = null;
-  let ranges = []; // array of {start: Date, end: Date, id: number}
-  let nextRangeId = 1;
-
-  function fmtISO(d){ return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
-  function sameDay(a,b){ return a && b && a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
-  function fmtRead(d){ return d.toLocaleDateString('nl-NL',{ day:'numeric', month:'short', year:'numeric' }); }
-
-  function clampMonthYear(y,m){
-    const firstOfView = new Date(y,m,1);
-    const lastOfView = new Date(y,m+1,0);
-    if (lastOfView < startBound) {
-      return [startBound.getFullYear(), startBound.getMonth()];
-    }
-    if (firstOfView > endBound) {
-      return [endBound.getFullYear(), endBound.getMonth()];
-    }
-    return [y,m];
-  }
-
-  function renderMonth(){
-    [viewYear, viewMonth] = clampMonthYear(viewYear, viewMonth);
-    monthTitle.textContent = new Date(viewYear, viewMonth, 1).toLocaleDateString('nl-NL', { month:'long', year:'numeric' });
-    const prevMonthLastDay = new Date(viewYear, viewMonth, 0); // last day of previous month
-    const nextMonthFirstDay = new Date(viewYear, viewMonth+1, 1);
-    prevBtn.disabled = (prevMonthLastDay < startBound);
-    nextBtn.disabled = (nextMonthFirstDay > endBound);
-
+  function renderCal(){
+    monthTitle.innerText = viewDate.toLocaleDateString('nl-NL', {month:'long', year:'numeric'});
     daysGrid.innerHTML = '';
-    const firstWeekdayJS = new Date(viewYear, viewMonth, 1).getDay();
-    const offset = (firstWeekdayJS + 6) % 7;
-    for (let i=0;i<offset;i++){ const el = document.createElement('div'); el.className = 'day disabled'; daysGrid.appendChild(el); }
-    const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
-    for (let d=1; d<=daysInMonth; d++){
-      const date = new Date(viewYear, viewMonth, d);
-      const dayEl = document.createElement('div');
-      dayEl.className = 'day';
-      dayEl.tabIndex = 0;
-      dayEl.dataset.date = fmtISO(date);
-      dayEl.textContent = d;
+    
+    const y = viewDate.getFullYear(), m = viewDate.getMonth();
+    const firstDay = new Date(y, m, 1).getDay(); // 0=zo, 1=ma...
+    const offset = (firstDay + 6) % 7; // fix maandag start
+    const daysInMonth = new Date(y, m+1, 0).getDate();
 
-      if (date < startBound || date > endBound) {
-        dayEl.classList.add('disabled'); dayEl.tabIndex = -1;
-      } else {
-        dayEl.addEventListener('click', ()=> onDayClick(date));
-        dayEl.addEventListener('keydown', (e)=> { if (e.key==='Enter' || e.key===' ') { e.preventDefault(); onDayClick(date); }});
-      }
-      daysGrid.appendChild(dayEl);
+    for(let i=0; i<offset; i++) daysGrid.innerHTML += '<div></div>';
+
+    for(let d=1; d<=daysInMonth; d++){
+        const date = new Date(y, m, d);
+        const el = document.createElement('div');
+        el.className = 'day';
+        el.innerText = d;
+        
+        // Check ranges
+        ranges.forEach(r => {
+             if(date >= r.start && date <= r.end) el.classList.add('in-range');
+             if(date.getTime() === r.start.getTime()) el.classList.add('start');
+             if(date.getTime() === r.end.getTime()) el.classList.add('end');
+        });
+
+        // Check selectie
+        if(selStart && date.getTime() === selStart.getTime()) el.classList.add('start');
+        if(selEnd && date.getTime() === selEnd.getTime()) el.classList.add('end');
+        if(selStart && selEnd && date > selStart && date < selEnd) el.classList.add('in-range');
+
+        el.onclick = () => {
+            if(!selStart || (selStart && selEnd)) { selStart = date; selEnd = null; }
+            else { if(date < selStart) { selEnd=selStart; selStart=date; } else selEnd = date; }
+            addRangeBtn.disabled = !(selStart && selEnd);
+            renderCal();
+        };
+        daysGrid.appendChild(el);
     }
-
-    updateDayClasses();
   }
 
-  function onDayClick(date){
-    if (!selectedStart || (selectedStart && selectedEnd)) {
-      selectedStart = date; selectedEnd = null;
-      drpSummary.textContent = 'Start geselecteerd: ' + fmtRead(selectedStart) + '. Kies nu de einddatum.';
-      addRangeBtn.disabled = true;
-    } else {
-      if (date < selectedStart) { selectedEnd = selectedStart; selectedStart = date; }
-      else { selectedEnd = date; }
-      addRange(selectedStart, selectedEnd);
-      selectedStart = null; selectedEnd = null;
-      drpSummary.textContent = 'Periode toegevoegd. Klik een nieuwe start-datum om nog een periode toe te voegen.';
+  document.getElementById('prevMonth').onclick = () => { viewDate.setMonth(viewDate.getMonth()-1); renderCal(); };
+  document.getElementById('nextMonth').onclick = () => { viewDate.setMonth(viewDate.getMonth()+1); renderCal(); };
+
+  addRangeBtn.onclick = () => {
+    if(selStart && selEnd){
+        ranges.push({start: new Date(selStart), end: new Date(selEnd)});
+        selStart = null; selEnd = null;
+        addRangeBtn.disabled = true;
+        updateRangesUI();
+        renderCal();
     }
-    updateDayClasses();
+  };
+
+  function updateRangesUI(){
+    rangesList.innerHTML = ranges.map((r, i) => 
+        `<div>📅 ${r.start.toLocaleDateString()} - ${r.end.toLocaleDateString()} <span style="color:red;cursor:pointer;" onclick="removeRange(${i})">x</span></div>`
+    ).join('');
+    
+    hiddenRanges.innerHTML = ranges.map(r => 
+        `<input type="hidden" name="travel_start[]" value="${fmtISO(r.start)}">
+         <input type="hidden" name="travel_end[]" value="${fmtISO(r.end)}">`
+    ).join('');
   }
 
-  function addRange(s,e){
-    const r = { id: nextRangeId++, start: new Date(s.getFullYear(), s.getMonth(), s.getDate()), end: new Date(e.getFullYear(), e.getMonth(), e.getDate()) };
-    ranges.push(r);
-    renderRangesList(); updateHiddenInputs();
-  }
+  window.removeRange = (i) => { ranges.splice(i, 1); updateRangesUI(); renderCal(); };
+  function fmtISO(d){ return d.toISOString().split('T')[0]; } // YYYY-MM-DD
 
-  function renderRangesList(){
-    rangesList.innerHTML = '';
-    if (ranges.length === 0) { rangesList.innerHTML = '<div class="small" style="margin-top:6px;">Nog geen periodes toegevoegd.</div>'; return; }
-    ranges.forEach(r=>{
-      const div = document.createElement('div'); div.className = 'range-item';
-      const txt = document.createElement('div'); txt.innerHTML = `<strong>${fmtRead(r.start)}</strong> — <strong>${fmtRead(r.end)}</strong>`;
-      const remove = document.createElement('button'); remove.type='button'; remove.className='remove-btn'; remove.textContent='Verwijder';
-      remove.addEventListener('click', ()=> { ranges = ranges.filter(x=>x.id!==r.id); renderRangesList(); updateHiddenInputs(); renderMonth(); });
-      div.appendChild(txt); div.appendChild(remove); rangesList.appendChild(div);
-    });
-  }
-
-  function updateHiddenInputs(){
-    hiddenRangesContainer.innerHTML = '';
-    ranges.forEach((r, idx)=>{
-      const inStart = document.createElement('input'); inStart.type='hidden'; inStart.name='travel_start[]'; inStart.value = fmtISO(r.start);
-      const inEnd = document.createElement('input'); inEnd.type='hidden'; inEnd.name='travel_end[]'; inEnd.value = fmtISO(r.end);
-      hiddenRangesContainer.appendChild(inStart); hiddenRangesContainer.appendChild(inEnd);
-    });
-  }
-
-  function updateDayClasses(){
-    const dayEls = daysGrid.querySelectorAll('.day');
-    dayEls.forEach(el=>{
-      el.classList.remove('start','end','in-range');
-      if (el.classList.contains('disabled')) return;
-      const d = new Date(el.dataset.date + 'T00:00:00');
-      if (selectedStart && sameDay(d, selectedStart)) el.classList.add('start');
-      if (selectedEnd && sameDay(d, selectedEnd)) el.classList.add('end');
-      if (selectedStart && selectedEnd && d > selectedStart && d < selectedEnd) el.classList.add('in-range');
-      ranges.forEach(r=>{
-        if (d >= r.start && d <= r.end) {
-          if (sameDay(d, r.start)) el.classList.add('start');
-          else if (sameDay(d, r.end)) el.classList.add('end');
-          else el.classList.add('in-range');
-        }
-      });
-    });
-    addRangeBtn.disabled = !(selectedStart && selectedEnd);
-  }
-
-  prevBtn.addEventListener('click', ()=> { viewMonth--; const cl = clampMonthYear(viewYear, viewMonth); viewYear = cl[0]; viewMonth = cl[1]; renderMonth(); });
-  nextBtn.addEventListener('click', ()=> { viewMonth++; const cl = clampMonthYear(viewYear, viewMonth); viewYear = cl[0]; viewMonth = cl[1]; renderMonth(); });
-
-  clearSelectionBtn.addEventListener('click', ()=> { selectedStart = null; selectedEnd = null; drpSummary.textContent = 'Selectie gewist. Klik een begin-datum.'; updateDayClasses(); });
-  addRangeBtn.addEventListener('click', ()=> {
-    if (selectedStart && selectedEnd) { addRange(selectedStart, selectedEnd); selectedStart = null; selectedEnd = null; drpSummary.textContent = 'Periode toegevoegd.'; updateDayClasses(); }
-  });
-
-  document.getElementById('intakeForm').addEventListener('submit', function(e){
-    if (ranges.length === 0) { e.preventDefault(); alert('Voeg minimaal één reisperiode toe (kies start en einde).'); showStep(1); return false; }
-    // all good — form can submit
-  });
-
-  renderMonth(); renderRangesList();
+  renderCal();
 })();
 </script>
-
-</body>
-</html>
+{% endblock %}

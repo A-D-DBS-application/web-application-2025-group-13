@@ -1,161 +1,197 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-  <meta charset="UTF-8">
-  <title>TrailTribe - Over ons</title>
+{% extends "base.html" %}
 
-  <style>
-    /* Algemeen */
-    body {
-      font-family: Arial, sans-serif;
-      background-color: white;
-      color: black;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      text-align: left;
-      padding-top: 80px; /* ruimte voor navbar */
+{% block styles %}
+<style>
+    /* Container stijl (Consistent met de rest van de site) */
+    .about-container {
+        background-color: white;
+        border-radius: 20px;
+        box-shadow: 0 5px 25px rgba(0,0,0,0.05);
+        padding: 50px;
+        max-width: 900px;
+        width: 90%;
+        margin: 40px auto;
+        text-align: left;
+        border: 1px solid rgba(0,0,0,0.05);
     }
 
-    /* Navigatie */
-    nav {
-      background-color: #007B7F;
-      padding: 10px 20px;
-      border-radius: 5px;
-      width: 100%;
-      text-align: left;
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 100;
+    h1 {
+        color: #007B7F;
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        border-bottom: 3px solid #007B7F;
+        display: inline-block;
+        padding-bottom: 5px;
     }
 
-    nav a {
-      color: white;
-      text-decoration: none;
-      margin: 0 10px;
-      font-weight: bold;
-    }
-
-    nav a:hover {
-      text-decoration: underline;
-    }
-
-    hr {
-      margin-top: 15px;
-      margin-bottom: 20px;
-    }
-
-    /* Kader voor content */
-    .content-box {
-      background-color: #f7ffff;
-      border: 2px solid #007B7F;
-      border-radius: 10px;
-      padding: 30px;
-      max-width: 900px;
-      width: 90%;
-      margin-bottom: 40px;
-    }
-
-    h1, h2 {
-      color: #007B7F;
-      text-align: left;
+    h2 {
+        color: #005f62;
+        margin-top: 40px;
+        margin-bottom: 20px;
+        font-size: 1.8rem;
     }
 
     p {
-      text-align: left;
-      line-height: 1.6;
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #444;
+        margin-bottom: 20px;
     }
 
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      text-align: left;
+    /* Highlight voor belangrijke tekst */
+    .lead-text {
+        font-size: 1.2rem;
+        font-weight: 500;
+        color: #222;
     }
 
-    /* Teamleden */
-    .team-list li {
-      margin-bottom: 8px;
-      text-indent: 0;
+    /* TEAM SECTIE STYLING */
+    .team-grid {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-top: 20px;
     }
 
-    /* Redenensectie */
+    .team-card {
+        background-color: #f8fafa;
+        border-radius: 12px;
+        padding: 20px;
+        flex: 1;
+        min-width: 200px;
+        text-align: center;
+        border: 1px solid #e0e0e0;
+        transition: transform 0.2s;
+    }
+
+    .team-card:hover {
+        transform: translateY(-5px);
+        border-color: #007B7F;
+    }
+
+    .avatar-circle {
+        width: 60px;
+        height: 60px;
+        background-color: #007B7F;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 0 auto 15px auto;
+    }
+
+    .role {
+        color: #666;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 5px;
+    }
+
+    /* REDENEN GRID */
     .reasons-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px 30px;
-      margin-top: 15px;
-      padding-left: 0;
-      list-style: none;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px 30px;
+        list-style: none;
+        padding: 0;
     }
 
-    .reasons-grid li {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      line-height: 1.4;
+    .reason-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        background: #fff;
+        padding: 10px;
+        border-radius: 8px;
     }
 
     .checkmark {
-      color: #007B7F;
-      font-weight: bold;
+        color: white;
+        background-color: #007B7F;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        flex-shrink: 0; /* Zorgt dat bolletje rond blijft */
     }
 
-    @media (max-width: 600px) {
-      .reasons-grid {
-        grid-template-columns: 1fr;
-      }
+    /* Mobiel vriendelijk maken */
+    @media (max-width: 700px) {
+        .reasons-grid {
+            grid-template-columns: 1fr;
+        }
+        .about-container {
+            padding: 25px;
+        }
     }
-  </style>
-</head>
-<body>
+</style>
+{% endblock %}
 
-  <nav>
-    <a href="{{ url_for('home') }}">Home</a> |
-    <a href="{{ url_for('intake') }}">Intake</a> |
-    <a href="{{ url_for('about') }}">Over ons</a> |
-    <a href="{{ url_for('login') }}">Login</a> |
-  </nav>
+{% block content %}
 
-  <hr>
-
-  <div class="content-box">
+<div class="about-container">
     <h1>Over TrailTribe</h1>
+    
 
-    <p><strong>TrailTribe</strong> is een innovatieve app en touroperator die groepsreizen weer persoonlijk maakt. 
-    In plaats van te vertrekken van een vast reisaanbod, beginnen we bij jou: jouw interesses, persoonlijkheid, budget en reisperiode vormen het vertrekpunt. 
-    Op basis van een speelse intake en slimme matching-technologie stellen we groepen samen die écht bij elkaar passen. 
-    Zo beleef je geen standaardreis, maar een authentieke ervaring met gelijkgestemden — een reis die klopt van begin tot einde.</p>
+    <p class="lead-text">
+        <strong>TrailTribe</strong> is een innovatieve app en touroperator die groepsreizen weer persoonlijk maakt. 
+    </p>
+    <p>
+        In plaats van te vertrekken van een vast reisaanbod, beginnen we bij jou: jouw interesses, persoonlijkheid, budget en reisperiode vormen het vertrekpunt. 
+        Op basis van een speelse intake en slimme matching-technologie stellen we groepen samen die écht bij elkaar passen. 
+        Zo beleef je geen standaardreis, maar een authentieke ervaring met gelijkgestemden — een reis die klopt van begin tot einde.
+    </p>
 
     <h2>Ons Team</h2>
-    <ul class="team-list">
-      <li>Alice — Oprichter &amp; CEO</li>
-      <li>Bob — CTO</li>
-      <li>Charlie — Marketing Manager</li>
-    </ul>
+    <div class="team-grid">
+        <div class="team-card">
+            <div class="avatar-circle">A</div>
+            <strong>Toon</strong>
+            <div class="role">Oprichter & CEO</div>
+        </div>
+        <div class="team-card">
+            <div class="avatar-circle">B</div>
+            <strong>Toon</strong>
+            <div class="role">CTO</div>
+        </div>
+        <div class="team-card">
+            <div class="avatar-circle">C</div>
+            <strong>Toon</strong>
+            <div class="role">Marketing Manager</div>
+        </div>
+    </div>
 
     <h2>Onze Missie</h2>
-    <p>Bij TrailTribe geloven we dat de beste reizen beginnen met de juiste mensen. 
-    Daarom brengen we reizigers samen die dezelfde energie, interesses en mindset delen. 
-    Ons doel is om betekenisvolle connecties en onvergetelijke ervaringen te creëren — ver weg van massatoerisme, dicht bij wie jij echt bent.</p>
+    <p>
+        Bij TrailTribe geloven we dat de beste reizen beginnen met de juiste mensen. 
+        Daarom brengen we reizigers samen die dezelfde energie, interesses en mindset delen. 
+        Ons doel is om betekenisvolle connecties en onvergetelijke ervaringen te creëren — ver weg van massatoerisme, dicht bij wie jij echt bent.
+    </p>
 
     <h2>Waarom reizen met TrailTribe?</h2>
-    <ul class="reasons-grid">
-      <li><span class="checkmark">✔</span> Gepersonaliseerde groepsreizen op basis van jouw profiel</li>
-      <li><span class="checkmark">✔</span> Match met gelijkgestemde reizigers</li>
-      <li><span class="checkmark">✔</span> Geen standaardpakketten maar unieke ervaringen</li>
-      <li><span class="checkmark">✔</span> Eerlijke prijzen afgestemd op jouw budget</li>
-      <li><span class="checkmark">✔</span> Professionele organisatie & begeleiding</li>
-      <li><span class="checkmark">✔</span> Mix van vrijheid en verbondenheid tijdens je reis</li>
-      <li><span class="checkmark">✔</span> Duurzame en bewuste reisopties</li>
-      <li><span class="checkmark">✔</span> Gebruiksvriendelijke app met leuke intake</li>
-      <li><span class="checkmark">✔</span> Reizen die écht kloppen qua energie en sfeer</li>
-      <li><span class="checkmark">✔</span> Focus op plezier, groei en nieuwe connecties</li>
-    </ul>
-  </div>
+    <div class="reasons-grid">
+        <div class="reason-item"><span class="checkmark">✔</span> <span>Gepersonaliseerde groepsreizen op basis van jouw profiel</span></div>
+        <div class="reason-item"><span class="checkmark">✔</span> <span>Match met gelijkgestemde reizigers</span></div>
+        <div class="reason-item"><span class="checkmark">✔</span> <span>Geen standaardpakketten maar unieke ervaringen</span></div>
+        <div class="reason-item"><span class="checkmark">✔</span> <span>Eerlijke prijzen afgestemd op jouw budget</span></div>
+        <div class="reason-item"><span class="checkmark">✔</span> <span>Professionele organisatie & begeleiding</span></div>
+        <div class="reason-item"><span class="checkmark">✔</span> <span>Mix van vrijheid en verbondenheid tijdens je reis</span></div>
+        <div class="reason-item"><span class="checkmark">✔</span> <span>Duurzame en bewuste reisopties</span></div>
+        <div class="reason-item"><span class="checkmark">✔</span> <span>Gebruiksvriendelijke app met leuke intake</span></div>
+        <div class="reason-item"><span class="checkmark">✔</span> <span>Reizen die écht kloppen qua energie en sfeer</span></div>
+        <div class="reason-item"><span class="checkmark">✔</span> <span>Focus op plezier, groei en nieuwe connecties</span></div>
+    </div>
 
-</body>
-</html>
+    <div style="text-align: center; margin-top: 50px;">
+        <a href="{{ url_for('intake') }}" style="background-color: #007B7F; color: white; padding: 15px 30px; border-radius: 30px; text-decoration: none; font-weight: bold;">Start jouw avontuur</a>
+    </div>
+</div>
+
+{% endblock %}

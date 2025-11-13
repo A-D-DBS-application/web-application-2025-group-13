@@ -1,36 +1,40 @@
-from app.extensions import db
+from app import db
 
+# Tabel 1: De Reiziger
 class User(db.Model):
-    __tablename__ = 'user'
+    __tablename__ = 'user'  # Komt overeen met jouw screenshot
+    
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, nullable=True)
-    name = db.Column(db.String(100), nullable=True)
+    name = db.Column(db.String(100))
     email = db.Column(db.String(120), unique=True, nullable=False)
     age = db.Column(db.Integer, nullable=True)
-    date = db.Column(db.Date, nullable=True)
+    # Password kolom staat in je DB, maar laten we even leeg als je geen ww wilt
 
-    def __repr__(self):
-        return f"<User {self.email}>"
-
-class TravelPreference(db.Model):
-    __tablename__ = 'travel_preference'
+# Tabel 2: De Organisator
+class Organiser(db.Model):
+    __tablename__ = 'Organiser' # Let op de Hoofdletter O, zoals in je screenshot
+    
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    interest_id = db.Column(db.Float)
-    budget = db.Column(db.String(50))
-    periode = db.Column(db.String(50))
-    persoonlijkheid = db.Column(db.String(50))
-    interesses = db.Column(db.String(100))
+    created_at = db.Column(db.DateTime, nullable=True)
+    name = db.Column(db.String(100))
+    email = db.Column(db.String(120), unique=True, nullable=False)
 
+# Tabel 3: De Reizen (Gekoppeld aan Organisator)
 class Trip(db.Model):
     __tablename__ = 'trip'
+    
     id = db.Column(db.Integer, primary_key=True)
-    match_id = db.Column(db.String(50))
-    travel_org_id = db.Column(db.String(50))
+    # In jouw screenshot heet de koppeling 'travel_org_id'
+    travel_org_id = db.Column(db.Integer, db.ForeignKey('Organiser.id')) 
+    
     destination = db.Column(db.String(100))
-    start_date = db.Column(db.Date)
+    start_date = db.Column(db.Date) # Of String als je dat makkelijker vindt
     end_date = db.Column(db.Date)
     price = db.Column(db.Float)
+    
+    # Optioneel: relatie zodat je makkelijk de organisator kan opvragen
+    organiser = db.relationship('Organiser', backref='trips')
 
 class Feedback(db.Model):
     __tablename__ = 'feedback'
@@ -42,9 +46,6 @@ class Feedback(db.Model):
     rating = db.Column(db.Integer)
     comment = db.Column(db.Text)
     feedback_date = db.Column(db.Date)
-
-
-
 
 class Group(db.Model):
     __tablename__ = 'group'

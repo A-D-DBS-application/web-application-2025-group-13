@@ -1,32 +1,24 @@
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 from .config import Config
-from .extensions import db
-import os
+
+# 1. Maak de database instantie aan (buiten de functie!)
+db = SQLAlchemy()
 
 def create_app():
+    # 2. Maak de app aan
     app = Flask(__name__)
     app.config.from_object(Config)
 
+    # 3. Koppel de database aan de app
     db.init_app(app)
 
+    # 4. Importeer routes HIER pas (om de cirkel te voorkomen)
+    from app.routes import register_routes
+    register_routes(app)
+
+    # 5. Tabellen aanmaken als ze niet bestaan
     with app.app_context():
-        # Importeer models EERST zodat alle db.Model-klassen geregistreerd zijn
-        from app import models, routes
-        
-        # Registreer routes nadat models geladen zijn
-        routes.register_routes(app)
-        
-        # Alleen automatisch tabellen aanmaken voor lokale SQLite.
-        # Voor externe databases (bv. Supabase) liever migrations gebruiken en niet op startup verbinden.
-        db_uri = app.config.get('SQLALCHEMY_DATABASE_URI', '') or ''
-        is_sqlite = db_uri.startswith('sqlite:')
-        if is_sqlite:
-            try:
-                db.create_all()
-                print("Info: SQLite tables created/verified.")
-            except Exception as e:
-                print(f"Warning: Could not create SQLite tables: {e}")
-        else:
-            print("Info: Skipping db.create_all for non-SQLite database (avoid remote connect at startup).")
+        db.create_all()
 
     return app
