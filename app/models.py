@@ -2,40 +2,45 @@ from app import db
 
 # Tabel 1: De Reiziger
 class User(db.Model):
-    __tablename__ = 'user'  # Komt overeen met jouw screenshot
+    __tablename__ = 'user'
     
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, nullable=True)
     name = db.Column(db.String(100))
     email = db.Column(db.String(120), unique=True, nullable=False)
     age = db.Column(db.Integer, nullable=True)
-    # Password kolom staat in je DB, maar laten we even leeg als je geen ww wilt
+    
+    def __repr__(self):
+        return f'<User {self.email}>'
 
-# Tabel 2: De Organisator
+# Tabel 2: De Organisator (Let op: Organiser met hoofdletter O)
 class Organiser(db.Model):
-    __tablename__ = 'Organiser' # Let op de Hoofdletter O, zoals in je screenshot
+    __tablename__ = 'Organiser' 
     
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, nullable=True)
     name = db.Column(db.String(100))
     email = db.Column(db.String(120), unique=True, nullable=False)
 
-# Tabel 3: De Reizen (Gekoppeld aan Organisator)
+# Tabel 3: De Reizen
 class Trip(db.Model):
     __tablename__ = 'trip'
     
     id = db.Column(db.Integer, primary_key=True)
-    # In jouw screenshot heet de koppeling 'travel_org_id'
-    travel_org_id = db.Column(db.Integer, db.ForeignKey('Organiser.id')) 
     
-    destination = db.Column(db.String(100))
-    start_date = db.Column(db.Date) # Of String als je dat makkelijker vindt
-    end_date = db.Column(db.Date)
-    price = db.Column(db.Float)
+    # Dit is de boosdoener. We vertellen Flask dat dit LEEG mag zijn.
+    match_id = db.Column(db.Integer, nullable=True)
     
-    # Optioneel: relatie zodat je makkelijk de organisator kan opvragen
-    organiser = db.relationship('Organiser', backref='trips')
+    # Koppeling naar Organiser
+    travel_org_id = db.Column(db.Integer, db.ForeignKey('Organiser.id'), nullable=False)
+    
+    destination = db.Column(db.String(100), nullable=False)
+    start_date = db.Column(db.Date, nullable=False)
+    end_date = db.Column(db.Date, nullable=False)
+    price = db.Column(db.Float, nullable=False)
 
+    # Relatie
+    organiser = db.relationship('Organiser', backref='trips')
 class Feedback(db.Model):
     __tablename__ = 'feedback'
     id = db.Column(db.Integer, primary_key=True)
