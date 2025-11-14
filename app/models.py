@@ -41,6 +41,32 @@ class Trip(db.Model):
 
     # Relatie
     organiser = db.relationship('Organiser', backref='trips')
+# Tabel 4: Reiziger Profiel (Intake vragenlijst)
+class TravelerProfile(db.Model):
+    __tablename__ = 'traveler_profile'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, unique=True)
+    created_at = db.Column(db.DateTime, nullable=True)
+    
+    # Basis info
+    age = db.Column(db.Integer, nullable=False)
+    budget_min = db.Column(db.Integer, nullable=False)  # in euros
+    budget_max = db.Column(db.Integer, nullable=False)  # in euros
+    
+    # Reisperiodes (simpel: seizoenen of maanden)
+    travel_period = db.Column(db.String(200))  # bijv. "Lente, Zomer"
+    
+    # Interesses op schaal 1-5
+    adventure_level = db.Column(db.Integer, nullable=False)  # 1=rustig, 5=heel avontuurlijk
+    party_level = db.Column(db.Integer, nullable=False)      # 1=rustig, 5=feestbeest
+    culture_level = db.Column(db.Integer, nullable=False)    # 1=weinig, 5=veel cultuur
+    food_level = db.Column(db.Integer, nullable=False)       # 1=normaal, 5=foodie
+    nature_level = db.Column(db.Integer, nullable=False)     # 1=weinig, 5=veel natuur
+    
+    # Relatie met User
+    user = db.relationship('User', backref='profile', uselist=False)
+
 class Feedback(db.Model):
     __tablename__ = 'feedback'
     id = db.Column(db.Integer, primary_key=True)
