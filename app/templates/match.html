@@ -1,16 +1,358 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block styles %}
+<style>
+    .match-container {
+        max-width: 1000px;
+        width: 95%;
+        margin: 30px auto;
+        padding: 20px;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .page-header h2 {
+        color: #007B7F;
+        margin-bottom: 10px;
+    }
+
+    .page-header p {
+        color: #666;
+        font-size: 1.1rem;
+    }
+
+    /* Jouw profiel kaart */
+    .my-profile-card {
+        background: linear-gradient(135deg, #007B7F, #00a8ad);
+        color: white;
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 40px;
+        box-shadow: 0 5px 20px rgba(0,123,127,0.3);
+    }
+
+    .my-profile-card h3 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        font-size: 1.3rem;
+    }
+
+    .profile-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+    }
+
+    .stat {
+        background: rgba(255,255,255,0.15);
+        padding: 12px;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        opacity: 0.9;
+        margin-bottom: 5px;
+    }
+
+    .stat-value {
+        font-size: 1.3rem;
+        font-weight: bold;
+    }
+
+    /* Match resultaten */
+    .matches-section h3 {
+        color: #333;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+    }
+
+    .no-matches {
+        text-align: center;
+        padding: 60px 20px;
+        background: #f9f9f9;
+        border-radius: 15px;
+        color: #666;
+    }
+
+    .no-matches-icon {
+        font-size: 4rem;
+        margin-bottom: 15px;
+    }
+
+    /* Match cards */
+    .match-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        transition: transform 0.2s, box-shadow 0.2s;
+        border-left: 5px solid #007B7F;
+    }
+
+    .match-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 25px rgba(0,0,0,0.12);
+    }
+
+    .match-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .match-user-info h4 {
+        margin: 0;
+        color: #333;
+        font-size: 1.3rem;
+    }
+
+    .match-user-info .age {
+        color: #666;
+        font-size: 0.95rem;
+        margin-top: 5px;
+    }
+
+    .match-score {
+        text-align: center;
+    }
+
+    .score-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: white;
+        position: relative;
+    }
+
+    .score-circle::before {
+        content: '%';
+        font-size: 0.7rem;
+        position: absolute;
+        bottom: 20px;
+        right: 15px;
+    }
+
+    .score-high {
+        background: linear-gradient(135deg, #4CAF50, #66BB6A);
+    }
+
+    .score-medium {
+        background: linear-gradient(135deg, #FF9800, #FFB74D);
+    }
+
+    .score-label {
+        font-size: 0.75rem;
+        color: #888;
+        margin-top: 5px;
+    }
+
+    /* Compatibility details */
+    .compatibility-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+    }
+
+    .compat-item {
+        background: #f8f9fa;
+        padding: 12px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+    }
+
+    .compat-label {
+        color: #666;
+        font-size: 0.85rem;
+        margin-bottom: 5px;
+    }
+
+    .compat-value {
+        color: #333;
+        font-weight: 600;
+    }
+
+    /* Action buttons */
+    .match-actions {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border-radius: 25px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-primary {
+        background: #007B7F;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #005f62;
+    }
+
+    .btn-secondary {
+        background: #f0f0f0;
+        color: #666;
+    }
+
+    .btn-secondary:hover {
+        background: #e0e0e0;
+    }
+
+    /* Back button */
+    .back-link {
+        display: inline-block;
+        margin-bottom: 20px;
+        color: #007B7F;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .back-link:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<h2>🎉 Je TrailTribe Match!</h2>
-<p>Hey {{ traveler.name }} ({{ traveler.age }} jaar)</p>
-<p>Op basis van je profiel past je het best bij:</p>
+<div class="match-container">
+    <a href="{{ url_for('home') }}" class="back-link">← Terug naar home</a>
+    
+    <div class="page-header">
+        <h2>🎯 Jouw Reisgenoot Matches</h2>
+        <p>We hebben de beste matches voor jou gevonden!</p>
+    </div>
 
-<h3>{{ match }}</h3>
+    <!-- Jouw profiel -->
+    <div class="my-profile-card">
+        <h3>👤 Jouw Reisprofiel</h3>
+        <div class="profile-stats">
+            <div class="stat">
+                <div class="stat-label">Leeftijd</div>
+                <div class="stat-value">{{ my_profile.age }}</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Budget</div>
+                <div class="stat-value">€{{ my_profile.budget_min }}-{{ my_profile.budget_max }}</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Avontuur</div>
+                <div class="stat-value">{{ my_profile.adventure_level }}/5</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Feesten</div>
+                <div class="stat-value">{{ my_profile.party_level }}/5</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Cultuur</div>
+                <div class="stat-value">{{ my_profile.culture_level }}/5</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Food</div>
+                <div class="stat-value">{{ my_profile.food_level }}/5</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Natuur</div>
+                <div class="stat-value">{{ my_profile.nature_level }}/5</div>
+            </div>
+        </div>
+        <div style="margin-top: 15px;">
+            <strong>Reisperiode:</strong> {{ my_profile.travel_period }}
+        </div>
+    </div>
 
-<p>Interesses: {{ traveler.interests }}</p>
-<p>Persoonlijkheid: {{ traveler.personality }}</p>
-<p>Budget: {{ traveler.budget }}</p>
-<p>Reisperiode: {{ traveler.travel_period }}</p>
-<p>Bestemming: {{ traveler.destination }}</p>
+    <!-- Match resultaten -->
+    <div class="matches-section">
+        <h3>🤝 Jouw Beste Matches ({{ matches|length }})</h3>
+        
+        {% if matches|length == 0 %}
+        <div class="no-matches">
+            <div class="no-matches-icon">😔</div>
+            <h4>Nog geen matches gevonden</h4>
+            <p>Er zijn momenteel geen reizigers die goed bij jouw profiel passen.</p>
+            <p>Probeer later opnieuw, of pas je voorkeuren aan in de intake.</p>
+            <a href="{{ url_for('intake') }}" class="btn btn-primary" style="margin-top: 20px;">Profiel Aanpassen</a>
+        </div>
+        {% else %}
+            {% for match in matches %}
+            <div class="match-card">
+                <div class="match-header">
+                    <div class="match-user-info">
+                        <h4>{{ match.user.name }}</h4>
+                        <div class="age">{{ match.profile.age }} jaar</div>
+                    </div>
+                    <div class="match-score">
+                        <div class="score-circle {% if match.percentage >= 70 %}score-high{% else %}score-medium{% endif %}">
+                            {{ match.percentage }}
+                        </div>
+                        <div class="score-label">Match Score</div>
+                    </div>
+                </div>
 
-<a href="{{ url_for('index') }}"><button>Terug naar start</button></a>
+                <div class="compatibility-grid">
+                    <div class="compat-item">
+                        <div class="compat-label">Budget</div>
+                        <div class="compat-value">€{{ match.profile.budget_min }}-{{ match.profile.budget_max }}</div>
+                    </div>
+                    <div class="compat-item">
+                        <div class="compat-label">Reisperiode</div>
+                        <div class="compat-value">{{ match.profile.travel_period }}</div>
+                    </div>
+                    <div class="compat-item">
+                        <div class="compat-label">🔥 Avontuur</div>
+                        <div class="compat-value">{{ match.profile.adventure_level }}/5</div>
+                    </div>
+                    <div class="compat-item">
+                        <div class="compat-label">🎉 Feesten</div>
+                        <div class="compat-value">{{ match.profile.party_level }}/5</div>
+                    </div>
+                    <div class="compat-item">
+                        <div class="compat-label">🏛️ Cultuur</div>
+                        <div class="compat-value">{{ match.profile.culture_level }}/5</div>
+                    </div>
+                    <div class="compat-item">
+                        <div class="compat-label">🍜 Food</div>
+                        <div class="compat-value">{{ match.profile.food_level }}/5</div>
+                    </div>
+                    <div class="compat-item">
+                        <div class="compat-label">🌲 Natuur</div>
+                        <div class="compat-value">{{ match.profile.nature_level }}/5</div>
+                    </div>
+                </div>
+
+                <div class="match-actions">
+                    <button class="btn btn-primary">Contact Opnemen</button>
+                    <button class="btn btn-secondary">Profiel Bekijken</button>
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div style="text-align: center; margin-top: 40px;">
+        <a href="{{ url_for('intake') }}" class="btn btn-secondary">Profiel Aanpassen</a>
+    </div>
+</div>
 {% endblock %}
