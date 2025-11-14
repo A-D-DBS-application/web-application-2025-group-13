@@ -19,9 +19,30 @@ def register_routes(app):
     def intake():
         if 'user_id' not in session or session.get('role') == 'organizer':
             return redirect(url_for('login'))
+        
+        # Check of gebruiker al een profiel heeft
+        existing_profile = TravelerProfile.query.filter_by(user_id=session['user_id']).first()
+        
+        if existing_profile:
+            # Toon overzicht van bestaand profiel
+            user = User.query.get(session['user_id'])
+            return render_template('intake_overview.html', user=user, profile=existing_profile)
+        
+        # Geen profiel -> toon intake formulier
         return render_template('intake.html')
     
     # --- INTAKE SUBMIT ---
+    @app.route('/edit-intake')
+    def edit_intake():
+        """Show the intake form pre-filled with existing data for editing"""
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+        
+        # Toon altijd het intake formulier, zelfs als er al een profiel is
+        # Het formulier zal worden ingevuld met bestaande data via de submit route
+        return render_template('intake.html')
+
+
     @app.route('/submit-intake', methods=['POST'])
     def submit_intake():
         if 'user_id' not in session or session.get('role') == 'organizer':

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jouw Intake Overzicht - TrailTribe</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif; background-color: #f8fafa; color: black;
+      margin: 0; display: flex; flex-direction: column; align-items: center;
+      justify-content: flex-start; min-height: 100vh; padding-top: 90px;
+    }
+    nav {
+      background-color: #007B7F; padding: 10px; width: 100%;
+      text-align: left; position: fixed; top: 0; left: 0; z-index: 1000;
+    }
+    nav a { color: white; text-decoration: none; margin: 0 10px; font-weight: bold; }
+    nav a:hover { text-decoration: underline; }
+    h1 { color: #007B7F; text-align: center; margin-bottom: 0.5em; }
+    .container { max-width: 900px; width: 95%; margin: 20px auto; }
+    
+    .overview-card {
+      background-color: white; padding: 30px; border-radius: 10px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1); border: 3px solid #007B7F;
+      margin-bottom: 20px;
+    }
+    
+    .section {
+      background: #f9f9f9; padding: 20px; border-radius: 8px;
+      margin-bottom: 20px; border-left: 4px solid #007B7F;
+    }
+    
+    .section h2 {
+      color: #007B7F; margin-top: 0; margin-bottom: 15px;
+      font-size: 1.3rem;
+    }
+    
+    .detail-row {
+      display: flex; margin-bottom: 12px; font-size: 0.95rem;
+      padding: 8px 0; border-bottom: 1px dashed rgba(0,123,127,0.2);
+    }
+    .detail-row:last-child { border-bottom: none; }
+    
+    .detail-label { 
+      font-weight: bold; color: #007B7F; min-width: 200px; 
+    }
+    .detail-value { color: #333; flex: 1; }
+    
+    .rating-bar {
+      display: flex; gap: 4px; align-items: center;
+    }
+    .rating-circle {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: #e0e0e0; display: inline-block;
+    }
+    .rating-circle.filled {
+      background: linear-gradient(135deg, #007B7F, #00a89b);
+    }
+    .rating-label {
+      margin-left: 10px; font-size: 0.9rem; color: #666;
+    }
+    
+    .button-group {
+      display: flex; gap: 15px; justify-content: center;
+      margin-top: 30px; flex-wrap: wrap;
+    }
+    
+    button, .btn {
+      background-color: #007B7F; color: white; border: none;
+      padding: 14px 28px; border-radius: 8px; cursor: pointer;
+      font-weight: bold; text-decoration: none; display: inline-block;
+      font-size: 1rem; transition: background-color 0.2s;
+    }
+    button:hover, .btn:hover { background-color: #00605f; }
+    
+    .btn-edit {
+      background-color: #ff9800;
+    }
+    .btn-edit:hover { background-color: #e68900; }
+    
+    .btn-matches {
+      background-color: #4CAF50;
+    }
+    .btn-matches:hover { background-color: #45a049; }
+    
+    .info-box {
+      background: #d4edda; border: 2px solid #28a745;
+      padding: 15px; border-radius: 8px; margin-bottom: 20px;
+      color: #155724;
+    }
+    
+    @media (max-width: 720px) {
+      .detail-row { flex-direction: column; }
+      .detail-label { min-width: auto; margin-bottom: 4px; }
+      .button-group { flex-direction: column; }
+      button, .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="{{ url_for('home') }}">Home</a> |
+  <a href="{{ url_for('intake') }}">Intake</a> |
+  <a href="{{ url_for('match') }}">Matches</a> |
+  <a href="{{ url_for('about') }}">Over ons</a>
+</nav>
+
+<div class="container">
+  <h1>📋 Jouw Intake Overzicht</h1>
+  
+  <div class="info-box">
+    <strong>✓ Je profiel is compleet!</strong> Bekijk hieronder jouw voorkeuren. Je kunt het altijd aanpassen door op "Wijzig profiel" te klikken.
+  </div>
+  
+  <div class="overview-card">
+    <!-- Basis informatie -->
+    <div class="section">
+      <h2>👤 Basisgegevens</h2>
+      <div class="detail-row">
+        <div class="detail-label">Naam:</div>
+        <div class="detail-value">{{ user.name }}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Email:</div>
+        <div class="detail-value">{{ user.email }}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Leeftijd:</div>
+        <div class="detail-value">{{ profile.age }} jaar</div>
+      </div>
+    </div>
+
+    <!-- Budget & Periode -->
+    <div class="section">
+      <h2>💰 Budget & Reisperiode</h2>
+      <div class="detail-row">
+        <div class="detail-label">Budget:</div>
+        <div class="detail-value">€{{ profile.budget_min }} - €{{ profile.budget_max }}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Reisperiode:</div>
+        <div class="detail-value">{{ profile.travel_period }}</div>
+      </div>
+    </div>
+
+    <!-- Interesses & Voorkeuren -->
+    <div class="section">
+      <h2>🎯 Jouw Interesses</h2>
+      
+      <div class="detail-row">
+        <div class="detail-label">Avontuur niveau:</div>
+        <div class="detail-value">
+          <div class="rating-bar">
+            {% for i in range(1, 6) %}
+              <span class="rating-circle {% if i <= profile.adventure_level %}filled{% endif %}"></span>
+            {% endfor %}
+            <span class="rating-label">
+              {% if profile.adventure_level == 1 %}Heel rustig
+              {% elif profile.adventure_level == 2 %}Rustig
+              {% elif profile.adventure_level == 3 %}Gemiddeld
+              {% elif profile.adventure_level == 4 %}Avontuurlijk
+              {% else %}Heel avontuurlijk{% endif %}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-label">Party niveau:</div>
+        <div class="detail-value">
+          <div class="rating-bar">
+            {% for i in range(1, 6) %}
+              <span class="rating-circle {% if i <= profile.party_level %}filled{% endif %}"></span>
+            {% endfor %}
+            <span class="rating-label">
+              {% if profile.party_level == 1 %}Heel rustig
+              {% elif profile.party_level == 2 %}Rustig
+              {% elif profile.party_level == 3 %}Gemiddeld
+              {% elif profile.party_level == 4 %}Feestelijk
+              {% else %}Feestbeest{% endif %}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-label">Cultuur niveau:</div>
+        <div class="detail-value">
+          <div class="rating-bar">
+            {% for i in range(1, 6) %}
+              <span class="rating-circle {% if i <= profile.culture_level %}filled{% endif %}"></span>
+            {% endfor %}
+            <span class="rating-label">
+              {% if profile.culture_level == 1 %}Weinig interesse
+              {% elif profile.culture_level == 2 %}Beetje interesse
+              {% elif profile.culture_level == 3 %}Gemiddeld
+              {% elif profile.culture_level == 4 %}Veel interesse
+              {% else %}Cultuurliefhebber{% endif %}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-label">Food niveau:</div>
+        <div class="detail-value">
+          <div class="rating-bar">
+            {% for i in range(1, 6) %}
+              <span class="rating-circle {% if i <= profile.food_level %}filled{% endif %}"></span>
+            {% endfor %}
+            <span class="rating-label">
+              {% if profile.food_level == 1 %}Normaal
+              {% elif profile.food_level == 2 %}Geïnteresseerd
+              {% elif profile.food_level == 3 %}Gemiddeld
+              {% elif profile.food_level == 4 %}Foodie
+              {% else %}Echte foodie{% endif %}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-label">Natuur niveau:</div>
+        <div class="detail-value">
+          <div class="rating-bar">
+            {% for i in range(1, 6) %}
+              <span class="rating-circle {% if i <= profile.nature_level %}filled{% endif %}"></span>
+            {% endfor %}
+            <span class="rating-label">
+              {% if profile.nature_level == 1 %}Weinig interesse
+              {% elif profile.nature_level == 2 %}Beetje interesse
+              {% elif profile.nature_level == 3 %}Gemiddeld
+              {% elif profile.nature_level == 4 %}Veel interesse
+              {% else %}Natuurliefhebber{% endif %}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="button-group">
+    <a href="{{ url_for('edit_intake') }}" class="btn btn-edit">✏️ Wijzig profiel</a>
+    <a href="{{ url_for('match') }}" class="btn btn-matches">💚 Bekijk je matches</a>
+    <a href="{{ url_for('home') }}" class="btn">🏠 Terug naar home</a>
+  </div>
+</div>
+
+</body>
+</html>
