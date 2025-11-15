@@ -8,7 +8,7 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, nullable=True)
     name = db.Column(db.String(100))
     email = db.Column(db.String(120), unique=True, nullable=False)
-    age = db.Column(db.Integer, nullable=True)
+    #age = db.Column(db.Integer, nullable=True)
     
     def __repr__(self):
         return f'<User {self.email}>'
