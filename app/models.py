@@ -57,12 +57,35 @@ class TravelerProfile(db.Model):
     # Reisperiodes (simpel: seizoenen of maanden)
     travel_period = db.Column(db.String(200))  # bijv. "Lente, Zomer"
     
-    # Interesses op schaal 1-5
-    adventure_level = db.Column(db.Integer, nullable=False)  # 1=rustig, 5=heel avontuurlijk
-    party_level = db.Column(db.Integer, nullable=False)      # 1=rustig, 5=feestbeest
-    culture_level = db.Column(db.Integer, nullable=False)    # 1=weinig, 5=veel cultuur
-    food_level = db.Column(db.Integer, nullable=False)       # 1=normaal, 5=foodie
-    nature_level = db.Column(db.Integer, nullable=False)     # 1=weinig, 5=veel natuur
+    # --- DE 16 VIBE CHECK VRAGEN (Schaal 1-5) ---
+    
+    # 1. Basis Vibe
+    adventure_level = db.Column(db.Integer, nullable=False)  # 1=Rustig, 5=Avontuur
+    beach_person = db.Column(db.Integer, nullable=False)     # 1=Geen zand, 5=Bakken
+    culture_interest = db.Column(db.Integer, nullable=False) # 1=Slaapverwekkend, 5=Museumrat
+    party_animal = db.Column(db.Integer, nullable=False)     # 1=Thee, 5=Feest
+    nature_lover = db.Column(db.Integer, nullable=False)     # 1=Asfalt, 5=Wild
+    
+    # 2. Reisstijl
+    luxury_comfort = db.Column(db.Integer, nullable=False)   # 1=Hostel, 5=Hotel
+    morning_person = db.Column(db.Integer, nullable=False)   # 1=Snooze, 5=Vroeg
+    planning_freak = db.Column(db.Integer, nullable=False)   # 1=Plannen, 5=Loslaten
+    foodie_level = db.Column(db.Integer, nullable=False)     # 1=Brandstof, 5=Culinair
+    sporty_spice = db.Column(db.Integer, nullable=False)     # 1=Lift, 5=Rennen
+    chaos_tolerance = db.Column(db.Integer, nullable=False)  # 1=Stress, 5=Zen
+
+    # 3. Interesses
+    city_trip = db.Column(db.Integer, nullable=False)        # 1=Mwah, 5=Ja
+    road_trip = db.Column(db.Integer, nullable=False)        # 1=Vliegen, 5=Roadtrip
+    backpacking = db.Column(db.Integer, nullable=False)      # 1=Koffer, 5=Rugzak
+    local_contact = db.Column(db.Integer, nullable=False)    # 1=Bubbel, 5=Locals
+    digital_detox = db.Column(db.Integer, nullable=False)    # 1=Wifi, 5=Offline
+
+    # 4. Ongebruikte velden (voor database compatibiliteit)
+    social_battery = db.Column(db.Integer, nullable=False, default=3)
+    leader_role = db.Column(db.Integer, nullable=False, default=3)
+    talkative = db.Column(db.Integer, nullable=False, default=3)
+    sustainability = db.Column(db.Integer, nullable=False, default=3)
     
     # Relatie met User
     user = db.relationship('User', backref='profile', uselist=False)

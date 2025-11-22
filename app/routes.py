@@ -59,12 +59,34 @@ def register_routes(app):
             periods = request.form.getlist('period')
             travel_period = ', '.join(periods)
             
-            # Ratings ophalen
+            # --- 16 VIBE CHECK VRAGEN ---
+            # 1. Basis Vibe
             adventure_level = int(request.form.get('adventure_level'))
-            party_level = int(request.form.get('party_level'))
-            culture_level = int(request.form.get('culture_level'))
-            food_level = int(request.form.get('food_level'))
-            nature_level = int(request.form.get('nature_level'))
+            beach_person = int(request.form.get('beach_person'))
+            culture_interest = int(request.form.get('culture_interest'))
+            party_animal = int(request.form.get('party_animal'))
+            nature_lover = int(request.form.get('nature_lover'))
+            
+            # 2. Reisstijl
+            luxury_comfort = int(request.form.get('luxury_comfort'))
+            morning_person = int(request.form.get('morning_person'))
+            planning_freak = int(request.form.get('planning_freak'))
+            foodie_level = int(request.form.get('foodie_level'))
+            sporty_spice = int(request.form.get('sporty_spice'))
+            chaos_tolerance = int(request.form.get('chaos_tolerance'))
+
+            # 3. Interesses
+            city_trip = int(request.form.get('city_trip'))
+            road_trip = int(request.form.get('road_trip'))
+            backpacking = int(request.form.get('backpacking'))
+            local_contact = int(request.form.get('local_contact'))
+            digital_detox = int(request.form.get('digital_detox'))
+
+            # 4. Ongebruikte velden (defaults)
+            social_battery = 3
+            leader_role = 3
+            talkative = 3
+            sustainability = 3
             
             # Check of profiel al bestaat
             existing = TravelerProfile.query.filter_by(user_id=session['user_id']).first()
@@ -75,11 +97,32 @@ def register_routes(app):
                 existing.budget_min = budget_min
                 existing.budget_max = budget_max
                 existing.travel_period = travel_period
+                
                 existing.adventure_level = adventure_level
-                existing.party_level = party_level
-                existing.culture_level = culture_level
-                existing.food_level = food_level
-                existing.nature_level = nature_level
+                existing.beach_person = beach_person
+                existing.culture_interest = culture_interest
+                existing.party_animal = party_animal
+                existing.nature_lover = nature_lover
+                
+                existing.luxury_comfort = luxury_comfort
+                existing.morning_person = morning_person
+                existing.planning_freak = planning_freak
+                existing.foodie_level = foodie_level
+                existing.sporty_spice = sporty_spice
+                existing.chaos_tolerance = chaos_tolerance
+                
+                existing.city_trip = city_trip
+                existing.road_trip = road_trip
+                existing.backpacking = backpacking
+                existing.local_contact = local_contact
+                existing.digital_detox = digital_detox
+                
+                # Defaults
+                existing.social_battery = social_battery
+                existing.leader_role = leader_role
+                existing.talkative = talkative
+                existing.sustainability = sustainability
+
                 flash('Je profiel is bijgewerkt! 🎉', 'success')
             else:
                 # Nieuw profiel aanmaken
@@ -90,11 +133,30 @@ def register_routes(app):
                     budget_min=budget_min,
                     budget_max=budget_max,
                     travel_period=travel_period,
+                    
                     adventure_level=adventure_level,
-                    party_level=party_level,
-                    culture_level=culture_level,
-                    food_level=food_level,
-                    nature_level=nature_level
+                    beach_person=beach_person,
+                    culture_interest=culture_interest,
+                    party_animal=party_animal,
+                    nature_lover=nature_lover,
+                    
+                    luxury_comfort=luxury_comfort,
+                    morning_person=morning_person,
+                    planning_freak=planning_freak,
+                    foodie_level=foodie_level,
+                    sporty_spice=sporty_spice,
+                    chaos_tolerance=chaos_tolerance,
+                    
+                    city_trip=city_trip,
+                    road_trip=road_trip,
+                    backpacking=backpacking,
+                    local_contact=local_contact,
+                    digital_detox=digital_detox,
+                    
+                    social_battery=social_battery,
+                    leader_role=leader_role,
+                    talkative=talkative,
+                    sustainability=sustainability
                 )
                 db.session.add(new_profile)
                 flash('Je profiel is opgeslagen! 🎉', 'success')
@@ -262,103 +324,78 @@ def register_routes(app):
 # Helper functie voor matching (buiten register_routes)
 def calculate_match_score(profile1, profile2):
     """
-    Simpel matching algoritme dat een percentage teruggeeft (0-100)
-    Gebaseerd op gelijkenis in interesses, budget en reisperiode
+    Matching algoritme gebaseerd op 16 Vibe Check vragen + Basis info
+    Totaal score = 70% Vibe + 30% Logistiek (Leeftijd, Budget, Periode)
     """
-    total_score = 0
-    max_score = 0
     
-    # 1. Leeftijd (10 punten max) - moet binnen 5 jaar zitten
-    age_diff = abs(profile1.age - profile2.age)
-    if age_diff <= 3:
-        total_score += 10
-    elif age_diff <= 5:
-        total_score += 7
-    elif age_diff <= 8:
-        total_score += 4
-    max_score += 10
+    # Helper om veilig waardes op te halen (voorkomt NoneType errors)
+    def get_val(obj, attr, default=3):
+        val = getattr(obj, attr, None)
+        return val if val is not None else default
+
+    # --- 1. LOGISTIEK (30 punten) ---
+    logistics_score = 0
     
-    # 2. Budget overlap (15 punten max)
-    # Check of budgetten overlappen
-    budget_overlap = not (profile1.budget_max < profile2.budget_min or profile2.budget_max < profile1.budget_min)
+    # Leeftijd (10 punten)
+    age1 = get_val(profile1, 'age', 25)
+    age2 = get_val(profile2, 'age', 25)
+    age_diff = abs(age1 - age2)
+    
+    if age_diff <= 3: logistics_score += 10
+    elif age_diff <= 5: logistics_score += 7
+    elif age_diff <= 8: logistics_score += 4
+    
+    # Budget (10 punten)
+    b_max1 = get_val(profile1, 'budget_max', 0)
+    b_min1 = get_val(profile1, 'budget_min', 0)
+    b_max2 = get_val(profile2, 'budget_max', 0)
+    b_min2 = get_val(profile2, 'budget_min', 0)
+    
+    budget_overlap = not (b_max1 < b_min2 or b_max2 < b_min1)
     if budget_overlap:
-        # Bereken hoe groot de overlap is
-        overlap_min = max(profile1.budget_min, profile2.budget_min)
-        overlap_max = min(profile1.budget_max, profile2.budget_max)
-        overlap_size = overlap_max - overlap_min
+        logistics_score += 10
         
-        # Grotere overlap = betere match
-        avg_budget_range = ((profile1.budget_max - profile1.budget_min) + (profile2.budget_max - profile2.budget_min)) / 2
-        overlap_ratio = min(overlap_size / avg_budget_range, 1.0)
-        total_score += int(15 * overlap_ratio)
-    max_score += 15
+    # Periode (10 punten)
+    p1 = getattr(profile1, 'travel_period', '') or ''
+    p2 = getattr(profile2, 'travel_period', '') or ''
+    periods1 = set(p1.split(', '))
+    periods2 = set(p2.split(', '))
+    if 'Flexibel' in periods1 or 'Flexibel' in periods2 or len(periods1.intersection(periods2)) > 0:
+        logistics_score += 10
+        
+    # --- 2. VIBE CHECK (70 punten) ---
+    # We vergelijken de 16 vragen. Elke vraag is max 4 punten verschil (1 vs 5).
+    # We berekenen de gelijkenis per vraag (1 - diff/4) en nemen het gemiddelde.
     
-    # 3. Reisperiode overlap (15 punten max)
-    periods1 = set(profile1.travel_period.split(', '))
-    periods2 = set(profile2.travel_period.split(', '))
+    vibe_fields = [
+        'adventure_level', 'beach_person', 'culture_interest', 'party_animal', 'nature_lover',
+        'luxury_comfort', 'morning_person', 'planning_freak', 'foodie_level', 'sporty_spice',
+        'chaos_tolerance', 
+        'city_trip', 'road_trip', 'backpacking', 'local_contact', 'digital_detox'
+    ]
     
-    # Als een van beiden "Flexibel" heeft, is dat altijd een match
-    if 'Flexibel' in periods1 or 'Flexibel' in periods2:
-        total_score += 15
-    else:
-        # Bereken overlap
-        overlap = periods1.intersection(periods2)
-        if len(overlap) > 0:
-            # Meer overlappende periodes = betere score
-            overlap_ratio = len(overlap) / max(len(periods1), len(periods2))
-            total_score += int(15 * overlap_ratio)
-    max_score += 15
+    total_similarity = 0
     
-    # 4. Avontuur niveau (10 punten max) - max verschil van 2
-    adventure_diff = abs(profile1.adventure_level - profile2.adventure_level)
-    if adventure_diff == 0:
-        total_score += 10
-    elif adventure_diff == 1:
-        total_score += 7
-    elif adventure_diff == 2:
-        total_score += 4
-    max_score += 10
+    for field in vibe_fields:
+        val1 = get_val(profile1, field, 3)
+        val2 = get_val(profile2, field, 3)
+        
+        # Verschil tussen 0 en 4
+        diff = abs(val1 - val2)
+        
+        # Similarity score voor deze vraag (0.0 tot 1.0)
+        # 0 verschil = 1.0 (100% match)
+        # 4 verschil = 0.0 (0% match)
+        similarity = 1 - (diff / 4)
+        total_similarity += similarity
+        
+    # Gemiddelde similarity over 16 vragen (0.0 tot 1.0)
+    avg_vibe_score = total_similarity / len(vibe_fields)
     
-    # 5. Party niveau (10 punten max)
-    party_diff = abs(profile1.party_level - profile2.party_level)
-    if party_diff == 0:
-        total_score += 10
-    elif party_diff == 1:
-        total_score += 7
-    elif party_diff == 2:
-        total_score += 4
-    max_score += 10
+    # Omzetten naar punten (max 70)
+    vibe_points = avg_vibe_score * 70
     
-    # 6. Cultuur niveau (10 punten max)
-    culture_diff = abs(profile1.culture_level - profile2.culture_level)
-    if culture_diff == 0:
-        total_score += 10
-    elif culture_diff == 1:
-        total_score += 7
-    elif culture_diff == 2:
-        total_score += 4
-    max_score += 10
+    # --- TOTAAL ---
+    final_score = logistics_score + vibe_points
     
-    # 7. Food niveau (10 punten max)
-    food_diff = abs(profile1.food_level - profile2.food_level)
-    if food_diff == 0:
-        total_score += 10
-    elif food_diff == 1:
-        total_score += 7
-    elif food_diff == 2:
-        total_score += 4
-    max_score += 10
-    
-    # 8. Natuur niveau (10 punten max)
-    nature_diff = abs(profile1.nature_level - profile2.nature_level)
-    if nature_diff == 0:
-        total_score += 10
-    elif nature_diff == 1:
-        total_score += 7
-    elif nature_diff == 2:
-        total_score += 4
-    max_score += 10
-    
-    # Bereken percentage
-    percentage = int((total_score / max_score) * 100)
-    return percentage
+    return int(final_score)

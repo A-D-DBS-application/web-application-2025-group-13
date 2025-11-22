@@ -125,96 +125,82 @@
 
     <!-- Interesses & Voorkeuren -->
     <div class="section">
-      <h2>🎯 Jouw Interesses</h2>
+      <h2>🎯 Jouw Vibe & Reisstijl</h2>
+      
+      <!-- 1. Basis Vibe -->
+      <h3 style="color: #007B7F; font-size: 1.1rem; margin-top: 15px; margin-bottom: 10px;">Basis Vibe</h3>
       
       <div class="detail-row">
-        <div class="detail-label">Avontuur niveau:</div>
-        <div class="detail-value">
-          <div class="rating-bar">
-            {% for i in range(1, 6) %}
-              <span class="rating-circle {% if i <= profile.adventure_level %}filled{% endif %}"></span>
-            {% endfor %}
-            <span class="rating-label">
-              {% if profile.adventure_level == 1 %}Heel rustig
-              {% elif profile.adventure_level == 2 %}Rustig
-              {% elif profile.adventure_level == 3 %}Gemiddeld
-              {% elif profile.adventure_level == 4 %}Avontuurlijk
-              {% else %}Heel avontuurlijk{% endif %}
-            </span>
-          </div>
-        </div>
+        <div class="detail-label">Avontuurlijk:</div>
+        <div class="detail-value">{{ profile.adventure_level }}/5</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Strand & Zon:</div>
+        <div class="detail-value">{{ profile.beach_person }}/5</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Cultuur:</div>
+        <div class="detail-value">{{ profile.culture_interest }}/5</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Feestbeest:</div>
+        <div class="detail-value">{{ profile.party_animal }}/5</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Natuurliefhebber:</div>
+        <div class="detail-value">{{ profile.nature_lover }}/5</div>
       </div>
 
+      <!-- 2. Reisstijl -->
+      <h3 style="color: #007B7F; font-size: 1.1rem; margin-top: 15px; margin-bottom: 10px;">Reisstijl</h3>
+      
       <div class="detail-row">
-        <div class="detail-label">Party niveau:</div>
-        <div class="detail-value">
-          <div class="rating-bar">
-            {% for i in range(1, 6) %}
-              <span class="rating-circle {% if i <= profile.party_level %}filled{% endif %}"></span>
-            {% endfor %}
-            <span class="rating-label">
-              {% if profile.party_level == 1 %}Heel rustig
-              {% elif profile.party_level == 2 %}Rustig
-              {% elif profile.party_level == 3 %}Gemiddeld
-              {% elif profile.party_level == 4 %}Feestelijk
-              {% else %}Feestbeest{% endif %}
-            </span>
-          </div>
-        </div>
+        <div class="detail-label">Luxe & Comfort:</div>
+        <div class="detail-value">{{ profile.luxury_comfort }}/5</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Ochtendmens:</div>
+        <div class="detail-value">{{ profile.morning_person }}/5</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Spontaniteit:</div>
+        <div class="detail-value">{{ profile.planning_freak }}/5 (1=Planner, 5=Loslaten)</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Foodie:</div>
+        <div class="detail-value">{{ profile.foodie_level }}/5</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Sportief:</div>
+        <div class="detail-value">{{ profile.sporty_spice }}/5</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Chaos & Drukte:</div>
+        <div class="detail-value">{{ profile.chaos_tolerance }}/5</div>
       </div>
 
+      <!-- 3. Wat vind je leuk? -->
+      <h3 style="color: #007B7F; font-size: 1.1rem; margin-top: 15px; margin-bottom: 10px;">Interesses</h3>
+      
       <div class="detail-row">
-        <div class="detail-label">Cultuur niveau:</div>
-        <div class="detail-value">
-          <div class="rating-bar">
-            {% for i in range(1, 6) %}
-              <span class="rating-circle {% if i <= profile.culture_level %}filled{% endif %}"></span>
-            {% endfor %}
-            <span class="rating-label">
-              {% if profile.culture_level == 1 %}Weinig interesse
-              {% elif profile.culture_level == 2 %}Beetje interesse
-              {% elif profile.culture_level == 3 %}Gemiddeld
-              {% elif profile.culture_level == 4 %}Veel interesse
-              {% else %}Cultuurliefhebber{% endif %}
-            </span>
-          </div>
-        </div>
+        <div class="detail-label">Citytrips:</div>
+        <div class="detail-value">{{ profile.city_trip }}/5</div>
       </div>
-
       <div class="detail-row">
-        <div class="detail-label">Food niveau:</div>
-        <div class="detail-value">
-          <div class="rating-bar">
-            {% for i in range(1, 6) %}
-              <span class="rating-circle {% if i <= profile.food_level %}filled{% endif %}"></span>
-            {% endfor %}
-            <span class="rating-label">
-              {% if profile.food_level == 1 %}Normaal
-              {% elif profile.food_level == 2 %}Geïnteresseerd
-              {% elif profile.food_level == 3 %}Gemiddeld
-              {% elif profile.food_level == 4 %}Foodie
-              {% else %}Echte foodie{% endif %}
-            </span>
-          </div>
-        </div>
+        <div class="detail-label">Roadtrips:</div>
+        <div class="detail-value">{{ profile.road_trip }}/5</div>
       </div>
-
       <div class="detail-row">
-        <div class="detail-label">Natuur niveau:</div>
-        <div class="detail-value">
-          <div class="rating-bar">
-            {% for i in range(1, 6) %}
-              <span class="rating-circle {% if i <= profile.nature_level %}filled{% endif %}"></span>
-            {% endfor %}
-            <span class="rating-label">
-              {% if profile.nature_level == 1 %}Weinig interesse
-              {% elif profile.nature_level == 2 %}Beetje interesse
-              {% elif profile.nature_level == 3 %}Gemiddeld
-              {% elif profile.nature_level == 4 %}Veel interesse
-              {% else %}Natuurliefhebber{% endif %}
-            </span>
-          </div>
-        </div>
+        <div class="detail-label">Backpacken:</div>
+        <div class="detail-value">{{ profile.backpacking }}/5</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Contact Locals:</div>
+        <div class="detail-value">{{ profile.local_contact }}/5</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Digital Detox:</div>
+        <div class="detail-value">{{ profile.digital_detox }}/5</div>
       </div>
     </div>
   </div>
