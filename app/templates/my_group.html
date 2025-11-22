@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 40px auto; padding: 20px;">
+    
+    <h1 style="color: #007B7F; text-align: center; margin-bottom: 30px;">Mijn Reisgroep 🌍</h1>
+
+    {% if group_id %}
+        <!-- GROEP INFO -->
+        <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;">
+                <h2 style="margin: 0; color: #333;">Groep #{{ group_id }}</h2>
+                <span style="background: #e0f7fa; color: #007B7F; padding: 5px 15px; border-radius: 20px; font-weight: bold;">
+                    {{ members|length }} Leden
+                </span>
+            </div>
+
+            <!-- GEKOPPELDE REIS -->
+            {% if trip %}
+                <div style="background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                    <div style="display: flex; align-items: center; gap: 20px; justify-content: space-between; margin-bottom: 20px;">
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <div style="font-size: 2.5rem;">✈️</div>
+                            <div>
+                                <h3 style="margin: 0 0 5px 0;">Jullie gaan naar: {{ trip.destination }}!</h3>
+                                <p style="margin: 0;">
+                                    📅 {{ trip.start_date }} t/m {{ trip.end_date }} <br>
+                                    💰 €{{ trip.price }} p.p.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- CONFIRMATION BUTTON -->
+                        <div>
+                            {% if my_entry.confirmed %}
+                                <div style="background: white; color: #28a745; padding: 10px 20px; border-radius: 8px; font-weight: bold; border: 2px solid #28a745; text-align: center;">
+                                    ✅ Bevestigd!
+                                </div>
+                            {% else %}
+                                <form action="{{ url_for('confirm_trip') }}" method="POST">
+                                    <button type="submit" style="background: #28a745; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                                        👍 Ik ga mee!
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- EXTRA INFO -->
+                    {% if trip.description or trip.activities %}
+                        <div style="background: rgba(255,255,255,0.6); padding: 15px; border-radius: 8px; margin-top: 15px;">
+                            {% if trip.description %}
+                                <h4 style="margin: 0 0 5px 0; color: #155724;">Over deze reis</h4>
+                                <p style="margin: 0 0 15px 0; font-size: 0.95rem; white-space: pre-line;">{{ trip.description }}</p>
+                            {% endif %}
+                            
+                            {% if trip.activities %}
+                                <h4 style="margin: 0 0 5px 0; color: #155724;">Highlights & Activiteiten</h4>
+                                <p style="margin: 0; font-size: 0.95rem; white-space: pre-line;">{{ trip.activities }}</p>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div style="background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 15px; border-radius: 10px; margin-bottom: 30px; text-align: center;">
+                    ⏳ De organisator heeft nog geen reis aan jullie groep gekoppeld. Even geduld!
+                </div>
+            {% endif %}
+
+            <!-- LEDEN LIJST -->
+            <h3 style="color: #007B7F; margin-bottom: 15px;">Wie zitten er in je groep?</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+                {% for member in members %}
+                    <div style="background: #f9f9f9; padding: 15px; border-radius: 10px; border: 1px solid #eee; display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 40px; height: 40px; background: #007B7F; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">
+                            {{ member.user.name[0] | upper }}
+                        </div>
+                        <div>
+                            <div style="font-weight: bold; color: #333;">
+                                {{ member.user.name }} 
+                                {% if member.user.id == session['user_id'] %} (Jij) {% endif %}
+                            </div>
+                            <div style="font-size: 0.85rem; color: #666;">{{ member.profile.age }} jaar</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- VERLAAT GROEP KNOP -->
+            <div style="margin-top: 40px; text-align: center; border-top: 1px solid #eee; padding-top: 20px;">
+                <p style="color: #666; margin-bottom: 15px;">Niet blij met deze groep? Je kunt de groep verlaten en wachten op een nieuwe indeling.</p>
+                <form action="{{ url_for('leave_group') }}" method="POST" onsubmit="return confirm('Weet je zeker dat je deze groep wilt verlaten?');">
+                    <button type="submit" style="background: #dc3545; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;">
+                        🚪 Groep Verlaten
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    {% else %}
+        <!-- GEEN GROEP -->
+        <div style="text-align: center; padding: 60px; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+            <div style="font-size: 4rem; margin-bottom: 20px;">🤷‍♂️</div>
+            <h2 style="color: #333; margin-bottom: 10px;">Je zit nog niet in een groep</h2>
+            <p style="color: #666; max-width: 500px; margin: 0 auto 30px auto;">
+                De organisator is druk bezig met puzzelen! Zodra de groepen zijn gemaakt, verschijnt jouw groep hier.
+            </p>
+            <a href="{{ url_for('home') }}" style="color: #007B7F; font-weight: bold; text-decoration: none;">Terug naar Home</a>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

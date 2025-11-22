@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 40px auto; padding: 20px;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1 style="color: #007B7F; margin:0;">🔔 Meldingen</h1>
+        {% if notifications and unread_notifications_count > 0 %}
+            <a href="{{ url_for('mark_all_notifications_read') }}" style="color: #007B7F; text-decoration: none; font-weight: bold; font-size: 0.9rem;">
+                ✓ Alles als gelezen markeren
+            </a>
+        {% endif %}
+    </div>
+
+    {% if notifications %}
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            {% for notif in notifications %}
+                <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border-left: 5px solid {% if notif.is_read %}#ccc{% else %}#ffc107{% endif %}; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <p style="margin: 0 0 5px 0; font-size: 1.05rem; color: #333; {% if not notif.is_read %}font-weight: bold;{% endif %}">
+                            {{ notif.message }}
+                        </p>
+                        <span style="font-size: 0.8rem; color: #999;">
+                            {{ notif.created_at.strftime('%d-%m-%Y %H:%M') }}
+                        </span>
+                    </div>
+                    
+                    {% if not notif.is_read %}
+                        <a href="{{ url_for('mark_notification_read', notif_id=notif.id) }}" title="Markeer als gelezen" style="text-decoration: none; font-size: 1.2rem; color: #ccc; transition: color 0.2s;">
+                            ⭕
+                        </a>
+                    {% else %}
+                        <span style="color: #28a745; font-size: 1.2rem;">✓</span>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 60px; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+            <div style="font-size: 4rem; margin-bottom: 20px;">🔕</div>
+            <h2 style="color: #333; margin-bottom: 10px;">Geen meldingen</h2>
+            <p style="color: #666;">Je bent helemaal bij!</p>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

@@ -1,15 +1,61 @@
 from flask import render_template, request, redirect, url_for, session, flash
 from app import db
-from app.models import User, Organiser, Trip, TravelerProfile
+from app.models import User, Organiser, Trip, TravelerProfile, Group, Notification
 from datetime import datetime
+import random
 
 def register_routes(app):
     
+    # --- CONTEXT PROCESSOR VOOR NOTIFICATIES ---
+    @app.context_processor
+    def inject_notifications():
+        if 'user_id' in session and session.get('role') == 'traveller':
+            unread_count = Notification.query.filter_by(user_id=session['user_id'], is_read=False).count()
+            return dict(unread_notifications_count=unread_count)
+        return dict(unread_notifications_count=0)
+
     @app.route('/')
     def home():
         if session.get('role') == 'organizer':
             return redirect(url_for('organizer_dashboard'))
         return render_template('index.html')
+
+    # --- NOTIFICATIES ---
+    @app.route('/notifications')
+    def notifications():
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+            
+        my_notifications = Notification.query.filter_by(user_id=session['user_id']).order_by(Notification.created_at.desc()).all()
+        
+        # Markeer alles als gelezen als je de pagina opent (optioneel, of via aparte knop)
+        # Laten we het via een aparte actie doen zodat ze 'nieuw' blijven tot de gebruiker ze wegklikt of leest.
+        
+        return render_template('notifications.html', notifications=my_notifications)
+
+    @app.route('/notifications/mark-read/<int:notif_id>')
+    def mark_notification_read(notif_id):
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+            
+        notif = Notification.query.get(notif_id)
+        if notif and notif.user_id == session['user_id']:
+            notif.is_read = True
+            db.session.commit()
+            
+        return redirect(url_for('notifications'))
+
+    @app.route('/notifications/mark-all-read')
+    def mark_all_notifications_read():
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+            
+        unread = Notification.query.filter_by(user_id=session['user_id'], is_read=False).all()
+        for n in unread:
+            n.is_read = True
+        db.session.commit()
+        
+        return redirect(url_for('notifications'))
 
     @app.route('/about')
     def about():
@@ -209,6 +255,53 @@ def register_routes(app):
         
         return render_template('match.html', matches=good_matches, my_profile=my_profile)
     
+    # --- MIJN GROEP ---
+    @app.route('/my-group')
+    def my_group():
+        if 'user_id' not in session or session.get('role') == 'organizer':
+            flash('Je moet ingelogd zijn als reiziger.', 'danger')
+            return redirect(url_for('login'))
+        
+        # Zoek in welke groep de user zit
+        my_group_entry = Group.query.filter_by(user_id=session['user_id']).first()
+        
+        if not my_group_entry:
+            return render_template('my_group.html', group=None)
+            
+        # Haal alle leden van deze groep op
+        group_members_entries = Group.query.filter_by(match_id=my_group_entry.match_id).all()
+        
+        members = []
+        for entry in group_members_entries:
+            user = User.query.get(entry.user_id)
+            profile = TravelerProfile.query.filter_by(user_id=entry.user_id).first()
+            members.append({'user': user, 'profile': profile})
+            
+        # Check of er een reis gekoppeld is aan deze groep
+        # We zoeken een Trip met match_id gelijk aan mijn group_id
+        assigned_trip = Trip.query.filter_by(match_id=my_group_entry.match_id).first()
+        
+        return render_template('my_group.html', 
+                               group_id=my_group_entry.match_id, 
+                               members=members, 
+                               trip=assigned_trip,
+                               my_entry=my_group_entry)
+
+    @app.route('/leave-group', methods=['POST'])
+    def leave_group():
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+            
+        # Zoek de entry en verwijder
+        my_group_entry = Group.query.filter_by(user_id=session['user_id']).first()
+        
+        if my_group_entry:
+            db.session.delete(my_group_entry)
+            db.session.commit()
+            flash('Je hebt de groep verlaten.', 'info')
+        
+        return redirect(url_for('my_group'))
+
     # --- ORGANIZER DASHBOARD ---
     @app.route('/organizer/dashboard', methods=['GET', 'POST'])
     def organizer_dashboard():
@@ -218,12 +311,41 @@ def register_routes(app):
             return redirect(url_for('home'))
         
         if request.method == 'POST':
+            # Check of het een "Maak Groepen" actie is
+            if 'generate_groups' in request.form:
+                create_automatic_groups()
+                flash('Groepen zijn automatisch gegenereerd op basis van matches!', 'success')
+                return redirect(url_for('organizer_dashboard'))
+            
+            # Check of het een "Koppel Reis" actie is
+            if 'assign_trip' in request.form:
+                group_id = request.form.get('group_id')
+                trip_id = request.form.get('trip_id')
+                
+                if group_id and trip_id:
+                    # Update de trip met het match_id (wat we gebruiken als group_id)
+                    trip = Trip.query.get(trip_id)
+                    trip.match_id = group_id
+                    
+                    # NOTIFICATIE: Reis gekoppeld
+                    # Zoek alle leden van deze groep
+                    members = Group.query.filter_by(match_id=group_id).all()
+                    for m in members:
+                        create_notification(m.user_id, f"Er is een reis gekoppeld aan jouw groep! Jullie gaan naar {trip.destination}. ✈️")
+                    
+                    db.session.commit()
+                    flash(f'Reis gekoppeld aan Groep {group_id}!', 'success')
+                return redirect(url_for('organizer_dashboard'))
+
+            # Anders: Nieuwe reis aanmaken
             try:
                 # Data ophalen
                 dest = request.form.get('destination')
                 price = request.form.get('price')
                 s_date = request.form.get('start_date')
                 e_date = request.form.get('end_date')
+                desc = request.form.get('description')
+                acts = request.form.get('activities')
                 
                 # Trip aanmaken
                 new_trip = Trip(
@@ -232,6 +354,8 @@ def register_routes(app):
                     price=float(price), # Zorg dat het een getal is
                     start_date=s_date,
                     end_date=e_date,
+                    description=desc,
+                    activities=acts,
                     match_id=None # Expliciet leeg laten
                 )
                 
@@ -249,7 +373,90 @@ def register_routes(app):
         
         # Reizen ophalen
         my_trips = Trip.query.filter_by(travel_org_id=session['user_id']).all()
-        return render_template('organizer_dashboard.html', trips=my_trips)
+        
+        # Groepen ophalen (unieke match_ids)
+        # We halen alle groepsleden op en groeperen ze per match_id
+        all_group_members = Group.query.all()
+        groups = {}
+        group_vibes = {}
+        grouped_user_ids = []
+
+        for member in all_group_members:
+            grouped_user_ids.append(member.user_id)
+            if member.match_id not in groups:
+                groups[member.match_id] = []
+            
+            # User info ophalen
+            user = User.query.get(member.user_id)
+            groups[member.match_id].append(user)
+            
+        # Calculate vibes for each group
+        for match_id in groups.keys():
+            group_vibes[match_id] = calculate_group_vibe(match_id)
+
+        # Unassigned users ophalen (voor dropdown)
+        # Dit zijn users die NIET in grouped_user_ids zitten
+        # We nemen aan dat alle users in User tabel reizigers zijn (tenzij ze ook in Organiser staan, maar dat is aparte tabel)
+        unassigned_users = User.query.filter(User.id.notin_(grouped_user_ids)).all()
+            
+        return render_template('organizer_dashboard.html', 
+                               trips=my_trips, 
+                               groups=groups, 
+                               group_vibes=group_vibes,
+                               unassigned_users=unassigned_users)
+
+    # --- GROEP BEHEER (ORGANIZER) ---
+    @app.route('/organizer/remove_member/<int:user_id>', methods=['POST'])
+    def remove_group_member(user_id):
+        if 'user_id' not in session or session.get('role') != 'organizer':
+            return redirect(url_for('home'))
+            
+        group_entry = Group.query.filter_by(user_id=user_id).first()
+        if group_entry:
+            db.session.delete(group_entry)
+            db.session.commit()
+            flash('Reiziger verwijderd uit de groep.', 'success')
+            
+        return redirect(url_for('organizer_dashboard'))
+
+    @app.route('/organizer/add_member', methods=['POST'])
+    def add_group_member():
+        if 'user_id' not in session or session.get('role') != 'organizer':
+            return redirect(url_for('home'))
+            
+        user_id = request.form.get('user_id')
+        group_id = request.form.get('group_id')
+        
+        if user_id and group_id:
+            new_entry = Group(
+                match_id=group_id,
+                user_id=user_id,
+                role='member',
+                confirmed=False
+            )
+            db.session.add(new_entry)
+            
+            # NOTIFICATIE: Handmatig toegevoegd
+            create_notification(user_id, f"De organisator heeft je toegevoegd aan Groep #{group_id}.")
+            
+            db.session.commit()
+            flash('Reiziger toegevoegd aan de groep.', 'success')
+            
+        return redirect(url_for('organizer_dashboard'))
+
+    # --- REIZIGER CONFIRMATION ---
+    @app.route('/confirm-trip', methods=['POST'])
+    def confirm_trip():
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+            
+        group_entry = Group.query.filter_by(user_id=session['user_id']).first()
+        if group_entry:
+            group_entry.confirmed = True
+            db.session.commit()
+            flash('Je hebt je reis bevestigd! 🌍✈️', 'success')
+            
+        return redirect(url_for('my_group'))
 
     # --- REGISTRATIE ---
     @app.route('/register', methods=['GET', 'POST'])
@@ -320,6 +527,79 @@ def register_routes(app):
         session.clear()
         flash('Uitgelogd.', 'info')
         return redirect(url_for('login'))
+
+# --- ALGORITME VOOR GROEPSVORMING ---
+def create_automatic_groups():
+    """
+    Greedy Best-Match Algoritme:
+    1. Haal alle gebruikers op die nog GEEN groep hebben.
+    2. Kies een willekeurige gebruiker ('seed').
+    3. Zoek de beste matches voor deze gebruiker.
+    4. Maak een groep van deze personen.
+    5. Herhaal tot iedereen op is.
+    """
+    
+    # 1. Haal alle gebruikers op die al in een groep zitten
+    grouped_user_ids = [g.user_id for g in Group.query.all()]
+    
+    # 2. Haal alle profielen op van gebruikers die nog NIET in een groep zitten
+    available_profiles = TravelerProfile.query.filter(TravelerProfile.user_id.notin_(grouped_user_ids)).all()
+    
+    # Als er te weinig mensen zijn, stop
+    if len(available_profiles) < 1:
+        return
+
+    # We gebruiken een uniek ID voor elke nieuwe groep (bijv. timestamp of random int)
+    # Om het simpel te houden: start bij hoogste match_id + 1
+    last_group = Group.query.order_by(Group.match_id.desc()).first()
+    next_group_id = (last_group.match_id + 1) if last_group and last_group.match_id else 1
+    
+    GROUP_SIZE = 20
+    
+    while len(available_profiles) > 0:
+        # Start nieuwe groep
+        current_group_id = next_group_id
+        next_group_id += 1
+        
+        # Pak de eerste persoon als 'seed'
+        seed_profile = available_profiles.pop(0)
+        group_members = [seed_profile]
+        
+        # Zoek beste matches voor deze seed uit de overgebleven pool
+        if len(available_profiles) > 0:
+            # Bereken scores voor iedereen die over is
+            candidates = []
+            for candidate in available_profiles:
+                score = calculate_match_score(seed_profile, candidate)
+                candidates.append((score, candidate))
+            
+            # Sorteer op score (hoogste eerst)
+            candidates.sort(key=lambda x: x[0], reverse=True)
+            
+            # Pak de top (GROUP_SIZE - 1) kandidaten
+            # Als er minder kandidaten zijn dan nodig, pakken we ze gewoon allemaal (incomplete groep)
+            num_needed = GROUP_SIZE - 1
+            best_matches = candidates[:num_needed]
+            
+            # Voeg ze toe aan de groep en verwijder uit available_profiles
+            for score, profile in best_matches:
+                group_members.append(profile)
+                available_profiles.remove(profile)
+        
+        # Sla de groep op in de database
+        for member in group_members:
+            new_group_entry = Group(
+                match_id=current_group_id,
+                user_id=member.user_id,
+                role='member',
+                confirmed=False
+            )
+            db.session.add(new_group_entry)
+            
+            # NOTIFICATIE: Je bent in een groep geplaatst
+            create_notification(member.user_id, f"Je bent toegevoegd aan Groep #{current_group_id}! Bekijk snel je nieuwe reisgenoten.")
+            
+    db.session.commit()
 
 # Helper functie voor matching (buiten register_routes)
 def calculate_match_score(profile1, profile2):
@@ -399,3 +679,74 @@ def calculate_match_score(profile1, profile2):
     final_score = logistics_score + vibe_points
     
     return int(final_score)
+
+def calculate_group_vibe(match_id):
+    """
+    Calculates the 'vibe' of a group based on average profile scores.
+    Returns a list of strings (tags).
+    """
+    # Get all user IDs in this group
+    group_entries = Group.query.filter_by(match_id=match_id).all()
+    user_ids = [g.user_id for g in group_entries]
+    
+    if not user_ids:
+        return ["Lege Groep"]
+
+    profiles = TravelerProfile.query.filter(TravelerProfile.user_id.in_(user_ids)).all()
+    
+    if not profiles:
+        return ["Geen Profielen"]
+
+    # Helper to get average of an attribute
+    def get_avg(attr):
+        values = [getattr(p, attr, 3) for p in profiles if getattr(p, attr, None) is not None]
+        if not values: return 0
+        return sum(values) / len(values)
+
+    tags = []
+    
+    # Thresholds (1-5 scale)
+    HIGH = 3.8
+    
+    if get_avg('party_animal') >= HIGH: tags.append("🎉 Party Squad")
+    if get_avg('culture_interest') >= HIGH: tags.append("🏛️ Cultuur Lovers")
+    if get_avg('nature_lover') >= HIGH: tags.append("🌲 Natuur Vrienden")
+    if get_avg('adventure_level') >= HIGH: tags.append("🧗 Avonturiers")
+    if get_avg('beach_person') >= HIGH: tags.append("🏖️ Strandgangers")
+    if get_avg('foodie_level') >= HIGH: tags.append("🍕 Foodies")
+    if get_avg('luxury_comfort') >= HIGH: tags.append("💎 Luxe Paardjes")
+    
+    # Budget check (average max budget)
+    avg_budget = get_avg('budget_max')
+    if avg_budget > 0 and avg_budget < 800: tags.append("💰 Budget Reizigers")
+    
+    # Age range
+    ages = [p.age for p in profiles if p.age]
+    if ages:
+        avg_age = sum(ages) / len(ages)
+        if avg_age < 25: tags.append("🎓 Jongeren")
+        elif avg_age > 40: tags.append("👴 40+")
+
+    if not tags:
+        tags.append("⚖️ Gebalanceerde Groep")
+        
+    return tags
+
+def create_notification(user_id, message):
+    """Helper om een notificatie aan te maken"""
+    try:
+        notif = Notification(
+            user_id=user_id,
+            message=message,
+            created_at=datetime.now(),
+            is_read=False
+        )
+        db.session.add(notif)
+        # Commit moet door de aanroeper gedaan worden of hier als we zeker weten dat het mag
+        # We doen hier geen commit om transacties niet te breken, tenzij we het expliciet willen.
+        # Maar voor het gemak doen we het hier wel, tenzij er een lopende transactie is.
+        # In SQLAlchemy sessie management is het beter om het aan de caller over te laten als onderdeel van een grotere actie.
+        # Echter, voor simpele notificaties is het vaak handig.
+        # Laten we het veilig spelen en de caller laten committen.
+    except Exception as e:
+        print(f"Fout bij maken notificatie: {e}")

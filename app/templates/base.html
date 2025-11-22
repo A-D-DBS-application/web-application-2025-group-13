@@ -113,10 +113,25 @@
 
         <div class="nav-links">
             <a href="{{ url_for('intake') }}" class="nav-link">Start Intake</a>
+            {% if session.get('role') == 'traveller' %}
+                <a href="{{ url_for('my_group') }}" class="nav-link">Mijn Groep</a>
+            {% endif %}
             <a href="{{ url_for('about') }}" class="nav-link">Over ons</a>
 
             {% if session.get('user_id') %}
-                <div style="display: flex; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <!-- NOTIFICATIE BELL -->
+                    {% if session.get('role') == 'traveller' %}
+                        <a href="{{ url_for('notifications') }}" style="position: relative; text-decoration: none; color: #333; font-size: 1.2rem;">
+                            🔔
+                            {% if unread_notifications_count > 0 %}
+                                <span style="position: absolute; top: -5px; right: -5px; background: #dc3545; color: white; font-size: 0.7rem; font-weight: bold; padding: 2px 5px; border-radius: 50%; min-width: 15px; text-align: center;">
+                                    {{ unread_notifications_count }}
+                                </span>
+                            {% endif %}
+                        </a>
+                    {% endif %}
+
                     <span class="user-greeting">Hi, {{ session['name'] }}</span>
                     <a href="{{ url_for('logout') }}" class="nav-link" style="font-size: 0.9rem; color: #999;">(Uitloggen)</a>
                 </div>

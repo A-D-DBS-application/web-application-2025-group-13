@@ -38,6 +38,10 @@ class Trip(db.Model):
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
     price = db.Column(db.Float, nullable=False)
+    
+    # Nieuwe velden voor extra info
+    description = db.Column(db.Text, nullable=True)
+    activities = db.Column(db.Text, nullable=True)
 
     # Relatie
     organiser = db.relationship('Organiser', backref='trips')
@@ -108,3 +112,14 @@ class Group(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     role = db.Column(db.String(50))
     confirmed = db.Column(db.Boolean)
+
+class Notification(db.Model):
+    __tablename__ = 'notification'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    message = db.Column(db.String(255), nullable=False)
+    is_read = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    
+    # Relatie
+    user = db.relationship('User', backref='notifications')
