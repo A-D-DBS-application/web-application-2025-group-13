@@ -117,10 +117,15 @@
 
     /* Budget & Period tags */
     .tags-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px;
         margin-top: 10px;
+    }
+
+    .tags-container label {
+        width: 100%;
+        margin: 0;
     }
 
     .hidden-input { 
@@ -128,21 +133,33 @@
     }
 
     .tag-label {
-        background: #f0f0f0;
-        padding: 10px 20px;
-        border-radius: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        background: #f8f9fa;
+        padding: 10px 5px;
+        border-radius: 12px;
         cursor: pointer;
         font-weight: 500;
+        font-size: 0.9rem;
         color: #555;
-        transition: 0.2s;
-        border: 2px solid transparent;
+        transition: all 0.2s ease;
+        border: 1px solid #eee;
+        box-sizing: border-box;
+        text-align: center;
+    }
+
+    .tag-label:hover {
+        background: #eee;
     }
 
     .hidden-input:checked + .tag-label {
-        background: #007B7F;
-        color: white;
-        border-color: #005f62;
-        transform: translateY(-2px);
+        background: #e0f7fa;
+        color: #007B7F;
+        border-color: #007B7F;
+        font-weight: 600;
+        box-shadow: 0 2px 4px rgba(0,123,127,0.1);
     }
 
     /* Submit button */
@@ -453,6 +470,21 @@
                        oninput="this.nextElementSibling.innerText = this.value">
                 <div class="rating-value">{{ profile.digital_detox if profile else 3 }}</div>
             </div>
+        </div>
+
+        <!-- NIEUW: BUDDY SECTIE -->
+        <div style="background: #e0f7fa; padding: 20px; border-radius: 15px; margin-bottom: 30px; border: 1px solid #b2dfdb;">
+            <h3 style="color: #007B7F; margin-top: 0;">👥 Reis je samen?</h3>
+            <p style="color: #555; font-size: 0.9rem; margin-bottom: 15px;">
+                Wil je zeker weten dat je bij je partner of beste vriend(in) in de groep komt? Vul hier hun e-mailadres in.
+            </p>
+            
+            <label class="question-label" style="margin-bottom: 5px;">E-mailadres van je reispartner (optioneel)</label>
+            <input type="email" name="buddy_email" placeholder="bv. partner@example.com" style="width: 100%; padding: 12px; border: 2px solid #b2dfdb; border-radius: 10px;">
+            
+            <p style="font-size: 0.8rem; color: #007B7F; margin-top: 10px;">
+                ℹ️ Zorg dat je partner zich ook registreert met dit e-mailadres!
+            </p>
         </div>
 
         <button type="submit" class="submit-btn">Profiel Opslaan & Matches Vinden 🚀</button>

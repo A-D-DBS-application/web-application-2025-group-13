@@ -137,6 +137,26 @@ def register_routes(app):
             # Check of profiel al bestaat
             existing = TravelerProfile.query.filter_by(user_id=session['user_id']).first()
             
+            # --- NIEUW: BUDDY LOGICA ---
+            buddy_email = request.form.get('buddy_email')
+            linked_buddy_id = None
+            
+            if buddy_email and buddy_email.strip() != "":
+                # Zoek de buddy in de database
+                buddy_user = User.query.filter_by(email=buddy_email.strip()).first()
+                
+                if buddy_user:
+                    linked_buddy_id = buddy_user.id
+                    
+                    # Link BUDDY aan HUIDIGE user (wederzijds)
+                    buddy_profile = TravelerProfile.query.filter_by(user_id=buddy_user.id).first()
+                    if buddy_profile:
+                        buddy_profile.linked_buddy_id = session['user_id']
+                    
+                    flash(f'Je bent nu gekoppeld aan {buddy_user.name}! Jullie komen in dezelfde groep.', 'success')
+                else:
+                    flash(f'Let op: We konden geen gebruiker vinden met email {buddy_email}. Zorg dat zij zich ook registreren!', 'warning')
+            
             if existing:
                 # Update bestaand profiel
                 existing.age = age
@@ -168,6 +188,9 @@ def register_routes(app):
                 existing.leader_role = leader_role
                 existing.talkative = talkative
                 existing.sustainability = sustainability
+                
+                if linked_buddy_id:
+                    existing.linked_buddy_id = linked_buddy_id
 
                 flash('Je profiel is bijgewerkt! 🎉', 'success')
             else:
@@ -202,7 +225,9 @@ def register_routes(app):
                     social_battery=social_battery,
                     leader_role=leader_role,
                     talkative=talkative,
-                    sustainability=sustainability
+                    sustainability=sustainability,
+                    
+                    linked_buddy_id=linked_buddy_id
                 )
                 db.session.add(new_profile)
                 flash('Je profiel is opgeslagen! 🎉', 'success')
@@ -262,11 +287,14 @@ def register_routes(app):
             flash('Je moet ingelogd zijn als reiziger.', 'danger')
             return redirect(url_for('login'))
         
+        # Haal profiel op (voor status check)
+        my_profile = TravelerProfile.query.filter_by(user_id=session['user_id']).first()
+
         # Zoek in welke groep de user zit
         my_group_entry = Group.query.filter_by(user_id=session['user_id']).first()
         
         if not my_group_entry:
-            return render_template('my_group.html', group=None)
+            return render_template('my_group.html', group=None, my_profile=my_profile)
             
         # Haal alle leden van deze groep op
         group_members_entries = Group.query.filter_by(match_id=my_group_entry.match_id).all()
@@ -281,11 +309,52 @@ def register_routes(app):
         # We zoeken een Trip met match_id gelijk aan mijn group_id
         assigned_trip = Trip.query.filter_by(match_id=my_group_entry.match_id).first()
         
+        # Bereken beschikbare plekken
+        spots_left = 0
+        if assigned_trip:
+            confirmed_count = Group.query.filter_by(match_id=my_group_entry.match_id, confirmed=True).count()
+            spots_left = max(0, assigned_trip.max_spots - confirmed_count)
+        
         return render_template('my_group.html', 
                                group_id=my_group_entry.match_id, 
                                members=members, 
                                trip=assigned_trip,
-                               my_entry=my_group_entry)
+                               my_entry=my_group_entry,
+                               spots_left=spots_left)
+
+    @app.route('/pay-deposit', methods=['POST'])
+    def pay_deposit():
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+            
+        my_group_entry = Group.query.filter_by(user_id=session['user_id']).first()
+        
+        if not my_group_entry:
+            return redirect(url_for('home'))
+            
+        # Check of er nog plek is
+        assigned_trip = Trip.query.filter_by(match_id=my_group_entry.match_id).first()
+        if not assigned_trip:
+            flash('Er is nog geen reis gekoppeld.', 'warning')
+            return redirect(url_for('my_group'))
+            
+        confirmed_count = Group.query.filter_by(match_id=my_group_entry.match_id, confirmed=True).count()
+        
+        if confirmed_count >= assigned_trip.max_spots:
+            flash('Helaas, de reis is volzet!', 'danger')
+            return redirect(url_for('my_group'))
+            
+        # "Betaling" verwerken
+        my_group_entry.payment_status = 'paid'
+        my_group_entry.confirmed = True
+        
+        # Notificatie
+        create_notification(session['user_id'], f"Betaling ontvangen! Je plek voor {assigned_trip.destination} is definitief.")
+        
+        db.session.commit()
+        flash('Betaling geslaagd! Je gaat mee op reis! 🌍✈️', 'success')
+            
+        return redirect(url_for('my_group'))
 
     @app.route('/leave-group', methods=['POST'])
     def leave_group():
@@ -297,9 +366,34 @@ def register_routes(app):
         
         if my_group_entry:
             db.session.delete(my_group_entry)
+            
+            # Zet profiel op inactief (niet direct opnieuw matchen)
+            profile = TravelerProfile.query.filter_by(user_id=session['user_id']).first()
+            if profile:
+                profile.is_active = False
+                
             db.session.commit()
-            flash('Je hebt de groep verlaten.', 'info')
+            flash('Je hebt de groep verlaten. Je staat nu op "Niet beschikbaar" voor nieuwe matches.', 'info')
         
+        return redirect(url_for('my_group'))
+
+    @app.route('/update-matching-status', methods=['POST'])
+    def update_matching_status():
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+            
+        status = request.form.get('status') # 'active' or 'inactive'
+        profile = TravelerProfile.query.filter_by(user_id=session['user_id']).first()
+        
+        if profile:
+            if status == 'active':
+                profile.is_active = True
+                flash('Je staat weer AAN! We gaan een nieuwe groep voor je zoeken.', 'success')
+            else:
+                profile.is_active = False
+                flash('Je staat nu UIT. Je wordt niet meegenomen in nieuwe groepen.', 'info')
+            db.session.commit()
+            
         return redirect(url_for('my_group'))
 
     # --- ORGANIZER DASHBOARD ---
@@ -347,6 +441,10 @@ def register_routes(app):
                 desc = request.form.get('description')
                 acts = request.form.get('activities')
                 
+                # Nieuwe velden
+                max_spots = int(request.form.get('max_spots', 20))
+                deposit_amount = float(request.form.get('deposit_amount', 0.0))
+                
                 # Trip aanmaken
                 new_trip = Trip(
                     travel_org_id=session['user_id'],
@@ -356,7 +454,9 @@ def register_routes(app):
                     end_date=e_date,
                     description=desc,
                     activities=acts,
-                    match_id=None # Expliciet leeg laten
+                    match_id=None, # Expliciet leeg laten
+                    max_spots=max_spots,
+                    deposit_amount=deposit_amount
                 )
                 
                 db.session.add(new_trip)
@@ -531,26 +631,30 @@ def register_routes(app):
 # --- ALGORITME VOOR GROEPSVORMING ---
 def create_automatic_groups():
     """
-    Greedy Best-Match Algoritme:
+    Greedy Best-Match Algoritme met Buddy Support:
     1. Haal alle gebruikers op die nog GEEN groep hebben.
     2. Kies een willekeurige gebruiker ('seed').
-    3. Zoek de beste matches voor deze gebruiker.
-    4. Maak een groep van deze personen.
-    5. Herhaal tot iedereen op is.
+    3. Check of seed een buddy heeft -> voeg toe.
+    4. Zoek de beste matches voor de groep.
+    5. Als een match een buddy heeft -> voeg die ook toe.
+    6. Herhaal tot groep vol is of iedereen op is.
     """
     
     # 1. Haal alle gebruikers op die al in een groep zitten
     grouped_user_ids = [g.user_id for g in Group.query.all()]
     
     # 2. Haal alle profielen op van gebruikers die nog NIET in een groep zitten
-    available_profiles = TravelerProfile.query.filter(TravelerProfile.user_id.notin_(grouped_user_ids)).all()
+    # EN die actief op zoek zijn (is_active=True)
+    available_profiles = TravelerProfile.query.filter(
+        TravelerProfile.user_id.notin_(grouped_user_ids),
+        TravelerProfile.is_active == True
+    ).all()
     
     # Als er te weinig mensen zijn, stop
     if len(available_profiles) < 1:
         return
 
-    # We gebruiken een uniek ID voor elke nieuwe groep (bijv. timestamp of random int)
-    # Om het simpel te houden: start bij hoogste match_id + 1
+    # We gebruiken een uniek ID voor elke nieuwe groep
     last_group = Group.query.order_by(Group.match_id.desc()).first()
     next_group_id = (last_group.match_id + 1) if last_group and last_group.match_id else 1
     
@@ -561,30 +665,51 @@ def create_automatic_groups():
         current_group_id = next_group_id
         next_group_id += 1
         
+        group_members = []
+        
+        # Helper om profiel uit available te halen op ID
+        def pop_profile_by_id(uid):
+            for i, p in enumerate(available_profiles):
+                if p.user_id == uid:
+                    return available_profiles.pop(i)
+            return None
+
         # Pak de eerste persoon als 'seed'
         seed_profile = available_profiles.pop(0)
-        group_members = [seed_profile]
+        group_members.append(seed_profile)
         
-        # Zoek beste matches voor deze seed uit de overgebleven pool
-        if len(available_profiles) > 0:
-            # Bereken scores voor iedereen die over is
+        # Check of seed een buddy heeft die ook beschikbaar is
+        if seed_profile.linked_buddy_id:
+            buddy = pop_profile_by_id(seed_profile.linked_buddy_id)
+            if buddy:
+                group_members.append(buddy)
+        
+        # Vul de rest van de groep
+        while len(group_members) < GROUP_SIZE and len(available_profiles) > 0:
             candidates = []
             for candidate in available_profiles:
                 score = calculate_match_score(seed_profile, candidate)
-                candidates.append((score, candidate))
+                if score != -1: # Alleen als budget past
+                    candidates.append((score, candidate))
             
             # Sorteer op score (hoogste eerst)
             candidates.sort(key=lambda x: x[0], reverse=True)
             
-            # Pak de top (GROUP_SIZE - 1) kandidaten
-            # Als er minder kandidaten zijn dan nodig, pakken we ze gewoon allemaal (incomplete groep)
-            num_needed = GROUP_SIZE - 1
-            best_matches = candidates[:num_needed]
+            if not candidates:
+                break # Geen geschikte kandidaten meer (budget mismatch?)
             
-            # Voeg ze toe aan de groep en verwijder uit available_profiles
-            for score, profile in best_matches:
-                group_members.append(profile)
-                available_profiles.remove(profile)
+            # Pak de beste
+            best_score, best_match = candidates[0]
+            
+            # Verwijder uit available
+            available_profiles.remove(best_match)
+            group_members.append(best_match)
+            
+            # Check of DEZE match een buddy heeft
+            if best_match.linked_buddy_id and len(group_members) < GROUP_SIZE:
+                buddy = pop_profile_by_id(best_match.linked_buddy_id)
+                if buddy:
+                    group_members.append(buddy)
         
         # Sla de groep op in de database
         for member in group_members:
@@ -634,6 +759,8 @@ def calculate_match_score(profile1, profile2):
     budget_overlap = not (b_max1 < b_min2 or b_max2 < b_min1)
     if budget_overlap:
         logistics_score += 10
+    else:
+        return -1 # Strict budget filter
         
     # Periode (10 punten)
     p1 = getattr(profile1, 'travel_period', '') or ''

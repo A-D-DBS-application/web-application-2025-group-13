@@ -31,17 +31,28 @@
                         </div>
                         
                         <!-- CONFIRMATION BUTTON -->
-                        <div>
-                            {% if my_entry.confirmed %}
+                        <div style="min-width: 200px; text-align: right;">
+                            <!-- SPOTS COUNTER -->
+                            <div style="margin-bottom: 10px; font-weight: bold; color: {% if spots_left <= 3 %}#dc3545{% else %}#155724{% endif %};">
+                                🔥 Nog {{ spots_left }} plekken!
+                            </div>
+
+                            {% if my_entry.payment_status == 'paid' %}
                                 <div style="background: white; color: #28a745; padding: 10px 20px; border-radius: 8px; font-weight: bold; border: 2px solid #28a745; text-align: center;">
-                                    ✅ Bevestigd!
+                                    ✅ Betaald & Bevestigd!
                                 </div>
                             {% else %}
-                                <form action="{{ url_for('confirm_trip') }}" method="POST">
-                                    <button type="submit" style="background: #28a745; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                                        👍 Ik ga mee!
-                                    </button>
-                                </form>
+                                {% if spots_left > 0 %}
+                                    <form action="{{ url_for('pay_deposit') }}" method="POST">
+                                        <button type="submit" style="background: #28a745; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%;">
+                                            💳 Betaal Voorschot (€{{ trip.deposit_amount }})
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <div style="background: #dc3545; color: white; padding: 10px 20px; border-radius: 8px; font-weight: bold; text-align: center;">
+                                        ⛔ Volzet!
+                                    </div>
+                                {% endif %}
                             {% endif %}
                         </div>
                     </div>
@@ -102,10 +113,39 @@
         <div style="text-align: center; padding: 60px; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
             <div style="font-size: 4rem; margin-bottom: 20px;">🤷‍♂️</div>
             <h2 style="color: #333; margin-bottom: 10px;">Je zit nog niet in een groep</h2>
-            <p style="color: #666; max-width: 500px; margin: 0 auto 30px auto;">
-                De organisator is druk bezig met puzzelen! Zodra de groepen zijn gemaakt, verschijnt jouw groep hier.
-            </p>
-            <a href="{{ url_for('home') }}" style="color: #007B7F; font-weight: bold; text-decoration: none;">Terug naar Home</a>
+            
+            {% if my_profile and not my_profile.is_active %}
+                <!-- STATUS: INACTIEF -->
+                <div style="background: #fff3cd; color: #856404; padding: 20px; border-radius: 10px; max-width: 500px; margin: 20px auto;">
+                    <strong>Je staat momenteel op "Pauze".</strong><br>
+                    Je wordt niet meegenomen in nieuwe groepsvormingen.
+                </div>
+                <form action="{{ url_for('update_matching_status') }}" method="POST">
+                    <input type="hidden" name="status" value="active">
+                    <button type="submit" style="background: #28a745; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        🚀 Zet mij weer op de lijst!
+                    </button>
+                </form>
+            {% else %}
+                <!-- STATUS: ACTIEF -->
+                <p style="color: #666; max-width: 500px; margin: 0 auto 30px auto;">
+                    De organisator is druk bezig met puzzelen! Zodra de groepen zijn gemaakt, verschijnt jouw groep hier.
+                </p>
+                
+                <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
+                    <p style="font-size: 0.9rem; color: #999;">Wil je even niet gematcht worden?</p>
+                    <form action="{{ url_for('update_matching_status') }}" method="POST">
+                        <input type="hidden" name="status" value="inactive">
+                        <button type="submit" style="background: none; border: none; color: #dc3545; text-decoration: underline; cursor: pointer;">
+                            Zet mij op pauze
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
+            
+            <div style="margin-top: 40px;">
+                <a href="{{ url_for('home') }}" style="color: #007B7F; font-weight: bold; text-decoration: none;">Terug naar Home</a>
+            </div>
         </div>
     {% endif %}
 
