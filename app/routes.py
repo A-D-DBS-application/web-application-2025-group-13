@@ -287,11 +287,14 @@ def register_routes(app):
             flash('Je moet ingelogd zijn als reiziger.', 'danger')
             return redirect(url_for('login'))
         
+        # Haal profiel op (voor status check)
+        my_profile = TravelerProfile.query.filter_by(user_id=session['user_id']).first()
+
         # Zoek in welke groep de user zit
         my_group_entry = Group.query.filter_by(user_id=session['user_id']).first()
         
         if not my_group_entry:
-            return render_template('my_group.html', group=None)
+            return render_template('my_group.html', group=None, my_profile=my_profile)
             
         # Haal alle leden van deze groep op
         group_members_entries = Group.query.filter_by(match_id=my_group_entry.match_id).all()
@@ -363,9 +366,34 @@ def register_routes(app):
         
         if my_group_entry:
             db.session.delete(my_group_entry)
+            
+            # Zet profiel op inactief (niet direct opnieuw matchen)
+            profile = TravelerProfile.query.filter_by(user_id=session['user_id']).first()
+            if profile:
+                profile.is_active = False
+                
             db.session.commit()
-            flash('Je hebt de groep verlaten.', 'info')
+            flash('Je hebt de groep verlaten. Je staat nu op "Niet beschikbaar" voor nieuwe matches.', 'info')
         
+        return redirect(url_for('my_group'))
+
+    @app.route('/update-matching-status', methods=['POST'])
+    def update_matching_status():
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+            
+        status = request.form.get('status') # 'active' or 'inactive'
+        profile = TravelerProfile.query.filter_by(user_id=session['user_id']).first()
+        
+        if profile:
+            if status == 'active':
+                profile.is_active = True
+                flash('Je staat weer AAN! We gaan een nieuwe groep voor je zoeken.', 'success')
+            else:
+                profile.is_active = False
+                flash('Je staat nu UIT. Je wordt niet meegenomen in nieuwe groepen.', 'info')
+            db.session.commit()
+            
         return redirect(url_for('my_group'))
 
     # --- ORGANIZER DASHBOARD ---
@@ -616,7 +644,11 @@ def create_automatic_groups():
     grouped_user_ids = [g.user_id for g in Group.query.all()]
     
     # 2. Haal alle profielen op van gebruikers die nog NIET in een groep zitten
-    available_profiles = TravelerProfile.query.filter(TravelerProfile.user_id.notin_(grouped_user_ids)).all()
+    # EN die actief op zoek zijn (is_active=True)
+    available_profiles = TravelerProfile.query.filter(
+        TravelerProfile.user_id.notin_(grouped_user_ids),
+        TravelerProfile.is_active == True
+    ).all()
     
     # Als er te weinig mensen zijn, stop
     if len(available_profiles) < 1:

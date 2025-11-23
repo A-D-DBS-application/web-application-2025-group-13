@@ -98,6 +98,9 @@ class TravelerProfile(db.Model):
     # NIEUW: Buddy Systeem
     linked_buddy_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     
+    # NIEUW: Status (Actief op zoek naar groep?)
+    is_active = db.Column(db.Boolean, default=True)
+
     # Relatie met User
     user = db.relationship('User', foreign_keys=[user_id], backref='profile', uselist=False)
 
