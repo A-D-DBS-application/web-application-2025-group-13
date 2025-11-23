@@ -6,3 +6,4 @@ https://miro.com/app/board/uXjVJzDwOEk=/
 LOVABLE APP PROTOTYPE:
 https://lovable.dev/projects/51ca8f5e-67dd-4f38-b5bf-bab8bfd5ed94
 
+render link app: https://web-application-2025-group-13-2.onrender.com
