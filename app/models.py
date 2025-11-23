@@ -91,8 +91,11 @@ class TravelerProfile(db.Model):
     talkative = db.Column(db.Integer, nullable=False, default=3)
     sustainability = db.Column(db.Integer, nullable=False, default=3)
     
+    # NIEUW: Buddy Systeem
+    linked_buddy_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    
     # Relatie met User
-    user = db.relationship('User', backref='profile', uselist=False)
+    user = db.relationship('User', foreign_keys=[user_id], backref='profile', uselist=False)
 
 class Feedback(db.Model):
     __tablename__ = 'feedback'
