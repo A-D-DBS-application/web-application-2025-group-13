@@ -31,17 +31,28 @@
                         </div>
                         
                         <!-- CONFIRMATION BUTTON -->
-                        <div>
-                            {% if my_entry.confirmed %}
+                        <div style="min-width: 200px; text-align: right;">
+                            <!-- SPOTS COUNTER -->
+                            <div style="margin-bottom: 10px; font-weight: bold; color: {% if spots_left <= 3 %}#dc3545{% else %}#155724{% endif %};">
+                                🔥 Nog {{ spots_left }} plekken!
+                            </div>
+
+                            {% if my_entry.payment_status == 'paid' %}
                                 <div style="background: white; color: #28a745; padding: 10px 20px; border-radius: 8px; font-weight: bold; border: 2px solid #28a745; text-align: center;">
-                                    ✅ Bevestigd!
+                                    ✅ Betaald & Bevestigd!
                                 </div>
                             {% else %}
-                                <form action="{{ url_for('confirm_trip') }}" method="POST">
-                                    <button type="submit" style="background: #28a745; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                                        👍 Ik ga mee!
-                                    </button>
-                                </form>
+                                {% if spots_left > 0 %}
+                                    <form action="{{ url_for('pay_deposit') }}" method="POST">
+                                        <button type="submit" style="background: #28a745; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%;">
+                                            💳 Betaal Voorschot (€{{ trip.deposit_amount }})
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <div style="background: #dc3545; color: white; padding: 10px 20px; border-radius: 8px; font-weight: bold; text-align: center;">
+                                        ⛔ Volzet!
+                                    </div>
+                                {% endif %}
                             {% endif %}
                         </div>
                     </div>

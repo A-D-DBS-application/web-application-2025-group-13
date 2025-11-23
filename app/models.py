@@ -42,6 +42,10 @@ class Trip(db.Model):
     # Nieuwe velden voor extra info
     description = db.Column(db.Text, nullable=True)
     activities = db.Column(db.Text, nullable=True)
+    
+    # Nieuwe velden voor betaling en plekken
+    max_spots = db.Column(db.Integer, default=20)
+    deposit_amount = db.Column(db.Float, default=0.0)
 
     # Relatie
     organiser = db.relationship('Organiser', backref='trips')
@@ -115,6 +119,7 @@ class Group(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     role = db.Column(db.String(50))
     confirmed = db.Column(db.Boolean)
+    payment_status = db.Column(db.String(50), default='pending') # 'pending', 'paid'
 
 class Notification(db.Model):
     __tablename__ = 'notification'

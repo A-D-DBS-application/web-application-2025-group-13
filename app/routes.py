@@ -306,11 +306,52 @@ def register_routes(app):
         # We zoeken een Trip met match_id gelijk aan mijn group_id
         assigned_trip = Trip.query.filter_by(match_id=my_group_entry.match_id).first()
         
+        # Bereken beschikbare plekken
+        spots_left = 0
+        if assigned_trip:
+            confirmed_count = Group.query.filter_by(match_id=my_group_entry.match_id, confirmed=True).count()
+            spots_left = max(0, assigned_trip.max_spots - confirmed_count)
+        
         return render_template('my_group.html', 
                                group_id=my_group_entry.match_id, 
                                members=members, 
                                trip=assigned_trip,
-                               my_entry=my_group_entry)
+                               my_entry=my_group_entry,
+                               spots_left=spots_left)
+
+    @app.route('/pay-deposit', methods=['POST'])
+    def pay_deposit():
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+            
+        my_group_entry = Group.query.filter_by(user_id=session['user_id']).first()
+        
+        if not my_group_entry:
+            return redirect(url_for('home'))
+            
+        # Check of er nog plek is
+        assigned_trip = Trip.query.filter_by(match_id=my_group_entry.match_id).first()
+        if not assigned_trip:
+            flash('Er is nog geen reis gekoppeld.', 'warning')
+            return redirect(url_for('my_group'))
+            
+        confirmed_count = Group.query.filter_by(match_id=my_group_entry.match_id, confirmed=True).count()
+        
+        if confirmed_count >= assigned_trip.max_spots:
+            flash('Helaas, de reis is volzet!', 'danger')
+            return redirect(url_for('my_group'))
+            
+        # "Betaling" verwerken
+        my_group_entry.payment_status = 'paid'
+        my_group_entry.confirmed = True
+        
+        # Notificatie
+        create_notification(session['user_id'], f"Betaling ontvangen! Je plek voor {assigned_trip.destination} is definitief.")
+        
+        db.session.commit()
+        flash('Betaling geslaagd! Je gaat mee op reis! 🌍✈️', 'success')
+            
+        return redirect(url_for('my_group'))
 
     @app.route('/leave-group', methods=['POST'])
     def leave_group():
@@ -372,6 +413,10 @@ def register_routes(app):
                 desc = request.form.get('description')
                 acts = request.form.get('activities')
                 
+                # Nieuwe velden
+                max_spots = int(request.form.get('max_spots', 20))
+                deposit_amount = float(request.form.get('deposit_amount', 0.0))
+                
                 # Trip aanmaken
                 new_trip = Trip(
                     travel_org_id=session['user_id'],
@@ -381,7 +426,9 @@ def register_routes(app):
                     end_date=e_date,
                     description=desc,
                     activities=acts,
-                    match_id=None # Expliciet leeg laten
+                    match_id=None, # Expliciet leeg laten
+                    max_spots=max_spots,
+                    deposit_amount=deposit_amount
                 )
                 
                 db.session.add(new_trip)
