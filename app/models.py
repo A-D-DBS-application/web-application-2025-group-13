@@ -104,17 +104,6 @@ class TravelerProfile(db.Model):
     # Relatie met User
     user = db.relationship('User', foreign_keys=[user_id], backref='profile', uselist=False)
 
-class Feedback(db.Model):
-    __tablename__ = 'feedback'
-    id = db.Column(db.Integer, primary_key=True)
-    created_at = db.Column(db.DateTime)
-    trip_id = db.Column(db.Integer, db.ForeignKey('trip.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    travel_org_id = db.Column(db.String(50))
-    rating = db.Column(db.Integer)
-    comment = db.Column(db.Text)
-    feedback_date = db.Column(db.Date)
-
 class Group(db.Model):
     __tablename__ = 'group'
     id = db.Column(db.Integer, primary_key=True)
