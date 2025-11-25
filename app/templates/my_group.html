@@ -41,6 +41,10 @@
                                 <div style="background: white; color: #28a745; padding: 10px 20px; border-radius: 8px; font-weight: bold; border: 2px solid #28a745; text-align: center;">
                                     Betaald & bevestigd!
                                 </div>
+                                <div style="margin-top: 10px; font-size: 0.85rem; color: #155724; text-align: center; background: rgba(255,255,255,0.5); padding: 8px; border-radius: 5px;">
+                                    ℹ️ <strong>Chatten met je groep?</strong><br>
+                                    Ongeveer 1 maand voor vertrek ontvang je hier een unieke code. Daarmee kun je in onze externe reis-app een groepschat starten om elkaar alvast te leren kennen!
+                                </div>
                             {% else %}
                                 {% if spots_left > 0 %}
                                     <form action="{{ url_for('pay_deposit') }}" method="POST">
