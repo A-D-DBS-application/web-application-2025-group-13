@@ -263,19 +263,19 @@
             </div>
             <div class="stat">
                 <div class="stat-label">Feesten</div>
-                <div class="stat-value">{{ my_profile.party_level }}/5</div>
+                <div class="stat-value">{{ my_profile.party_animal }}/5</div>
             </div>
             <div class="stat">
                 <div class="stat-label">Cultuur</div>
-                <div class="stat-value">{{ my_profile.culture_level }}/5</div>
+                <div class="stat-value">{{ my_profile.culture_interest }}/5</div>
             </div>
             <div class="stat">
                 <div class="stat-label">Food</div>
-                <div class="stat-value">{{ my_profile.food_level }}/5</div>
+                <div class="stat-value">{{ my_profile.foodie_level }}/5</div>
             </div>
             <div class="stat">
                 <div class="stat-label">Natuur</div>
-                <div class="stat-value">{{ my_profile.nature_level }}/5</div>
+                <div class="stat-value">{{ my_profile.nature_lover }}/5</div>
             </div>
         </div>
         <div style="margin-top: 15px;">
@@ -326,25 +326,24 @@
                     </div>
                     <div class="compat-item">
                         <div class="compat-label">🎉 Feesten</div>
-                        <div class="compat-value">{{ match.profile.party_level }}/5</div>
+                        <div class="compat-value">{{ match.profile.party_animal }}/5</div>
                     </div>
                     <div class="compat-item">
                         <div class="compat-label">🏛️ Cultuur</div>
-                        <div class="compat-value">{{ match.profile.culture_level }}/5</div>
+                        <div class="compat-value">{{ match.profile.culture_interest }}/5</div>
                     </div>
                     <div class="compat-item">
                         <div class="compat-label">🍜 Food</div>
-                        <div class="compat-value">{{ match.profile.food_level }}/5</div>
+                        <div class="compat-value">{{ match.profile.foodie_level }}/5</div>
                     </div>
                     <div class="compat-item">
                         <div class="compat-label">🌲 Natuur</div>
-                        <div class="compat-value">{{ match.profile.nature_level }}/5</div>
+                        <div class="compat-value">{{ match.profile.nature_lover }}/5</div>
                     </div>
                 </div>
 
                 <div class="match-actions">
-                    <button class="btn btn-primary">Contact Opnemen</button>
-                    <button class="btn btn-secondary">Profiel Bekijken</button>
+                    <button class="btn btn-primary" onclick="this.textContent = '📧 {{ match.user.email }}'">Contact Opnemen</button>
                 </div>
             </div>
             {% endfor %}

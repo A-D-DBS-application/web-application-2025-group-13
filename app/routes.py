@@ -283,6 +283,9 @@ def register_routes(app):
         # Alleen matches boven 50% tonen
         good_matches = [m for m in matches if m['score'] >= 50]
         
+        # Beperk tot top 10 matches
+        good_matches = good_matches[:10]
+        
         return render_template('match.html', matches=good_matches, my_profile=my_profile)
     
     # --- MIJN GROEP ---
