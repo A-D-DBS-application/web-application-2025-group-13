@@ -91,25 +91,25 @@
                     <form method="POST" action="{{ url_for('organizer_groups') }}" style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
                         <input type="hidden" name="assign_trip" value="true">
                         <input type="hidden" name="group_id" value="{{ group_id }}">
-                        <select name="trip_id" required style="flex: 1; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                        <select name="trip_id" required style="flex: 1; min-width: 0; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
                             <option value="" disabled selected>Koppel een reis...</option>
                             {% for trip in trips %}
                                 <option value="{{ trip.id }}">{{ trip.destination }} (€{{ trip.price | int }})</option>
                             {% endfor %}
                         </select>
-                        <button type="submit" style="background: #28a745; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold;">Koppel</button>
+                        <button type="submit" style="flex-shrink: 0; background: #28a745; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold;">Koppel</button>
                     </form>
                     
                     <form method="POST" action="{{ url_for('organizer_groups') }}" style="display: flex; gap: 10px; align-items: center;">
                         <input type="hidden" name="add_member" value="true">
                         <input type="hidden" name="group_id" value="{{ group_id }}">
-                        <select name="user_id" required style="flex: 1; padding: 8px; border-radius: 5px; border: 1px solid #17a2b8;">
+                        <select name="user_id" required style="flex: 1; min-width: 0; padding: 8px; border-radius: 5px; border: 1px solid #17a2b8;">
                             <option value="" disabled selected>+ Voeg reiziger toe...</option>
                             {% for u in unassigned_users %}
                                 <option value="{{ u.id }}">{{ u.name }} ({{ u.email }})</option>
                             {% endfor %}
                         </select>
-                        <button type="submit" style="background: #17a2b8; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold;">Toevoegen</button>
+                        <button type="submit" style="flex-shrink: 0; background: #17a2b8; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold;">Toevoegen</button>
                     </form>
                 </div>
             </div>
