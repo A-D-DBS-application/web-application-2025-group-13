@@ -1,188 +1,88 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div style="max-width: 1200px; margin: 40px auto; padding: 20px;">
+<div style="max-width: 1000px; margin: 40px auto; padding: 20px;">
     
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-        <h1 style="color: #007B7F; margin:0;">Organizer Dashboard</h1>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+        <h1 style="color: #007B7F; margin:0;">Organisator Overzicht</h1>
         <div style="background: #e0f7fa; color: #007B7F; padding: 8px 15px; border-radius: 20px; font-weight: bold; display:flex; align-items:center; gap:8px;">
-            <span></span> {{ session['name'] }}
+            <span>{{ session['name'] }}</span>
         </div>
     </div>
-
-    <!-- GROEPEN GENEREREN SECTIE -->
-    <div style="background: #fff3cd; border: 1px solid #ffeeba; padding: 20px; border-radius: 10px; margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center;">
-        <div>
-            <h3 style="margin: 0 0 5px 0; color: #856404;">Automatische groepsvorming</h3>
-            <p style="margin: 0; color: #856404; font-size: 0.9rem;">
-                Klik hier om reizigers automatisch in groepen van 20 te plaatsen op basis van hun match-score.
-            </p>
-        </div>
-        <form method="POST">
-            <input type="hidden" name="generate_groups" value="true">
-            <button type="submit" style="background: #ffc107; color: #333; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                ⚡ Genereer Groepen
-            </button>
-        </form>
-    </div>
-
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+    
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 50px;">
         
-        <!-- LINKERKOLOM: NIEUWE REIS -->
-        <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); height: fit-content; border: 1px solid rgba(0,0,0,0.05);">
-            <h2 style="margin-top: 0; color: #333; display:flex; align-items:center; gap:10px;">
-                <span>✈️</span> Nieuwe Reis
-            </h2>
-            <p style="color:#888; font-size:0.9rem; margin-bottom:20px;">Vul de details in om een trip toe te voegen aan Supabase.</p>
-
-            <form method="POST">
-                <label style="display:block; margin:15px 0 5px; font-weight:600; color:#444;">Bestemming</label>
-                <input type="text" name="destination" required placeholder="bv. Roadtrip IJsland" 
-                       style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
-
-                <div style="display: flex; gap: 15px;">
-                    <div style="flex: 1;">
-                        <label style="display:block; margin:15px 0 5px; font-weight:600; color:#444;">Begindatum</label>
-                        <input type="date" name="start_date" required 
-                               style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
-                    </div>
-                    <div style="flex: 1;">
-                        <label style="display:block; margin:15px 0 5px; font-weight:600; color:#444;">Einddatum</label>
-                        <input type="date" name="end_date" required 
-                               style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
-                    </div>
-                </div>
-
-                <label style="display:block; margin:15px 0 5px; font-weight:600; color:#444;">Prijs p.p. (€)</label>
-                <input type="number" name="price" required placeholder="1250" step="0.01" 
-                       style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
-
-                <div style="display: flex; gap: 15px;">
-                    <div style="flex: 1;">
-                        <label style="display:block; margin:15px 0 5px; font-weight:600; color:#444;">Max. Plaatsen</label>
-                        <input type="number" name="max_spots" required value="20" min="1"
-                               style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
-                    </div>
-                    <div style="flex: 1;">
-                        <label style="display:block; margin:15px 0 5px; font-weight:600; color:#444;">Voorschot (€)</label>
-                        <input type="number" name="deposit_amount" required value="250" min="0" step="10"
-                               style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
-                    </div>
-                </div>
-
-                <label style="display:block; margin:15px 0 5px; font-weight:600; color:#444;">Beschrijving (Wat gaan we doen?)</label>
-                <textarea name="description" rows="4" placeholder="Beschrijf de reis, de sfeer en wat de reizigers kunnen verwachten..." 
-                          style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box; font-family: inherit;"></textarea>
-
-                <label style="display:block; margin:15px 0 5px; font-weight:600; color:#444;">Activiteiten / Highlights</label>
-                <textarea name="activities" rows="3" placeholder="Bijv: Noorderlicht spotten, Gletsjer wandeling, Blue Lagoon..." 
-                          style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box; font-family: inherit;"></textarea>
-
-                <button type="submit" style="width:100%; margin-top:25px; background:#007B7F; color:white; padding:14px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:1rem; transition: background 0.2s;">
-                    + Voeg Trip Toe
-                </button>
-            </form>
+        <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; border-bottom: 5px solid #007B7F;">
+            <div style="font-size: 2.5rem; color: #007B7F; margin-bottom: 10px;">{{ total_users }}</div>
+            <div style="font-weight: bold; color: #333;">Totaal reizigers</div>
         </div>
-
-        <!-- RECHTERKOLOM: GROEPEN & REIZEN -->
-        <div>
-            <!-- GROEPEN OVERZICHT -->
-            <h2 style="margin-top: 0; color: #333;">Gevormde Groepen</h2>
-            
-            {% if groups %}
-                <div style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 40px;">
-                    {% for group_id, members in groups.items() %}
-                    <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px;">
-                            <div>
-                                <h3 style="margin: 0; color: #007B7F;">Groep #{{ group_id }}</h3>
-                                <!-- VIBE TAGS -->
-                                <div style="display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap;">
-                                    {% for tag in group_vibes[group_id] %}
-                                        <span style="background: #e0f2f1; color: #00695c; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; border: 1px solid #b2dfdb;">{{ tag }}</span>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            
-                            <!-- Koppel Reis Formulier -->
-                            <form method="POST" style="display: flex; gap: 10px; align-items: center;">
-                                <input type="hidden" name="assign_trip" value="true">
-                                <input type="hidden" name="group_id" value="{{ group_id }}">
-                                <select name="trip_id" required style="padding: 5px; border-radius: 5px; border: 1px solid #ddd; max-width: 150px;">
-                                    <option value="" disabled selected>Koppel een reis...</option>
-                                    {% for trip in trips %}
-                                        <option value="{{ trip.id }}">{{ trip.destination }} (€{{ trip.price }})</option>
-                                    {% endfor %}
-                                </select>
-                                <button type="submit" style="background: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">✓</button>
-                            </form>
-                        </div>
-                        
-                        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
-                            {% for user in members %}
-                            <div style="background: #f9f9f9; padding: 8px 12px; border-radius: 20px; font-size: 0.9rem; color: #555; border: 1px solid #eee; display: flex; align-items: center; gap: 8px;">
-                                <span>👤 {{ user.name }}</span>
-                                <!-- REMOVE BUTTON -->
-                                <form action="{{ url_for('remove_group_member', user_id=user.id) }}" method="POST" style="margin:0;">
-                                    <button type="submit" style="background: none; border: none; color: #dc3545; cursor: pointer; font-weight: bold; padding: 0; font-size: 1rem; line-height: 1;" title="Verwijder uit groep">&times;</button>
-                                </form>
-                            </div>
-                            {% endfor %}
-                        </div>
-
-                        <!-- ADD MEMBER FORM -->
-                        <form action="{{ url_for('add_group_member') }}" method="POST" style="display: flex; gap: 10px; align-items: center; background: #f8f9fa; padding: 10px; border-radius: 8px;">
-                            <input type="hidden" name="group_id" value="{{ group_id }}">
-                            <select name="user_id" required style="flex: 1; padding: 6px; border-radius: 4px; border: 1px solid #ddd;">
-                                <option value="" disabled selected>+ Voeg reiziger toe...</option>
-                                {% for u in unassigned_users %}
-                                    <option value="{{ u.id }}">{{ u.name }}</option>
-                                {% endfor %}
-                            </select>
-                            <button type="submit" style="background: #17a2b8; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">Toevoegen</button>
-                        </form>
-                    </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div style="text-align: center; padding: 30px; background: white; border-radius: 12px; border: 2px dashed #eee; color: #999; margin-bottom: 40px;">
-                    Nog geen groepen gevormd. Klik op de knop hierboven.
-                </div>
-            {% endif %}
-
-            <!-- REIZEN OVERZICHT -->
-            <h2 style="margin-top: 0; color: #333;">Jouw Huidige Aanbod</h2>
-            
-            {% if trips %}
-                <div style="display: flex; flex-direction: column; gap: 15px;">
-                    {% for trip in trips %}
-                    <div style="background: white; padding: 20px; border-radius: 12px; border-left: 5px solid #007B7F; box-shadow: 0 2px 10px rgba(0,0,0,0.03); display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <h3 style="margin: 0 0 5px 0; color: #007B7F;">{{ trip.destination }}</h3>
-                            <div style="color: #666; font-size: 0.9rem; display:flex; gap:15px;">
-                                <span>📅 {{ trip.start_date }} <span style="color:#ccc">➔</span> {{ trip.end_date }}</span>
-                            </div>
-                            {% if trip.match_id %}
-                                <div style="margin-top: 5px; font-size: 0.85rem; color: #28a745; font-weight: bold;">
-                                    ✅ Gekoppeld aan Groep #{{ trip.match_id }}
-                                </div>
-                            {% endif %}
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 1.2rem; font-weight: bold; color: #333;">€{{ trip.price }}</div>
-                            <div style="font-size: 0.8rem; color: #888;">per persoon</div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div style="text-align: center; padding: 60px; background: white; border-radius: 12px; border: 2px dashed #eee; color: #999;">
-                    <div style="font-size: 3rem; margin-bottom: 10px;">📭</div>
-                    Nog geen reizen toegevoegd.
-                </div>
-            {% endif %}
+        
+        <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; border-bottom: 5px solid #ffc107;">
+            <div style="font-size: 2.5rem; color: #ffc107; margin-bottom: 10px;">{{ total_groups }}</div>
+            <div style="font-weight: bold; color: #333;">Actieve groepen</div>
         </div>
+        
+        <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; border-bottom: 5px solid #28a745;">
+            <div style="font-size: 2.5rem; color: #28a745; margin-bottom: 10px;">{{ total_trips }}</div>
+            <div style="font-weight: bold; color: #333;">Reizen in aanbod</div>
+        </div>
+        
+        <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; border-bottom: 5px solid #dc3545;">
+            <div style="font-size: 2.5rem; color: #dc3545; margin-bottom: 10px;">{{ unassigned_users }}</div>
+            <div style="font-weight: bold; color: #333;">Niet gematched</div>
+        </div>
+    </div>
 
+    <h2 style="color: #333; margin-bottom: 20px;">Snelkoppelingen</h2>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px;">
+        
+        <a href="{{ url_for('organizer_groups') }}" style="text-decoration: none;">
+            <div class="action-card" style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); border-left: 5px solid #ffc107; transition: transform 0.2s; min-height: 200px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <h3 style="margin-top: 0; color: #ffc107;">👥 Groepen beheren</h3>
+                    <p style="color: #666; margin-bottom: 20px;">Genereer automatisch groepen en koppel reizen.</p>
+                </div>
+                <span style="display: inline-block; background: #ffc107; color: #333; padding: 8px 15px; border-radius: 5px; font-weight: bold; align-self: flex-start;">Naar groepen</span>
+            </div>
+        </a>
+
+        <a href="{{ url_for('organizer_trips') }}" style="text-decoration: none;">
+            <div class="action-card" style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); border-left: 5px solid #28a745; transition: transform 0.2s; min-height: 200px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <h3 style="margin-top: 0; color: #28a745;">✈️ Reizen in aanbod</h3>
+                    <p style="color: #666; margin-bottom: 20px;">Bekijk alle aangemaakte reizen van alle organisatoren.</p>
+                </div>
+                <span style="display: inline-block; background: #28a745; color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; align-self: flex-start;">Naar reizen</span>
+            </div>
+        </a>
+        
+        <a href="{{ url_for('organizer_users') }}" style="text-decoration: none;">
+            <div class="action-card" style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); border-left: 5px solid #17a2b8; transition: transform 0.2s; min-height: 200px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <h3 style="margin-top: 0; color: #17a2b8;">📞 Contactlijst</h3>
+                    <p style="color: #666; margin-bottom: 20px;">Bekijk alle geregistreerde reizigers en hun contactgegevens.</p>
+                </div>
+                <span style="display: inline-block; background: #17a2b8; color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; align-self: flex-start;">Naar contacten</span>
+            </div>
+        </a>
+
+        <a href="{{ url_for('organizer_create_trip') }}" style="text-decoration: none;">
+            <div class="action-card" style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); border-left: 5px solid #007B7F; transition: transform 0.2s; min-height: 200px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <h3 style="margin-top: 0; color: #007B7F;">➕ Nieuwe reis</h3>
+                    <p style="color: #666; margin-bottom: 20px;">Maak een gloednieuwe reis aan voor in het aanbod.</p>
+                </div>
+                <span style="display: inline-block; background: #007B7F; color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; align-self: flex-start;">Reis aanmaken</span>
+            </div>
+        </a>
     </div>
 </div>
+
+<style>
+    /* Styling voor hover effect op de actie kaarten */
+    .action-card:hover {
+        transform: translateY(-5px) !important;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.12) !important;
+    }
+</style>
 {% endblock %}

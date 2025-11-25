@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 40px auto; padding: 20px;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1 style="color: #007B7F; margin:0;">👥 Groepen Beheren</h1>
+        <a href="{{ url_for('organizer_dashboard') }}" style="color: #007B7F; text-decoration: none; font-weight: bold;">← Terug naar Dashboard</a>
+    </div>
+
+    <div style="background: #fff3cd; border: 1px solid #ffeeba; padding: 20px; border-radius: 10px; margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h3 style="margin: 0 0 5px 0; color: #856404;">Automatische groepsvorming</h3>
+            <p style="margin: 0; color: #856404; font-size: 0.9rem;">
+                Klik hier om reizigers automatisch in groepen van 20 te plaatsen op basis van hun match-score.
+            </p>
+        </div>
+        <form method="POST" action="{{ url_for('organizer_groups') }}">
+            <input type="hidden" name="generate_groups" value="true">
+            <button type="submit" style="background: #ffc107; color: #333; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                ⚡ Genereer Groepen
+            </button>
+        </form>
+    </div>
+
+    <h2 style="margin-top: 0; color: #333;">Gevormde Groepen</h2>
+            
+    {% if groups %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; margin-bottom: 40px;">
+            {% for group_id, members in groups.items() %}
+            <div style="background: white; padding: 20px; border-radius: 15px; border: 1px solid #eee; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                
+                <div style="margin-bottom: 15px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="margin: 0; color: #007B7F;">Groep #{{ group_id }}</h3>
+                        <span style="background: #e0f7fa; color: #007B7F; padding: 5px 10px; border-radius: 15px; font-weight: bold;">
+                            {{ members|length }} Leden
+                        </span>
+                    </div>
+                    
+                    <div style="display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap;">
+                        {% for tag in group_vibes[group_id] %}
+                            <span style="background: #e0f2f1; color: #00695c; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; border: 1px solid #b2dfdb;">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div style="max-height: 200px; overflow-y: auto; padding-right: 10px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;">
+                    {% for user in members %}
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; padding: 6px 10px; border-radius: 8px; font-size: 0.9rem; color: #555;">
+                        <span>👤 {{ user.name }}</span>
+                        <form action="{{ url_for('remove_group_member', user_id=user.id) }}" method="POST" style="margin:0;">
+                            <button type="submit" style="background: none; border: none; color: #dc3545; cursor: pointer; font-weight: bold; padding: 0 5px; font-size: 1rem; line-height: 1;" title="Verwijder uit groep">&times;</button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div style="padding-top: 15px; border-top: 1px solid #eee;">
+                    
+                    <form method="POST" action="{{ url_for('organizer_groups') }}" style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
+                        <input type="hidden" name="assign_trip" value="true">
+                        <input type="hidden" name="group_id" value="{{ group_id }}">
+                        <select name="trip_id" required style="flex: 1; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                            <option value="" disabled selected>Koppel een reis...</option>
+                            {% for trip in trips %}
+                                <option value="{{ trip.id }}">{{ trip.destination }} (€{{ trip.price | int }})</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" style="background: #28a745; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold;">Koppel</button>
+                    </form>
+                    
+                    <form method="POST" action="{{ url_for('organizer_groups') }}" style="display: flex; gap: 10px; align-items: center;">
+                        <input type="hidden" name="add_member" value="true">
+                        <input type="hidden" name="group_id" value="{{ group_id }}">
+                        <select name="user_id" required style="flex: 1; padding: 8px; border-radius: 5px; border: 1px solid #17a2b8;">
+                            <option value="" disabled selected>+ Voeg reiziger toe...</option>
+                            {% for u in unassigned_users %}
+                                <option value="{{ u.id }}">{{ u.name }} ({{ u.email }})</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" style="background: #17a2b8; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold;">Toevoegen</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 60px; background: white; border-radius: 12px; border: 2px dashed #eee; color: #999; margin-bottom: 40px;">
+            <div style="font-size: 3rem; margin-bottom: 10px;">🤷‍♂️</div>
+            Nog geen groepen gevormd. Klik op de knop hierboven.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

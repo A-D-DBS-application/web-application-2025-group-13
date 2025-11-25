@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 40px auto; padding: 20px;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1 style="color: #007B7F; margin:0;">📞 Reizigers Contactlijst</h1>
+        <a href="{{ url_for('organizer_dashboard') }}" style="color: #007B7F; text-decoration: none; font-weight: bold;">← Terug naar Dashboard</a>
+    </div>
+
+    <div style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+        
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="border-bottom: 2px solid #007B7F; background: #e0f7fa;">
+                    <th style="padding: 15px;">Naam</th>
+                    <th style="padding: 15px;">E-mail</th>
+                    <th style="padding: 15px;">Leeftijd</th>
+                    <th style="padding: 15px;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user_info in users %}
+                <tr style="border-bottom: 1px solid #eee; transition: background 0.2s;">
+                    <td style="padding: 15px; font-weight: bold; color: #333;">{{ user_info.user.name }}</td>
+                    <td style="padding: 15px; color: #666;"><a href="mailto:{{ user_info.user.email }}" style="color: #007B7F; text-decoration: none;">{{ user_info.user.email }}</a></td>
+                    <td style="padding: 15px;">{{ user_info.profile.age if user_info.profile else 'N/A' }}</td>
+                    <td style="padding: 15px; font-size: 0.9rem;">
+                        <span style="background: {% if 'Bevestigd' in user_info.status %}#d4edda{% elif 'Actief' in user_info.status %}#cff4fc{% elif 'Inactief' in user_info.status %}#f8d7da{% else %}#fff3cd{% endif %}; color: #333; padding: 5px 10px; border-radius: 10px;">
+                            {{ user_info.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
