@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<style>
+    .showcase-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 60px;
+    }
+
+    .page-header h1 {
+        color: #007B7F;
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+
+    .page-header p {
+        color: #666;
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* TRIP SECTION */
+    .trip-showcase {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        margin-bottom: 80px;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .trip-hero {
+        height: 400px;
+        position: relative;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .trip-hero-overlay {
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        padding: 30px;
+        color: white;
+    }
+
+    .trip-title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin: 0;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .trip-meta {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin-top: 5px;
+    }
+
+    .trip-body {
+        padding: 40px;
+    }
+
+    .trip-intro {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #444;
+        margin-bottom: 30px;
+        border-left: 4px solid #007B7F;
+        padding-left: 20px;
+    }
+
+    /* PHOTO GRID */
+    .photo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .photo-item {
+        height: 200px;
+        border-radius: 10px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .photo-item:hover {
+        transform: scale(1.02);
+    }
+
+    .photo-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* HIGHLIGHTS */
+    .highlights-section {
+        background: #f9fafa;
+        padding: 25px;
+        border-radius: 15px;
+    }
+
+    .highlights-title {
+        color: #007B7F;
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+        font-weight: bold;
+    }
+
+    .highlights-list {
+        list-style: none;
+        padding: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .highlight-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #555;
+    }
+
+    .highlight-icon {
+        color: #007B7F;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    @media (max-width: 700px) {
+        .highlights-list { grid-template-columns: 1fr; }
+        .trip-hero { height: 250px; }
+        .trip-title { font-size: 1.8rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="showcase-container">
+    
+    <div class="page-header">
+        <h1>Terugblik op Vorige Avonturen</h1>
+        <p>Benieuwd hoe een TrailTribe reis er écht uitziet? Bekijk hier de verhalen en foto's van onze recente groepen.</p>
+    </div>
+
+    <!-- TRIP 1: IJSLAND -->
+    <div class="trip-showcase">
+        <div class="trip-hero" style="background-image: url('https://images.unsplash.com/photo-1476610182048-b716b8518aae?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');">
+            <div class="trip-hero-overlay">
+                <h2 class="trip-title">Roadtrip IJsland: Fire & Ice</h2>
+                <div class="trip-meta">Oktober 2024 • Groep van 18 • IJsland</div>
+            </div>
+        </div>
+        
+        <div class="trip-body">
+            <div class="trip-intro">
+                "Wat een ervaring! We begonnen als vreemden op de luchthaven, maar na 10 dagen in busjes door het ruige landschap te hebben gecrost, voelde het als familie. Van het noorderlicht spotten in een hot tub tot wandelen op een gletsjer — dit was onvergetelijk."
+                <br><br>
+                <strong>- Thomas, 26 jaar (Solo reiziger)</strong>
+            </div>
+
+            <h3 class="highlights-title">Sfeerimpressie</h3>
+            <div class="photo-grid">
+                <div class="photo-item"><img src="https://images.unsplash.com/photo-1520769945061-0a448c463865?auto=format&fit=crop&w=400&q=80" alt="Hot Spring"></div>
+                <div class="photo-item"><img src="https://images.unsplash.com/photo-1476610182048-b716b8518aae?auto=format&fit=crop&w=400&q=80" alt="Highlands"></div>
+                <div class="photo-item"><img src="https://images.unsplash.com/photo-1531366936337-7c912a4589a7?auto=format&fit=crop&w=400&q=80" alt="Northern Lights"></div>
+            </div>
+
+            <div class="highlights-section">
+                <div class="highlights-title">Wat hebben ze gedaan?</div>
+                <ul class="highlights-list">
+                    <li class="highlight-item"><span class="highlight-icon">•</span> 4x4 Roadtrip door de Highlands</li>
+                    <li class="highlight-item"><span class="highlight-icon">•</span> Gletsjerwandeling bij Skaftafell</li>
+                    <li class="highlight-item"><span class="highlight-icon">•</span> Noorderlicht jacht (Succesvol!)</li>
+                    <li class="highlight-item"><span class="highlight-icon">•</span> Relaxen in natuurlijke warmwaterbronnen</li>
+                    <li class="highlight-item"><span class="highlight-icon">•</span> Zwarte stranden van Vík bezocht</li>
+                    <li class="highlight-item"><span class="highlight-icon">•</span> Pubquiz avond in Reykjavik</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- TRIP 2: BALI -->
+    <div class="trip-showcase">
+        <div class="trip-hero" style="background-image: url('https://images.unsplash.com/photo-1537996194471-e657df975ab4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');">
+            <div class="trip-hero-overlay">
+                <h2 class="trip-title">Bali: Culture & Surf</h2>
+                <div class="trip-meta">September 2024 • Groep van 20 • Indonesië</div>
+            </div>
+        </div>
+        
+        <div class="trip-body">
+            <div class="trip-intro">
+                "Ik zocht een relaxte vakantie maar wilde niet alleen. Deze groep was perfect: we hadden allemaal zin in yoga, lekker eten en een beetje surfen. De mix van activiteiten en vrije tijd was precies goed. Ik heb nog steeds dagelijks contact met mijn kamergenootje!"
+                <br><br>
+                <strong>- Lisa, 24 jaar (Samen met vriendin ingeschreven)</strong>
+            </div>
+
+            <h3 class="highlights-title">Sfeerimpressie</h3>
+            <div class="photo-grid">
+                <div class="photo-item"><img src="https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=400&q=80" alt="Bali Temple"></div>
+                <div class="photo-item"><img src="https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=400&q=80" alt="Surfing"></div>
+                <div class="photo-item"><img src="https://images.unsplash.com/photo-1526772662000-3f88f10405ff?auto=format&fit=crop&w=400&q=80" alt="Group Hiking"></div>
+                <div class="photo-item"><img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=400&q=80" alt="Cocktails"></div>
+            </div>
+
+            <div class="highlights-section">
+                <div class="highlights-title">Wat hebben ze gedaan?</div>
+                <ul class="highlights-list">
+                    <li class="highlight-item"><span class="highlight-icon">•</span> Surfles in Canggu</li>
+                    <li class="highlight-item"><span class="highlight-icon">•</span> Sunrise Yoga in Ubud</li>
+                    <li class="highlight-item"><span class="highlight-icon">•</span> Monkey Forest bezoek (Pas op je bril!)</li>
+                    <li class="highlight-item"><span class="highlight-icon">•</span> Mount Batur beklimmen bij zonsopgang</li>
+                    <li class="highlight-item"><span class="highlight-icon">•</span> Balinese kookworkshop</li>
+                    <li class="highlight-item"><span class="highlight-icon">•</span> Snorkelen bij Nusa Penida</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 50px;">
+        <h2 style="color: #007B7F; margin-bottom: 20px;">Wil jij dit ook meemaken?</h2>
+        <p style="margin-bottom: 30px; color: #666;">Schrijf je in en wij vinden de groep die bij jou past.</p>
+        <a href="{{ url_for('intake') }}" style="background-color: #007B7F; color: white; padding: 15px 40px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 1.2rem; box-shadow: 0 5px 15px rgba(0,123,127,0.3);">Start Jouw Avontuur</a>
+    </div>
+
+</div>
+{% endblock %}

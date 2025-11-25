@@ -41,10 +41,32 @@
         font-size: 1.2rem; font-weight: bold; text-decoration: none;
         border-radius: 50px; transition: transform 0.2s, background 0.2s;
         display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        margin: 10px;
     }
 
     .cta-button:hover {
         background-color: #005f62; transform: translateY(-3px);
+    }
+
+    .secondary-button {
+        background-color: rgba(255, 255, 255, 0.2); 
+        color: white; 
+        padding: 15px 40px;
+        font-size: 1.2rem; 
+        font-weight: bold; 
+        text-decoration: none;
+        border-radius: 50px; 
+        transition: transform 0.2s, background 0.2s;
+        display: inline-block; 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        border: 2px solid white;
+        margin: 10px;
+    }
+
+    .secondary-button:hover {
+        background-color: white; 
+        color: #007B7F;
+        transform: translateY(-3px);
     }
 
     /* HOE HET WERKT (Verticaal Design) */
@@ -137,7 +159,10 @@
         <div class="hero-content">
             <h1>Vind jouw reisgroep,<br>start je avontuur.</h1>
             <p>Reizen op basis van wie jij bent. De perfecte match, de perfecte trip.</p>
-            <a href="{{ url_for('intake') }}" class="cta-button">Start Intake 🚀</a>
+            <div>
+                <a href="{{ url_for('intake') }}" class="cta-button">Start Intake 🚀</a>
+                <a href="{{ url_for('example_trips') }}" class="secondary-button">Bekijk Voorbeeldreizen 🌍</a>
+            </div>
         </div>
     </div>
 

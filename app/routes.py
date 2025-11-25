@@ -61,6 +61,11 @@ def register_routes(app):
     def about():
         return render_template('about.html')
 
+    @app.route('/example-trips')
+    def example_trips():
+        # Statische pagina met voorbeeldreizen (IJsland & Bali)
+        return render_template('example_trips.html')
+
     @app.route('/intake')
     def intake():
         if 'user_id' not in session or session.get('role') == 'organizer':
