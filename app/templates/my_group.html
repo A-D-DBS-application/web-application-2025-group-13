@@ -34,12 +34,12 @@
                         <div style="min-width: 200px; text-align: right;">
                             <!-- SPOTS COUNTER -->
                             <div style="margin-bottom: 10px; font-weight: bold; color: {% if spots_left <= 3 %}#dc3545{% else %}#155724{% endif %};">
-                                🔥 Nog {{ spots_left }} plekken!
+                                Nog {{ spots_left }} plekken!
                             </div>
 
                             {% if my_entry.payment_status == 'paid' %}
                                 <div style="background: white; color: #28a745; padding: 10px 20px; border-radius: 8px; font-weight: bold; border: 2px solid #28a745; text-align: center;">
-                                    ✅ Betaald & Bevestigd!
+                                    Betaald & bevestigd!
                                 </div>
                             {% else %}
                                 {% if spots_left > 0 %}
@@ -102,7 +102,7 @@
                 <p style="color: #666; margin-bottom: 15px;">Niet blij met deze groep? Je kunt de groep verlaten en wachten op een nieuwe indeling.</p>
                 <form action="{{ url_for('leave_group') }}" method="POST" onsubmit="return confirm('Weet je zeker dat je deze groep wilt verlaten?');">
                     <button type="submit" style="background: #dc3545; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;">
-                        🚪 Groep Verlaten
+                        Groep verlaten
                     </button>
                 </form>
             </div>
