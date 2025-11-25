@@ -114,6 +114,46 @@ def calculate_group_vibe(match_id):
         
     return tags
 
+def get_group_stats(match_id):
+    """Berekent statistieken voor een groep (leeftijd, budget, interesses)."""
+    group_entries = Group.query.filter_by(match_id=match_id).all()
+    user_ids = [g.user_id for g in group_entries]
+    profiles = TravelerProfile.query.filter(TravelerProfile.user_id.in_(user_ids)).all()
+    
+    if not profiles:
+        return None
+        
+    ages = [p.age for p in profiles if p.age]
+    budgets = [p.budget_max for p in profiles if p.budget_max]
+    
+    min_age = min(ages) if ages else 0
+    max_age = max(ages) if ages else 0
+    
+    min_budget = min(budgets) if budgets else 0
+    max_budget = max(budgets) if budgets else 0
+    
+    # Top interests
+    interest_fields = [
+        'adventure_level', 'beach_person', 'culture_interest', 'party_animal', 'nature_lover',
+        'foodie_level', 'sporty_spice'
+    ]
+    
+    interest_scores = {field: 0 for field in interest_fields}
+    for p in profiles:
+        for field in interest_fields:
+            val = getattr(p, field, 0) or 0
+            interest_scores[field] += val
+            
+    # Sort by score
+    sorted_interests = sorted(interest_scores.items(), key=lambda x: x[1], reverse=True)
+    top_3 = [k.replace('_', ' ').title() for k, v in sorted_interests[:3]]
+    
+    return {
+        'age_range': f"{min_age} - {max_age}",
+        'budget_range': f"€{min_budget} - €{max_budget}",
+        'top_interests': top_3
+    }
+
 def create_notification(user_id, message):
     """Helper om een notificatie aan te maken"""
     try:
@@ -757,6 +797,7 @@ def register_routes(app):
         all_group_members = Group.query.all()
         groups = {}
         group_vibes = {}
+        group_stats = {}
         
         users_in_group_ids = db.session.query(Group.user_id).distinct().all()
         users_in_group_ids = [u[0] for u in users_in_group_ids]
@@ -766,10 +807,15 @@ def register_routes(app):
                 groups[member.match_id] = []
             
             user = User.query.get(member.user_id)
+            # Voeg status info toe aan user object (tijdelijk)
+            user.group_status = member.payment_status
+            user.group_confirmed = member.confirmed
+            
             groups[member.match_id].append(user)
             
         for match_id in groups.keys():
             group_vibes[match_id] = calculate_group_vibe(match_id)
+            group_stats[match_id] = get_group_stats(match_id)
 
         trips_for_dropdown = Trip.query.filter(Trip.match_id.is_(None)).all()
         
@@ -784,6 +830,7 @@ def register_routes(app):
         return render_template('organizer_groups.html', 
                                groups=groups, 
                                group_vibes=group_vibes,
+                               group_stats=group_stats,
                                trips=trips_for_dropdown,
                                unassigned_users=unassigned_users)
                                

@@ -43,12 +43,42 @@
                             <span style="background: #e0f2f1; color: #00695c; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; border: 1px solid #b2dfdb;">{{ tag }}</span>
                         {% endfor %}
                     </div>
+
+                    {% if group_stats[group_id] %}
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 0.85rem; color: #555;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span>🎂 Leeftijd:</span>
+                            <span style="font-weight: bold;">{{ group_stats[group_id].age_range }} jaar</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span>💰 Budget:</span>
+                            <span style="font-weight: bold;">{{ group_stats[group_id].budget_range }}</span>
+                        </div>
+                        <div style="margin-top: 8px;">
+                            <span style="display: block; margin-bottom: 2px;">❤️ Top Interesses:</span>
+                            <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                                {% for interest in group_stats[group_id].top_interests %}
+                                    <span style="background: #fff3cd; color: #856404; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">{{ interest }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
                 
                 <div style="max-height: 200px; overflow-y: auto; padding-right: 10px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;">
                     {% for user in members %}
                     <div style="display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; padding: 6px 10px; border-radius: 8px; font-size: 0.9rem; color: #555;">
-                        <span>👤 {{ user.name }}</span>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            {% if user.group_status == 'paid' %}
+                                <span title="Betaald">💰</span>
+                            {% elif user.group_confirmed %}
+                                <span title="Bevestigd">✅</span>
+                            {% else %}
+                                <span title="Nog niet bevestigd">⏳</span>
+                            {% endif %}
+                            <span>{{ user.name }}</span>
+                        </div>
                         <form action="{{ url_for('remove_group_member', user_id=user.id) }}" method="POST" style="margin:0;">
                             <button type="submit" style="background: none; border: none; color: #dc3545; cursor: pointer; font-weight: bold; padding: 0 5px; font-size: 1rem; line-height: 1;" title="Verwijder uit groep">&times;</button>
                         </form>
