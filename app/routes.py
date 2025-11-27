@@ -168,75 +168,86 @@ def create_notification(user_id, message):
         print(f"Fout bij maken notificatie: {e}")
 
 def create_automatic_groups():
-    """Greedy Best-Match Algoritme met Buddy Support."""
+    """Greedy Best-Match Algoritme: Maakt ÉÉN groep aan."""
     
+    # 1. Haal alle users op die al in een groep zitten
     grouped_user_ids = [g.user_id for g in Group.query.all()]
     
+    # 2. Haal alle actieve profielen op die nog NIET in een groep zitten
     available_profiles = TravelerProfile.query.filter(
         TravelerProfile.user_id.notin_(grouped_user_ids),
         TravelerProfile.is_active == True
     ).all()
     
+    # Als er niemand beschikbaar is, stop direct
     if len(available_profiles) < 1:
         return
 
+    # 3. Bepaal het volgende Match ID
     last_group = Group.query.order_by(Group.match_id.desc()).first()
     next_group_id = (last_group.match_id + 1) if last_group and last_group.match_id else 1
     
     GROUP_SIZE = 20
+    current_group_id = next_group_id
     
-    while len(available_profiles) > 0:
-        current_group_id = next_group_id
-        next_group_id += 1
-        
-        group_members = []
-        
-        def pop_profile_by_id(uid):
-            for i, p in enumerate(available_profiles):
-                if p.user_id == uid:
-                    return available_profiles.pop(i)
-            return None
+    group_members = []
+    
+    # Helper om iemand uit de lijst te halen op basis van ID
+    def pop_profile_by_id(uid):
+        for i, p in enumerate(available_profiles):
+            if p.user_id == uid:
+                return available_profiles.pop(i)
+        return None
 
-        seed_profile = available_profiles.pop(0)
-        group_members.append(seed_profile)
+    # --- START LOGICA VOOR 1 GROEP ---
+
+    # Pak de eerste persoon als 'Seed' (het startpunt)
+    seed_profile = available_profiles.pop(0)
+    group_members.append(seed_profile)
+    
+    # Heeft de seed een buddy? Voeg die direct toe
+    if seed_profile.linked_buddy_id:
+        buddy = pop_profile_by_id(seed_profile.linked_buddy_id)
+        if buddy:
+            group_members.append(buddy)
+    
+    # Vul de rest van DEZE groep aan tot 20 (of tot op is)
+    while len(group_members) < GROUP_SIZE and len(available_profiles) > 0:
+        candidates = []
+        for candidate in available_profiles:
+            score = calculate_match_score(seed_profile, candidate)
+            if score != -1: 
+                candidates.append((score, candidate))
         
-        if seed_profile.linked_buddy_id:
-            buddy = pop_profile_by_id(seed_profile.linked_buddy_id)
+        # Sorteer op beste score
+        candidates.sort(key=lambda x: x[0], reverse=True)
+        
+        if not candidates:
+            break # Geen matches meer gevonden die bij de seed passen
+        
+        best_score, best_match = candidates[0]
+        
+        # Voeg beste match toe
+        available_profiles.remove(best_match)
+        group_members.append(best_match)
+        
+        # Heeft deze match een buddy? Voeg die ook toe (mits plek)
+        if best_match.linked_buddy_id and len(group_members) < GROUP_SIZE:
+            buddy = pop_profile_by_id(best_match.linked_buddy_id)
             if buddy:
                 group_members.append(buddy)
+    
+    # --- OPSLAAN IN DATABASE ---
+    for member in group_members:
+        new_group_entry = Group(
+            match_id=current_group_id,
+            user_id=member.user_id,
+            role='member',
+            confirmed=False
+        )
+        db.session.add(new_group_entry)
         
-        while len(group_members) < GROUP_SIZE and len(available_profiles) > 0:
-            candidates = []
-            for candidate in available_profiles:
-                score = calculate_match_score(seed_profile, candidate)
-                if score != -1: 
-                    candidates.append((score, candidate))
-            
-            candidates.sort(key=lambda x: x[0], reverse=True)
-            
-            if not candidates:
-                break 
-            
-            best_score, best_match = candidates[0]
-            
-            available_profiles.remove(best_match)
-            group_members.append(best_match)
-            
-            if best_match.linked_buddy_id and len(group_members) < GROUP_SIZE:
-                buddy = pop_profile_by_id(best_match.linked_buddy_id)
-                if buddy:
-                    group_members.append(buddy)
-        
-        for member in group_members:
-            new_group_entry = Group(
-                match_id=current_group_id,
-                user_id=member.user_id,
-                role='member',
-                confirmed=False
-            )
-            db.session.add(new_group_entry)
-            
-            create_notification(member.user_id, f"Je bent toegevoegd aan Groep #{current_group_id}! Bekijk snel je nieuwe reisgenoten.")
+        create_notification(member.user_id, f"Je bent toegevoegd aan Groep #{current_group_id}! Bekijk snel je nieuwe reisgenoten.")
             
     db.session.commit()
 
@@ -754,6 +765,16 @@ def register_routes(app):
                 if group_id and trip_id:
                     trip = Trip.query.get(trip_id)
                     
+                    if trip.travel_org_id != session['user_id']:
+                        flash('Je kunt alleen je eigen reizen koppelen!', 'danger')
+                        return redirect(url_for('organizer_groups'))
+
+                    # Check of de groep al een reis heeft
+                    existing_trip = Trip.query.filter_by(match_id=group_id).first()
+                    if existing_trip:
+                         flash(f'Deze groep heeft al een reis ({existing_trip.destination})!', 'danger')
+                         return redirect(url_for('organizer_groups'))
+
                     if trip.match_id and str(trip.match_id) != group_id:
                         flash(f'Reis is al gekoppeld aan groep #{trip.match_id}!', 'warning')
                         return redirect(url_for('organizer_groups'))
@@ -793,7 +814,31 @@ def register_routes(app):
                     flash('Reiziger handmatig toegevoegd aan de groep.', 'success')
                 return redirect(url_for('organizer_groups'))
 
-        # GET Request: Toon Groepen
+            # 4. Groep Verwijderen (NIEUW)
+            if 'delete_group' in request.form:
+                group_id = request.form.get('group_id')
+                if group_id:
+                    # A. Koppel reis los (zodat reis weer beschikbaar wordt)
+                    linked_trip = Trip.query.filter_by(match_id=group_id).first()
+                    if linked_trip:
+                        linked_trip.match_id = None
+                    
+                    # B. Zet profielen van leden weer op 'active'
+                    members = Group.query.filter_by(match_id=group_id).all()
+                    for m in members:
+                        profile = TravelerProfile.query.filter_by(user_id=m.user_id).first()
+                        if profile:
+                            profile.is_active = True
+                        create_notification(m.user_id, "Helaas, de groep waarin je zat is opgeheven door de organisator.")
+                    
+                    # C. Verwijder groep entries
+                    Group.query.filter_by(match_id=group_id).delete()
+                    
+                    db.session.commit()
+                    flash(f'Groep #{group_id} is verwijderd.', 'info')
+                return redirect(url_for('organizer_groups'))
+
+        # GET Request: Data ophalen
         all_group_members = Group.query.all()
         groups = {}
         group_vibes = {}
@@ -807,19 +852,25 @@ def register_routes(app):
                 groups[member.match_id] = []
             
             user = User.query.get(member.user_id)
-            # Voeg status info toe aan user object (tijdelijk)
             user.group_status = member.payment_status
             user.group_confirmed = member.confirmed
-            
             groups[member.match_id].append(user)
             
+        # NIEUW: Maak een map van match_id -> Trip object
+        # Zodat we in de HTML weten welke groep welke reis heeft
+        assigned_trips_query = Trip.query.filter(Trip.match_id.isnot(None)).all()
+        assigned_trips = {t.match_id: t for t in assigned_trips_query}
+
         for match_id in groups.keys():
             group_vibes[match_id] = calculate_group_vibe(match_id)
             group_stats[match_id] = get_group_stats(match_id)
 
-        trips_for_dropdown = Trip.query.filter(Trip.match_id.is_(None)).all()
+        # Dropdown alleen voor ONGEKOPPELDE reizen van MIJ
+        trips_for_dropdown = Trip.query.filter(
+            Trip.match_id.is_(None),
+            Trip.travel_org_id == session['user_id']
+        ).all()
         
-        # Opgelost: Expliciete join voor unassigned users
         unassigned_users = User.query.outerjoin(
             TravelerProfile,
             TravelerProfile.user_id == User.id 
@@ -832,7 +883,8 @@ def register_routes(app):
                                group_vibes=group_vibes,
                                group_stats=group_stats,
                                trips=trips_for_dropdown,
-                               unassigned_users=unassigned_users)
+                               unassigned_users=unassigned_users,
+                               assigned_trips=assigned_trips) # Geef assigned_trips mee!
                                
     @app.route('/organizer/remove_member/<int:user_id>', methods=['POST'])
     def remove_group_member(user_id):
