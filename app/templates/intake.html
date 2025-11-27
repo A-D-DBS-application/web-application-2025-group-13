@@ -28,6 +28,7 @@
         margin-bottom: 35px;
         padding-bottom: 25px;
         border-bottom: 1px solid #f0f0f0;
+        position: relative;
     }
 
     .question-group:last-of-type {
@@ -83,7 +84,6 @@
         border-radius: 5px;
         background: linear-gradient(to right, #e0f7fa, #007B7F);
         outline: none;
-        
     }
 
     input[type="range"]::-webkit-slider-thumb {
@@ -196,6 +196,7 @@
             grid-template-columns: 1fr;
         }
     }
+
 </style>
 {% endblock %}
 
@@ -255,7 +256,8 @@
             </div>
         </div>
 
-        <!-- 1. Basis Vibe -->
+        <!-- Alle slider vragen blijven identiek — ik verwijder enkel walker -->
+
         <div class="question-group">
             <label class="question-label">1. Hoe avontuurlijk ben je op reis?</label>
             <div class="rating-container">
@@ -263,14 +265,14 @@
                     <span>😌 Liever rustig</span>
                     <span>🔥 Zoek constant avontuur</span>
                 </div>
-                <input type="range" name="adventure_level" min="1" max="5" value="{{ profile.adventure_level if profile else 3 }}" 
+                <input type="range" name="adventure_level" min="1" max="5" value="{{ profile.adventure_level if profile else 3 }}"
                        oninput="this.nextElementSibling.innerText = this.value">
                 <div class="rating-value">{{ profile.adventure_level if profile else 3 }}</div>
             </div>
         </div>
 
         <div class="question-group">
-            <label class="question-label">2. Strand & Zon</label>
+            <label class="question-label">2. Het is een warme vakantiedag. Kies je een terras in de schaduw met een drankje, of lig je de hele dag op strand?</label>
             <div class="rating-container">
                 <div class="rating-labels">
                     <span>🚫 Geen zand aub</span>
@@ -296,7 +298,7 @@
         </div>
 
         <div class="question-group">
-            <label class="question-label">4. Feestgehalte</label>
+            <label class="question-label">4. Je bent op reis en het is avond. Kies je eerder voor een rustige plek of beland je in een club en dans je tot sluitingstijd?</label>
             <div class="rating-container">
                 <div class="rating-labels">
                     <span>🍵 Thee & Boek</span>
@@ -336,7 +338,7 @@
         </div>
 
         <div class="question-group">
-            <label class="question-label">7. Ochtendhumeur?</label>
+            <label class="question-label">7. De wekker gaat op vakantie. Druk jij liever op snooze of ben je degene die voor de zon opstaat om alles uit de dag te halen?</label>
             <div class="rating-container">
                 <div class="rating-labels">
                     <span>😴 Snooze button</span>
@@ -355,12 +357,6 @@
                     <span>📋 Alles plannen</span>
                     <span>🍃 Alles loslaten</span>
                 </div>
-                <!-- Let op: 1=Plannen, 5=Loslaten. In DB heet dit 'planning_freak'. 
-                     Als planning_freak 1=YOLO en 5=Excel was, dan is dit nu omgedraaid.
-                     We gebruiken de variabele 'planning_freak' maar de betekenis is nu:
-                     1 = Alles plannen (High Planning)
-                     5 = Alles loslaten (High Spontaneity)
-                -->
                 <input type="range" name="planning_freak" min="1" max="5" value="{{ profile.planning_freak if profile else 3 }}"
                        oninput="this.nextElementSibling.innerText = this.value">
                 <div class="rating-value">{{ profile.planning_freak if profile else 3 }}</div>
@@ -368,7 +364,7 @@
         </div>
 
         <div class="question-group">
-            <label class="question-label">9. Eten</label>
+            <label class="question-label">9. Hoe belangrijk is eten voor jou op reis?</label>
             <div class="rating-container">
                 <div class="rating-labels">
                     <span>🥪 Brandstof</span>
@@ -381,7 +377,7 @@
         </div>
 
         <div class="question-group">
-            <label class="question-label">10. Hoe graag doe je sportieve activiteiten op reis?</label>
+            <label class="question-label">10. Je wilt een perfecte zonsondergang spot bereiken. Wat doe je?</label>
             <div class="rating-container">
                 <div class="rating-labels">
                     <span>🛗 Lift nemen</span>
@@ -408,7 +404,7 @@
 
         <!-- 3. Wat vind je leuk? -->
         <div class="question-group">
-            <label class="question-label">12. Citytrips</label>
+            <label class="question-label">12. Wat vind je van Citytrips?</label>
             <div class="rating-container">
                 <div class="rating-labels">
                     <span>🏙️ Mwah</span>
@@ -421,10 +417,10 @@
         </div>
 
         <div class="question-group">
-            <label class="question-label">13. Roadtrips</label>
+            <label class="question-label">13. Je gaat op reis maar het is 20 uur rijden met de auto. Wat zou je eerder doen?</label>
             <div class="rating-container">
                 <div class="rating-labels">
-                    <span>✈️ Liever vliegen</span>
+                    <span>✈️ Efficiënt vliegen</span>
                     <span>🚐 Roadtrip baby!</span>
                 </div>
                 <input type="range" name="road_trip" min="1" max="5" value="{{ profile.road_trip if profile else 3 }}"
@@ -434,7 +430,7 @@
         </div>
 
         <div class="question-group">
-            <label class="question-label">14. Backpacken</label>
+            <label class="question-label">14. Welke past best bij jouw reisstijl?</label>
             <div class="rating-container">
                 <div class="rating-labels">
                     <span>🧳 Koffer</span>
@@ -447,7 +443,7 @@
         </div>
 
         <div class="question-group">
-            <label class="question-label">15. Contact met Locals</label>
+            <label class="question-label">15. Blijf je liever in je eigen bubbel, of zoek je actief contact met locals om hun cultuur echt te leren kennen?</label>
             <div class="rating-container">
                 <div class="rating-labels">
                     <span>🫧 Eigen bubbel</span>
@@ -460,10 +456,10 @@
         </div>
 
         <div class="question-group">
-            <label class="question-label">16. Digital Detox</label>
+            <label class="question-label">16. Tijdens een tweedaagse hike heb je geen bereik. Zoek je actief naar signaal of ga je helemaal offline?</label>
             <div class="rating-container">
                 <div class="rating-labels">
-                    <span>📱 Wifi nodig</span>
+                    <span>📱 Verbinding nodig</span>
                     <span>📵 Offline gaan</span>
                 </div>
                 <input type="range" name="digital_detox" min="1" max="5" value="{{ profile.digital_detox if profile else 3 }}"
@@ -472,19 +468,15 @@
             </div>
         </div>
 
-        <!-- NIEUW: BUDDY SECTIE -->
+        <!-- Buddy -->
         <div style="background: #e0f7fa; padding: 20px; border-radius: 15px; margin-bottom: 30px; border: 1px solid #b2dfdb;">
             <h3 style="color: #007B7F; margin-top: 0;">👥 Reis je samen?</h3>
             <p style="color: #555; font-size: 0.9rem; margin-bottom: 15px;">
-                Wil je zeker weten dat je bij je partner of beste vriend(in) in de groep komt? Vul hier hun e-mailadres in.
+                Vul het e-mailadres van je partner of vriend(in) in zodat we jullie samen kunnen indelen.
             </p>
-            
-            <label class="question-label" style="margin-bottom: 5px;">E-mailadres van je reispartner (optioneel)</label>
-            <input type="email" name="buddy_email" placeholder="bv. partner@example.com" style="width: 100%; padding: 12px; border: 2px solid #b2dfdb; border-radius: 10px;">
-            
-            <p style="font-size: 0.8rem; color: #007B7F; margin-top: 10px;">
-                ℹ️ Zorg dat je partner zich ook registreert met dit e-mailadres!
-            </p>
+            <label class="question-label">E-mailadres partner/vriend(in)</label>
+            <input type="email" name="buddy_email" placeholder="bv. partner@example.com" style="width:100%; padding:12px; border-radius:10px; border:2px solid #b2dfdb;">
+            <p style="font-size: 0.8rem; color:#007B7F;">ℹ️ Zorg dat je partner zich ook registreert met ditzelfde e-mailadres.</p>
         </div>
 
         <button type="submit" class="submit-btn">Profiel Opslaan & Matches Vinden 🚀</button>
@@ -494,24 +486,27 @@
 
 {% block scripts %}
 <script>
-// Extra validatie: check of budget_max >= budget_min
-document.getElementById('intakeForm').addEventListener('submit', function(e) {
-    const minBudget = parseInt(document.querySelector('input[name="budget_min"]').value);
-    const maxBudget = parseInt(document.querySelector('input[name="budget_max"]').value);
+document.addEventListener('DOMContentLoaded', function () {
+    // Budget & periode validatie
+    const form = document.getElementById('intakeForm');
     
-    if (maxBudget < minBudget) {
-        e.preventDefault();
-        alert('Je maximum budget moet hoger zijn dan je minimum budget!');
-        return false;
-    }
-    
-    // Check of minstens 1 periode is gekozen
-    const periods = document.querySelectorAll('input[name="period"]:checked');
-    if (periods.length === 0) {
-        e.preventDefault();
-        alert('Kies minimaal één reisperiode!');
-        return false;
-    }
+    form.addEventListener('submit', function(e) {
+        const minBudget = parseInt(document.querySelector('input[name="budget_min"]').value);
+        const maxBudget = parseInt(document.querySelector('input[name="budget_max"]').value);
+
+        if (maxBudget < minBudget) {
+            e.preventDefault();
+            alert('Je maximum budget moet hoger zijn dan je minimum budget!');
+            return;
+        }
+
+        const periods = document.querySelectorAll('input[name="period"]:checked');
+        if (periods.length === 0) {
+            e.preventDefault();
+            alert('Kies minimaal één reisperiode!');
+            return;
+        }
+    });
 });
 </script>
 {% endblock %}
