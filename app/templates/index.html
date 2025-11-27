@@ -150,6 +150,65 @@
     
     .usp-item h4 { margin-bottom: 10px; color: #005f62; font-size: 1.2rem;}
 
+    /* REVIEWS SECTIE */
+    .reviews-container {
+        max-width: 1000px;
+        margin: 0 auto 80px auto;
+        padding: 0 20px;
+        text-align: center;
+    }
+
+    .reviews-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+    }
+
+    .review-card {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        text-align: left;
+        position: relative;
+    }
+
+    .review-card::before {
+        content: "“";
+        font-size: 5rem;
+        color: #e0f7fa;
+        position: absolute;
+        top: 10px;
+        left: 20px;
+        font-family: serif;
+        line-height: 1;
+    }
+
+    .review-text {
+        font-style: italic;
+        color: #555;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .review-author {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .author-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #ddd;
+    }
+
+    .author-info h5 { margin: 0; color: #333; }
+    .author-info span { font-size: 0.85rem; color: #888; }
+
 </style>
 {% endblock %}
 
@@ -195,6 +254,42 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+
+    <div class="reviews-container">
+        <h2 class="section-title">Wat reizigers zeggen</h2>
+        <div class="reviews-grid">
+            <div class="review-card">
+                <p class="review-text">"Ik zag er tegenop om alleen te reizen, maar via TrailTribe kwam ik in een groep terecht die voelde als vrienden die ik al jaren kende. De match was perfect!"</p>
+                <div class="review-author">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Felix" class="author-avatar">
+                    <div class="author-info">
+                        <h5>Felix (24)</h5>
+                        <span>Ging naar Noorwegen</span>
+                    </div>
+                </div>
+            </div>
+            <div class="review-card">
+                <p class="review-text">"Eindelijk een reisorganisatie die snapt dat budget en 'vibe' belangrijker zijn dan alleen de bestemming. Top ervaring gehad in Portugal."</p>
+                <div class="review-author">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" alt="Sarah" class="author-avatar">
+                    <div class="author-info">
+                        <h5>Sarah (29)</h5>
+                        <span>Ging naar Portugal</span>
+                    </div>
+                </div>
+            </div>
+            <div class="review-card">
+                <p class="review-text">"De intake was leuk om te doen en het resultaat klopte precies. Geen feestbeesten in mijn rustige wandelgroep, heerlijk!"</p>
+                <div class="review-author">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Mark" alt="Mark" class="author-avatar">
+                    <div class="author-info">
+                        <h5>Mark (35)</h5>
+                        <span>Ging naar de Dolomieten</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
