@@ -26,6 +26,10 @@ def calculate_match_score(profile1, profile2):
     age2 = get_val(profile2, 'age', 25)
     age_diff = abs(age1 - age2)
     
+    # NIEUW: Harde eis van max 10 jaar verschil
+    if age_diff > 10:
+        return -1
+    
     if age_diff <= 3: logistics_score += 10
     elif age_diff <= 5: logistics_score += 7
     elif age_diff <= 8: logistics_score += 4
@@ -226,6 +230,10 @@ def create_automatic_groups():
             break # Geen matches meer gevonden die bij de seed passen
         
         best_score, best_match = candidates[0]
+        
+        # NIEUW: Drempelwaarde van 50%
+        if best_score < 50:
+            break
         
         # Voeg beste match toe
         available_profiles.remove(best_match)
