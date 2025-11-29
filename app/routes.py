@@ -62,7 +62,11 @@ def calculate_match_score(profile1, profile2):
         'city_trip', 'road_trip', 'backpacking', 'local_contact', 'digital_detox'
     ]
     
-    total_similarity = 0
+    # Belangrijke velden krijgen iets meer gewicht (1.5x)
+    important_fields = ['adventure_level', 'culture_interest', 'nature_lover', 'luxury_comfort']
+    
+    total_weighted_similarity = 0
+    total_weight = 0
     
     for field in vibe_fields:
         val1 = get_val(profile1, field, 3)
@@ -70,9 +74,13 @@ def calculate_match_score(profile1, profile2):
         
         diff = abs(val1 - val2)
         similarity = 1 - (diff / 4)
-        total_similarity += similarity
         
-    avg_vibe_score = total_similarity / len(vibe_fields)
+        weight = 1.5 if field in important_fields else 1.0
+        
+        total_weighted_similarity += similarity * weight
+        total_weight += weight
+        
+    avg_vibe_score = total_weighted_similarity / total_weight
     vibe_points = avg_vibe_score * 70
     
     final_score = logistics_score + vibe_points
@@ -219,6 +227,17 @@ def create_automatic_groups():
     while len(group_members) < GROUP_SIZE and len(available_profiles) > 0:
         candidates = []
         for candidate in available_profiles:
+            # Check period overlap with seed_profile (Harde eis voor groepsvorming)
+            p1 = getattr(seed_profile, 'travel_period', '') or ''
+            p2 = getattr(candidate, 'travel_period', '') or ''
+            periods1 = set(p1.split(', '))
+            periods2 = set(p2.split(', '))
+            
+            has_overlap = 'Flexibel' in periods1 or 'Flexibel' in periods2 or len(periods1.intersection(periods2)) > 0
+            
+            if not has_overlap:
+                continue
+
             score = calculate_match_score(seed_profile, candidate)
             if score != -1: 
                 candidates.append((score, candidate))
