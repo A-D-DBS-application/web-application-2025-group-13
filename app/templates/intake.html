@@ -50,7 +50,7 @@
         margin-bottom: 8px;
     }
 
-    input[type="number"], select {
+    input[type="number"], select, input[type="email"] {
         width: 100%;
         padding: 12px;
         border: 2px solid #eee;
@@ -58,6 +58,7 @@
         font-size: 1rem;
         box-sizing: border-box;
         transition: border 0.2s;
+        background-color: white;
     }
 
     input:focus, select:focus {
@@ -207,56 +208,54 @@
 
     <form method="POST" action="{{ url_for('submit_intake') }}" id="intakeForm">
         
-        <!-- Leeftijd -->
         <div class="question-group">
             <label class="question-label">1. Hoe oud ben je?</label>
-            <input type="number" name="age" placeholder="Bijv. 24" required min="18" max="99">
+            <input type="number" name="age" placeholder="Bijv. 24" required min="18" max="99" value="{{ profile.age if profile else '' }}">
         </div>
 
-        <!-- Budget -->
         <div class="question-group">
             <label class="question-label">2. Wat is je reisbudget per persoon?</label>
             <div class="budget-grid">
                 <div>
                     <label class="sub-label">Minimum budget (€)</label>
-                    <input type="number" name="budget_min" placeholder="Bijv. 500" required min="0" step="50">
+                    <input type="number" name="budget_min" placeholder="Bijv. 500" required min="0" step="500" value="{{ profile.budget_min if profile else '' }}">
                 </div>
                 <div>
                     <label class="sub-label">Maximum budget (€)</label>
-                    <input type="number" name="budget_max" placeholder="Bijv. 1500" required min="0" step="50">
+                    <input type="number" name="budget_max" placeholder="Bijv. 1500" required min="0" step="500" value="{{ profile.budget_max if profile else '' }}">
                 </div>
             </div>
+            <p style="font-size: 0.8rem; color: #666; margin-top: 5px;">* Vul een veelvoud van 500 in (bv. 500, 1000, 1500).</p>
         </div>
 
-        <!-- Reisperiode -->
         <div class="question-group">
             <label class="question-label">3. Wanneer wil je graag reizen?</label>
             <label class="sub-label">Je mag meerdere periodes kiezen</label>
             <div class="tags-container">
+                {% set periods = profile.travel_period.split(', ') if profile and profile.travel_period else [] %}
+                
                 <label>
-                    <input type="checkbox" name="period" value="Winter (dec-feb)" class="hidden-input">
+                    <input type="checkbox" name="period" value="Winter (dec-feb)" class="hidden-input" {{ 'checked' if 'Winter (dec-feb)' in periods }}>
                     <span class="tag-label">❄️ Winter (dec-feb)</span>
                 </label>
                 <label>
-                    <input type="checkbox" name="period" value="Lente (mrt-mei)" class="hidden-input">
+                    <input type="checkbox" name="period" value="Lente (mrt-mei)" class="hidden-input" {{ 'checked' if 'Lente (mrt-mei)' in periods }}>
                     <span class="tag-label">🌸 Lente (mrt-mei)</span>
                 </label>
                 <label>
-                    <input type="checkbox" name="period" value="Zomer (jun-aug)" class="hidden-input">
+                    <input type="checkbox" name="period" value="Zomer (jun-aug)" class="hidden-input" {{ 'checked' if 'Zomer (jun-aug)' in periods }}>
                     <span class="tag-label">☀️ Zomer (jun-aug)</span>
                 </label>
                 <label>
-                    <input type="checkbox" name="period" value="Herfst (sep-nov)" class="hidden-input">
+                    <input type="checkbox" name="period" value="Herfst (sep-nov)" class="hidden-input" {{ 'checked' if 'Herfst (sep-nov)' in periods }}>
                     <span class="tag-label">🍂 Herfst (sep-nov)</span>
                 </label>
                 <label>
-                    <input type="checkbox" name="period" value="Flexibel" class="hidden-input">
+                    <input type="checkbox" name="period" value="Flexibel" class="hidden-input" {{ 'checked' if 'Flexibel' in periods }}>
                     <span class="tag-label">🔄 Flexibel</span>
                 </label>
             </div>
         </div>
-
-        <!-- Alle slider vragen blijven identiek — ik verwijder enkel walker -->
 
         <div class="question-group">
             <label class="question-label">1. Hoe avontuurlijk ben je op reis?</label>
@@ -323,7 +322,6 @@
             </div>
         </div>
 
-        <!-- 2. Jouw Reisstijl -->
         <div class="question-group">
             <label class="question-label">6. Hoe belangrijk is comfort qua verblijf?</label>
             <div class="rating-container">
@@ -402,7 +400,6 @@
             </div>
         </div>
 
-        <!-- 3. Wat vind je leuk? -->
         <div class="question-group">
             <label class="question-label">12. Wat vind je van Citytrips?</label>
             <div class="rating-container">
@@ -468,13 +465,11 @@
             </div>
         </div>
 
-        <!-- Buddy -->
         <div style="background: #e0f7fa; padding: 20px; border-radius: 15px; margin-bottom: 30px; border: 1px solid #b2dfdb;">
             <h3 style="color: #007B7F; margin-top: 0;">👥 Reis je samen?</h3>
             <p style="color: #555; font-size: 0.9rem; margin-bottom: 15px;">
                 Vul het e-mailadres van je partner of vriend(in) in zodat we jullie samen kunnen indelen.
             </p>
-            <label class="question-label">E-mailadres partner/vriend(in)</label>
             <input type="email" name="buddy_email" placeholder="bv. partner@example.com" style="width:100%; padding:12px; border-radius:10px; border:2px solid #b2dfdb;">
             <p style="font-size: 0.8rem; color:#007B7F;">ℹ️ Zorg dat je partner zich ook registreert met ditzelfde e-mailadres.</p>
         </div>
@@ -487,17 +482,36 @@
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Budget & periode validatie
     const form = document.getElementById('intakeForm');
     
     form.addEventListener('submit', function(e) {
-        const minBudget = parseInt(document.querySelector('input[name="budget_min"]').value);
-        const maxBudget = parseInt(document.querySelector('input[name="budget_max"]').value);
+        // Gebruikers kunnen nu alles invullen, dus we moeten checken op veelvoud van 500
+        const minBudgetEl = document.querySelector('[name="budget_min"]');
+        const maxBudgetEl = document.querySelector('[name="budget_max"]');
+        
+        if (minBudgetEl && maxBudgetEl) {
+            const minBudget = parseInt(minBudgetEl.value);
+            const maxBudget = parseInt(maxBudgetEl.value);
 
-        if (maxBudget < minBudget) {
-            e.preventDefault();
-            alert('Je maximum budget moet hoger zijn dan je minimum budget!');
-            return;
+            // Validatie 1: Is het een veelvoud van 500?
+            if (minBudget % 500 !== 0) {
+                e.preventDefault();
+                alert('Het minimum budget moet een veelvoud van 500 zijn (bijv. 500, 1000).');
+                return;
+            }
+
+            if (maxBudget % 500 !== 0) {
+                e.preventDefault();
+                alert('Het maximum budget moet een veelvoud van 500 zijn (bijv. 1500, 2000).');
+                return;
+            }
+
+            // Validatie 2: Is max groter dan min?
+            if (maxBudget < minBudget) {
+                e.preventDefault();
+                alert('Je maximum budget moet hoger zijn dan (of gelijk aan) je minimum budget!');
+                return;
+            }
         }
 
         const periods = document.querySelectorAll('input[name="period"]:checked');
