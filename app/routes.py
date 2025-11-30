@@ -135,14 +135,28 @@ def get_group_stats(match_id):
     if not profiles:
         return None
         
+    # Leeftijd (Min - Max + Gemiddelde)
     ages = [p.age for p in profiles if p.age]
-    budgets = [p.budget_max for p in profiles if p.budget_max]
+    if ages:
+        avg_age = round(sum(ages) / len(ages))
+        age_str = f"{min(ages)} - {max(ages)} (Gem. {avg_age})"
+    else:
+        age_str = "?"
+        
+    # Budget (Overlap: Hoogste Minimum - Laagste Maximum)
+    mins = [p.budget_min for p in profiles if p.budget_min is not None]
+    maxs = [p.budget_max for p in profiles if p.budget_max is not None]
     
-    min_age = min(ages) if ages else 0
-    max_age = max(ages) if ages else 0
-    
-    min_budget = min(budgets) if budgets else 0
-    max_budget = max(budgets) if budgets else 0
+    if mins and maxs:
+        safe_min = max(mins) # De hoogste ondergrens
+        safe_max = min(maxs) # De laagste bovengrens
+        
+        if safe_min > safe_max:
+            budget_str = f"€{safe_max} (Krap)"
+        else:
+            budget_str = f"€{safe_min} - €{safe_max}"
+    else:
+        budget_str = "?"
     
     # Top interests
     interest_fields = [
@@ -161,8 +175,8 @@ def get_group_stats(match_id):
     top_3 = [k.replace('_', ' ').title() for k, v in sorted_interests[:3]]
     
     return {
-        'age_range': f"{min_age} - {max_age}",
-        'budget_range': f"€{min_budget} - €{max_budget}",
+        'age_range': age_str,
+        'budget_range': budget_str,
         'top_interests': top_3
     }
 
@@ -792,10 +806,6 @@ def register_routes(app):
                 if group_id and trip_id:
                     trip = Trip.query.get(trip_id)
                     
-                    if trip.travel_org_id != session['user_id']:
-                        flash('Je kunt alleen je eigen reizen koppelen!', 'danger')
-                        return redirect(url_for('organizer_groups'))
-
                     # Check of de groep al een reis heeft
                     existing_trip = Trip.query.filter_by(match_id=group_id).first()
                     if existing_trip:
@@ -892,10 +902,9 @@ def register_routes(app):
             group_vibes[match_id] = calculate_group_vibe(match_id)
             group_stats[match_id] = get_group_stats(match_id)
 
-        # Dropdown alleen voor ONGEKOPPELDE reizen van MIJ
+        # Dropdown voor ALLE ONGEKOPPELDE reizen (niet alleen van mij)
         trips_for_dropdown = Trip.query.filter(
-            Trip.match_id.is_(None),
-            Trip.travel_org_id == session['user_id']
+            Trip.match_id.is_(None)
         ).all()
         
         unassigned_users = User.query.outerjoin(
