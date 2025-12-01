@@ -159,19 +159,46 @@
     }
 
     .reviews-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        display: flex;
+        overflow-x: auto;
         gap: 30px;
         margin-top: 40px;
+        padding-bottom: 20px; /* Ruimte voor scrollbar */
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Scrollbar styling */
+    .reviews-grid::-webkit-scrollbar {
+        height: 8px;
+    }
+    .reviews-grid::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+    .reviews-grid::-webkit-scrollbar-thumb {
+        background: #007B7F;
+        border-radius: 4px;
+    }
+    .reviews-grid::-webkit-scrollbar-thumb:hover {
+        background: #005f62;
     }
 
     .review-card {
+        width: 300px;
+        min-width: 300px;
+        flex: 0 0 auto;
+        scroll-snap-align: start;
+        
         background: white;
         padding: 30px;
         border-radius: 15px;
         box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         text-align: left;
         position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     .review-card::before {
@@ -203,7 +230,11 @@
         width: 50px;
         height: 50px;
         border-radius: 50%;
-        background: #ddd;
+        background: #e0f7fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
     }
 
     .author-info h5 { margin: 0; color: #333; }
@@ -261,32 +292,52 @@
         <h2 class="section-title">Wat reizigers zeggen</h2>
         <div class="reviews-grid">
             <div class="review-card">
-                <p class="review-text">"Ik zag er tegenop om alleen te reizen, maar via TrailTribe kwam ik in een groep terecht die voelde als vrienden die ik al jaren kende. De match was perfect!"</p>
+                <p class="review-text">"Ik ben inmiddels al meerdere keren met TrailTribe op reis geweest, onder meer naar Portugal, en ik ben nog nooit teleurgesteld geweest. De organisatie is helder en betrouwbaar, en de activiteiten – zoals hiken, lokale uitstappen en gezellige avonden – zorgen voor een leuke mix. Tijdens deze reizen heb ik telkens nieuwe, fijne mensen leren kennen met wie het meteen klikte. Een aanrader voor wie actief wil reizen in een ontspannen sfeer."</p>
                 <div class="review-author">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Felix" class="author-avatar">
+                    <div class="author-avatar">👨</div>
                     <div class="author-info">
-                        <h5>Felix (24)</h5>
-                        <span>Ging naar Noorwegen</span>
-                    </div>
-                </div>
-            </div>
-            <div class="review-card">
-                <p class="review-text">"Eindelijk een reisorganisatie die snapt dat budget en 'vibe' belangrijker zijn dan alleen de bestemming. Top ervaring gehad in Portugal."</p>
-                <div class="review-author">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" alt="Sarah" class="author-avatar">
-                    <div class="author-info">
-                        <h5>Sarah (29)</h5>
+                        <h5>Geert (28)</h5>
                         <span>Ging naar Portugal</span>
                     </div>
                 </div>
             </div>
             <div class="review-card">
-                <p class="review-text">"De intake was leuk om te doen en het resultaat klopte precies. Geen feestbeesten in mijn rustige wandelgroep, heerlijk!"</p>
+                <p class="review-text">"Ik ben met TrailTribe naar Barcelona geweest en het was een ideale mix van cultuur en uitgaan. We bezochten musea, aten in kleine lokale plekken en ontdekten enkele zeer goede clubs. De organisatie was strak en de groep bestond uit jonge mensen met een gelijkaardig tempo. Voor mij blijft TrailTribe een betrouwbare keuze."</p>
                 <div class="review-author">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Mark" alt="Mark" class="author-avatar">
+                    <div class="author-avatar">👩</div>
                     <div class="author-info">
-                        <h5>Mark (35)</h5>
-                        <span>Ging naar de Dolomieten</span>
+                        <h5>Emma (24)</h5>
+                        <span>Ging naar Barcelona</span>
+                    </div>
+                </div>
+            </div>
+            <div class="review-card">
+                <p class="review-text">"Dit was mijn derde reis met TrailTribe en ook Georgië stelde niet teleur. We trokken door valleien, proefden lokale gerechten en stonden vaak vroeg op om het programma te halen. Ik heb opnieuw een diverse groep leren kennen, jong en ouder door elkaar, en de sfeer zat vanaf dag één goed."</p>
+                <div class="review-author">
+                    <div class="author-avatar">👨</div>
+                    <div class="author-info">
+                        <h5>Thomas (31)</h5>
+                        <span>Ging naar Georgië</span>
+                    </div>
+                </div>
+            </div>
+            <div class="review-card">
+                <p class="review-text">"Mijn reis naar Marokko was actief en avontuurlijk. Overdag deden we stadswandelingen en marktbezoeken, en ’s avonds genoten we van rustige momenten op het dakterras. TrailTribe combineert alles op een evenwichtige manier. Ik heb veel nieuwe mensen ontmoet met heel uiteenlopende interesses."</p>
+                <div class="review-author">
+                    <div class="author-avatar">👩</div>
+                    <div class="author-info">
+                        <h5>Sara (27)</h5>
+                        <span>Ging naar Marokko</span>
+                    </div>
+                </div>
+            </div>
+            <div class="review-card">
+                <p class="review-text">"De Praag-reis was één van de leukste tot nu toe. Overdag bezochten we musea en historische plekken, en ’s avonds trokken we naar een paar sterke clubs. De organisatie liet voldoende ruimte voor eigen keuzes. Ik heb veel leeftijdsgenoten ontmoet met wie het direct klikte. Ik zou meteen opnieuw vertrekken."</p>
+                <div class="review-author">
+                    <div class="author-avatar">👨</div>
+                    <div class="author-info">
+                        <h5>Pieter (22)</h5>
+                        <span>Ging naar Tsjechië</span>
                     </div>
                 </div>
             </div>
