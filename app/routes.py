@@ -231,17 +231,33 @@ def create_automatic_groups():
     seed_profile = available_profiles.pop(0)
     group_members.append(seed_profile)
     
+    # Houd de gezamenlijke budget range bij van de HELE groep
+    current_group_min = seed_profile.budget_min
+    current_group_max = seed_profile.budget_max
+
     # Heeft de seed een buddy? Voeg die direct toe
     if seed_profile.linked_buddy_id:
         buddy = pop_profile_by_id(seed_profile.linked_buddy_id)
         if buddy:
-            group_members.append(buddy)
-    
+            # Check of buddy past in budget (zou moeten als ze buddies zijn, maar voor zekerheid)
+            new_min = max(current_group_min, buddy.budget_min)
+            new_max = min(current_group_max, buddy.budget_max)
+            
+            # Eis: Minimaal 500 overlap (dus max - min >= 500)
+            if (new_max - new_min) >= 500:
+                group_members.append(buddy)
+                current_group_min = new_min
+                current_group_max = new_max
+            else:
+                # Buddy past niet in budget range -> Buddy wordt niet toegevoegd aan deze groep
+                # (In praktijk zou je hier misschien de seed ook willen skippen, maar voor nu laten we seed staan)
+                available_profiles.append(buddy) # Zet buddy terug
+
     # Vul de rest van DEZE groep aan tot 20 (of tot op is)
     while len(group_members) < GROUP_SIZE and len(available_profiles) > 0:
         candidates = []
         for candidate in available_profiles:
-            # Check period overlap with seed_profile (Harde eis voor groepsvorming)
+            # 1. Check period overlap with seed_profile (Harde eis voor groepsvorming)
             p1 = getattr(seed_profile, 'travel_period', '') or ''
             p2 = getattr(candidate, 'travel_period', '') or ''
             periods1 = set(p1.split(', '))
@@ -252,31 +268,53 @@ def create_automatic_groups():
             if not has_overlap:
                 continue
 
+            # 2. Check Budget Overlap met de HELE groep (Harde eis)
+            # De nieuwe kandidaat moet passen binnen de huidige groeps-range
+            # EN de overlap moet minstens 500 zijn.
+            
+            new_min = max(current_group_min, candidate.budget_min)
+            new_max = min(current_group_max, candidate.budget_max)
+            
+            # Als new_max - new_min < 500, is de overlap te klein (of negatief)
+            if (new_max - new_min) < 500:
+                continue
+
             score = calculate_match_score(seed_profile, candidate)
             if score != -1: 
-                candidates.append((score, candidate))
+                # Sla ook de nieuwe range op, zodat we die kunnen updaten als we deze kandidaat kiezen
+                candidates.append((score, candidate, new_min, new_max))
         
         # Sorteer op beste score
         candidates.sort(key=lambda x: x[0], reverse=True)
         
         if not candidates:
-            break # Geen matches meer gevonden die bij de seed passen
+            break # Geen matches meer gevonden die bij de groep passen
         
-        best_score, best_match = candidates[0]
+        best_score, best_match, new_min, new_max = candidates[0]
         
         # NIEUW: Drempelwaarde van 50%
         if best_score < 50:
             break
         
-        # Voeg beste match toe
+        # Voeg beste match toe en update groeps-range
         available_profiles.remove(best_match)
         group_members.append(best_match)
+        current_group_min = new_min
+        current_group_max = new_max
         
-        # Heeft deze match een buddy? Voeg die ook toe (mits plek)
+        # Heeft deze match een buddy? Voeg die ook toe (mits plek en budget past)
         if best_match.linked_buddy_id and len(group_members) < GROUP_SIZE:
             buddy = pop_profile_by_id(best_match.linked_buddy_id)
             if buddy:
-                group_members.append(buddy)
+                b_min = max(current_group_min, buddy.budget_min)
+                b_max = min(current_group_max, buddy.budget_max)
+                
+                if (b_max - b_min) >= 500:
+                    group_members.append(buddy)
+                    current_group_min = b_min
+                    current_group_max = b_max
+                else:
+                    available_profiles.append(buddy) # Buddy past niet, zet terug
     
     # --- OPSLAAN IN DATABASE ---
     for member in group_members:
@@ -506,7 +544,7 @@ def register_routes(app):
                 flash('Je profiel is opgeslagen! 🎉', 'success')
             
             db.session.commit()
-            return redirect(url_for('match'))
+            return redirect(url_for('intake'))
             
         except Exception as e:
             db.session.rollback()
