@@ -569,13 +569,15 @@ def register_routes(app):
             flash('Vul eerst je profiel in!', 'warning')
             return redirect(url_for('intake'))
         
-        all_profiles = TravelerProfile.query.filter(TravelerProfile.user_id != session['user_id']).all()
+        # OPTIMALISATIE: Eager loading van user data
+        all_profiles = TravelerProfile.query.options(joinedload(TravelerProfile.user)).filter(TravelerProfile.user_id != session['user_id']).all()
         
         matches = []
         for profile in all_profiles:
             score = calculate_match_score(my_profile, profile)
             
-            user = User.query.get(profile.user_id)
+            # Gebruik de eager loaded user in plaats van een nieuwe query
+            user = profile.user
             
             matches.append({
                 'user': user,
