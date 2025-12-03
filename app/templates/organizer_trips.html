@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div style="max-width: 1000px; margin: 40px auto; padding: 20px;">
+<div class="trips-container">
     
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <div class="trips-header">
         <h1 style="color: #007B7F; margin:0;">Alle reizen in aanbod ({{ trips|length }})</h1>
         
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <a href="{{ url_for('organizer_create_trip') }}" style="background-color: #3e8e9e; color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.9rem;">
+        <div class="trips-actions">
+            <a href="{{ url_for('organizer_create_trip') }}" class="add-trip-btn">
                 + Nieuwe reis
             </a>
             <a href="{{ url_for('organizer_dashboard') }}" style="color: #007B7F; text-decoration: none; font-weight: bold; align-self: center;">← Dashboard</a>
@@ -16,44 +16,45 @@
 
     <p style="color: #666; margin-bottom: 30px;">Dit zijn alle reizen die door alle organisatoren zijn toegevoegd.</p>
 
-    <div style="display: flex; flex-direction: column; gap: 20px;">
+    <div class="trips-list">
         {% for trip_info in trips %}
         {% set trip = trip_info.trip %}
         {% set border_color = '#28a745' if trip.match_id else '#dc3545' %}
-        <div style="background: white; padding: 25px; border-radius: 12px; border-left: 5px solid {{ border_color }}; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <h3 style="margin: 0 0 5px 0; color: #007B7F; font-size: 1.5rem;">{{ trip.destination }}</h3>
-                    <div style="color: #666; font-size: 0.9rem; margin-bottom: 10px;">
+        {% set border_class = 'trip-item-matched' if trip.match_id else 'trip-item-unmatched' %}
+        <div class="trip-item-card {{ border_class }}">
+            <div class="trip-item-content">
+                <div class="trip-details">
+                    <h3>{{ trip.destination }}</h3>
+                    <div class="trip-meta">
                         <span>Georganiseerd door: <strong>{{ trip_info.organizer_name }}</strong></span>
                     </div>
-                    <div style="color: #666; font-size: 0.9rem; display:flex; gap:15px;">
+                    <div class="trip-dates">
                         <span>📅 {{ trip.start_date }} <span style="color:#ccc">➔</span> {{ trip.end_date }}</span>
                         <span>👥 Max. {{ trip.max_spots }} plekken</span>
                     </div>
                 </div>
-                <div style="text-align: right;">
-                    <div style="font-size: 1.8rem; font-weight: bold; color: #333;">€{{ trip.price | int }}</div>
-                    <div style="font-size: 0.8rem; color: #888;">Voorschot: €{{ trip.deposit_amount | int }}</div>
+                <div class="trip-price-area">
+                    <div class="trip-price">€{{ trip.price | int }}</div>
+                    <div class="trip-deposit">Voorschot: €{{ trip.deposit_amount | int }}</div>
                     {% if trip.match_id %}
-                        <div style="margin-top: 10px; font-size: 0.9rem; color: #28a745; font-weight: bold; background: #d4edda; padding: 5px 10px; border-radius: 5px;">
+                        <div class="trip-match-status matched-status">
                             ✅ Gekoppeld aan Groep #{{ trip.match_id }}
                         </div>
                     {% else %}
-                         <div style="margin-top: 10px; font-size: 0.9rem; color: #dc3545; font-weight: bold; background: #f8d7da; padding: 5px 10px; border-radius: 5px;">
+                         <div class="trip-match-status unmatched-status">
                             ❌ Nog niet gekoppeld
                         </div>
                     {% endif %}
                 </div>
             </div>
             
-            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed #eee;">
-                <p style="font-size: 0.9rem; color: #444; margin-bottom: 5px;">**Beschrijving:** {{ trip.description | default('') | truncate(150, True) }}</p>
-                <p style="font-size: 0.9rem; color: #444;">**Highlights:** {{ trip.activities | default('') | truncate(100, True) }}</p>
+            <div class="trip-more-info">
+                <p>**Beschrijving:** {{ trip.description | default('') | truncate(150, True) }}</p>
+                <p>**Highlights:** {{ trip.activities | default('') | truncate(100, True) }}</p>
             </div>
         </div>
         {% else %}
-        <div style="text-align: center; padding: 60px; background: #fff3cd; border-radius: 12px; border: 2px dashed #ffeeba; color: #856404;">
+        <div class="no-trips-alert">
             <div style="font-size: 3rem; margin-bottom: 10px;">📭</div>
             Er zijn nog geen reizen toegevoegd door enige organisator.
         </div>
@@ -61,3 +62,4 @@
     </div>
 </div>
 {% endblock %}
+

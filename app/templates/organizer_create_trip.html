@@ -1,59 +1,59 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div style="max-width: 700px; margin: 40px auto; padding: 20px;">
+<div class="trip-form-container">
     
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <div class="trip-form-header">
         <h1 style="color: #007B7F; margin:0;">✈️ Nieuwe Reis Aanmaken</h1>
         <a href="{{ url_for('organizer_dashboard') }}" style="color: #007B7F; text-decoration: none; font-weight: bold;">← Terug naar Dashboard</a>
     </div>
 
-    <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05);">
+    <div class="trip-form-card">
         
         <form method="POST" action="{{ url_for('organizer_create_trip') }}">
-            <label style="display:block; margin:15px 0 5px; font-weight:600; color:#444;">Bestemming</label>
+            <label class="form-label">Bestemming</label>
             <input type="text" name="destination" required placeholder="bv. Roadtrip IJsland" 
-                   style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
+                   class="form-input">
 
-            <div style="display: flex; gap: 15px;">
-                <div style="flex: 1;">
-                    <label style="display:block; margin:15px 0 5px; font-weight:600; color:#444;">Begindatum</label>
+            <div class="form-date-group">
+                <div>
+                    <label class="form-label">Begindatum</label>
                     <input type="date" name="start_date" required 
-                           style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
+                           class="form-input">
                 </div>
-                <div style="flex: 1;">
-                    <label style="display:block; margin:15px 0 5px; font-weight:600; color:#444;">Einddatum</label>
+                <div>
+                    <label class="form-label">Einddatum</label>
                     <input type="date" name="end_date" required 
-                           style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
+                           class="form-input">
                 </div>
             </div>
 
-            <label style="display:block; margin:15px 0 5px; font-weight:600; color:#444;">Prijs p.p. (€)</label>
+            <label class="form-label">Prijs p.p. (€)</label>
             <input type="number" name="price" required placeholder="1250" step="0.01" 
-                   style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
+                   class="form-input">
 
-            <div style="display: flex; gap: 15px;">
-                <div style="flex: 1;">
-                    <label style="display:block; margin:15px 0 5px; font-weight:600; color:#444;">Max. Plaatsen</label>
+            <div class="form-spots-group">
+                <div>
+                    <label class="form-label">Max. Plaatsen</label>
                     <input type="number" name="max_spots" required value="20" min="1"
-                           style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
+                           class="form-input">
                 </div>
-                <div style="flex: 1;">
-                    <label style="display:block; margin:15px 0 5px; font-weight:600; color:#444;">Voorschot (€)</label>
+                <div>
+                    <label class="form-label">Voorschot (€)</label>
                     <input type="number" name="deposit_amount" required value="250" min="0" step="10"
-                           style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
+                           class="form-input">
                 </div>
             </div>
 
-            <label style="display:block; margin:15px 0 5px; font-weight:600; color:#444;">Beschrijving (Wat gaan we doen?)</label>
+            <label class="form-label">Beschrijving (Wat gaan we doen?)</label>
             <textarea name="description" rows="4" placeholder="Beschrijf de reis, de sfeer en wat de reizigers kunnen verwachten..." 
-                      style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box; font-family: inherit;"></textarea>
+                      class="form-textarea"></textarea>
 
-            <label style="display:block; margin:15px 0 5px; font-weight:600; color:#444;">Activiteiten / Highlights</label>
+            <label class="form-label">Activiteiten / Highlights</label>
             <textarea name="activities" rows="3" placeholder="Bijv: Noorderlicht spotten, Gletsjer wandeling, Blue Lagoon..." 
-                      style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box; font-family: inherit;"></textarea>
+                      class="form-textarea"></textarea>
 
-            <button type="submit" style="width:100%; margin-top:25px; background:#007B7F; color:white; padding:14px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:1rem; transition: background 0.2s;">
+            <button type="submit" class="form-submit-btn">
                 + Voeg Trip Toe
             </button>
         </form>

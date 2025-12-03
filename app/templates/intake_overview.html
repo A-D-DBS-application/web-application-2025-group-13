@@ -1,99 +1,14 @@
 {% extends "base.html" %}
 
-{% block styles %}
-<style>
-    h1 { color: #007B7F; text-align: center; margin-bottom: 0.5em; }
-    .container { max-width: 900px; width: 95%; margin: 20px auto; }
-    
-    .overview-card {
-      background-color: white; padding: 30px; border-radius: 10px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.1); border: 3px solid #007B7F;
-      margin-bottom: 20px;
-    }
-    
-    .section {
-      background: #f9f9f9; padding: 20px; border-radius: 8px;
-      margin-bottom: 20px; border-left: 4px solid #007B7F;
-    }
-    
-    .section h2 {
-      color: #007B7F; margin-top: 0; margin-bottom: 15px;
-      font-size: 1.3rem;
-    }
-    
-    .detail-row {
-      display: flex; margin-bottom: 12px; font-size: 0.95rem;
-      padding: 8px 0; border-bottom: 1px dashed rgba(0,123,127,0.2);
-    }
-    .detail-row:last-child { border-bottom: none; }
-    
-    .detail-label { 
-      font-weight: bold; color: #007B7F; min-width: 200px; 
-    }
-    .detail-value { color: #333; flex: 1; }
-    
-    .rating-bar {
-      display: flex; gap: 4px; align-items: center;
-    }
-    .rating-circle {
-      width: 30px; height: 30px; border-radius: 50%;
-      background: #e0e0e0; display: inline-block;
-    }
-    .rating-circle.filled {
-      background: linear-gradient(135deg, #007B7F, #00a89b);
-    }
-    .rating-label {
-      margin-left: 10px; font-size: 0.9rem; color: #666;
-    }
-    
-    .button-group {
-      display: flex; gap: 15px; justify-content: center;
-      margin-top: 30px; flex-wrap: wrap;
-    }
-    
-    button, .btn {
-      background-color: #007B7F; color: white; border: none;
-      padding: 14px 28px; border-radius: 8px; cursor: pointer;
-      font-weight: bold; text-decoration: none; display: inline-block;
-      font-size: 1rem; transition: background-color 0.2s;
-    }
-    button:hover, .btn:hover { background-color: #00605f; }
-    
-    .btn-edit {
-      background-color: #ff9800;
-    }
-    .btn-edit:hover { background-color: #e68900; }
-    
-    .btn-matches {
-      background-color: #4CAF50;
-    }
-    .btn-matches:hover { background-color: #45a049; }
-    
-    .info-box {
-      background: #d4edda; border: 2px solid #28a745;
-      padding: 15px; border-radius: 8px; margin-bottom: 20px;
-      color: #155724;
-    }
-    
-    @media (max-width: 720px) {
-      .detail-row { flex-direction: column; }
-      .detail-label { min-width: auto; margin-bottom: 4px; }
-      .button-group { flex-direction: column; }
-      button, .btn { width: 100%; }
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="container">
-  <h1>Jouw Intake Overzicht</h1>
+<div class="intake-overview-container">
+  <h1 class="intake-overview-h1">Jouw Intake Overzicht</h1>
   
   <div class="info-box">
     <strong>✓ Je profiel is compleet!</strong> Bekijk hieronder jouw voorkeuren. Je kunt het altijd aanpassen door op "Wijzig profiel" te klikken.
   </div>
   
   <div class="overview-card">
-    <!-- Basis informatie -->
     <div class="section">
       <h2>👤 Basisgegevens</h2>
       <div class="detail-row">
@@ -110,7 +25,6 @@
       </div>
     </div>
 
-    <!-- Budget & Periode -->
     <div class="section">
       <h2>💰 Budget & Reisperiode</h2>
       <div class="detail-row">
@@ -123,11 +37,9 @@
       </div>
     </div>
 
-    <!-- Interesses & Voorkeuren -->
     <div class="section">
       <h2>🎯 Jouw Vibe & Reisstijl</h2>
       
-      <!-- 1. Basis Vibe -->
       <h3 style="color: #007B7F; font-size: 1.1rem; margin-top: 15px; margin-bottom: 10px;">Basis Vibe</h3>
       
       <div class="detail-row">
@@ -151,7 +63,6 @@
         <div class="detail-value">{{ profile.nature_lover }}/5</div>
       </div>
 
-      <!-- 2. Reisstijl -->
       <h3 style="color: #007B7F; font-size: 1.1rem; margin-top: 15px; margin-bottom: 10px;">Reisstijl</h3>
       
       <div class="detail-row">
@@ -179,7 +90,6 @@
         <div class="detail-value">{{ profile.chaos_tolerance }}/5</div>
       </div>
 
-      <!-- 3. Wat vind je leuk? -->
       <h3 style="color: #007B7F; font-size: 1.1rem; margin-top: 15px; margin-bottom: 10px;">Interesses</h3>
       
       <div class="detail-row">

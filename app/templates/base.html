@@ -4,104 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TrailTribe</title>
-    <style>
-        /* ALGEMENE STIJL (MODERN & SCHOON) */
-        :root {
-            --primary: #007B7F;
-            --primary-dark: #005f62;
-            --bg-color: #f4f7f6;
-            --text-dark: #333;
-            --text-light: #666;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding-top: 80px; /* Ruimte voor de fixed navbar */
-            background-color: var(--bg-color);
-            color: var(--text-dark);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* NAVBAR styling */
-        nav {
-            background-color: white; /* Wit oogt frisser dan donkergroen voor de hele balk */
-            height: 80px;
-            width: 100%;
-            position: fixed;
-            top: 0; left: 0;
-            z-index: 1000;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 5%; /* Zorgt dat content niet tegen de rand plakt */
-            box-sizing: border-box;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.05); /* Subtiele schaduw */
-        }
-
-        /* Het Logo */
-        .nav-brand {
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: var(--primary);
-            text-decoration: none;
-            letter-spacing: -0.5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* De Links */
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-        }
-
-        .nav-link {
-            color: var(--text-dark);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: color 0.3s;
-        }
-
-        .nav-link:hover {
-            color: var(--primary);
-        }
-
-        /* De Login / Profiel Knop */
-        .btn-nav {
-            background-color: var(--primary);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: background 0.3s, transform 0.2s;
-        }
-
-        .btn-nav:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-1px);
-        }
-        
-        .user-greeting {
-            font-weight: bold;
-            color: var(--primary);
-            margin-right: 10px;
-        }
-
-        /* Flash messages (meldingen) */
-        .flash-container { width: 90%; max-width: 800px; margin: 20px auto 0 auto; }
-        .alert { padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px; font-weight: 500; }
-        .alert-success { background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
-        .alert-danger { background-color: #f8d7da; color: #842029; border: 1px solid #f5c6cb; }
-        .alert-info { background-color: #cff4fc; color: #055160; border: 1px solid #b6effb; }
-
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     {% block styles %}{% endblock %}
 </head>
 <body>
@@ -117,10 +20,10 @@
                 <a href="{{ url_for('my_group') }}" class="nav-link">Mijn Groep</a>
             {% endif %}
             <a href="{{ url_for('about') }}" class="nav-link">Over ons</a>
+            <a href="{{ url_for('contact') }}" class="nav-link">Contact</a>
 
             {% if session.get('user_id') %}
                 <div style="display: flex; align-items: center; gap: 15px;">
-                    <!-- NOTIFICATIE BELL -->
                     {% if session.get('role') == 'traveller' %}
                         <a href="{{ url_for('notifications') }}" style="position: relative; text-decoration: none; color: #333; font-size: 1.2rem;">
                             🔔

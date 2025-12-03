@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="contact-container">
+    <h1>Contacteer ons</h1>
+    
+    <p>
+        Heb je een vraag over onze reizen? Contacteer ons op één van de volgende manieren. Lize en Laika beantwoorden met plezier je vragen.
+    </p>
+
+    <div class="contact-method">
+        <h3>✉️ Stuur een mailtje</h3>
+        <p>
+            Heb je interesse in onze reizen en heb je vragen? Stuur dan een mailtje naar 
+            <a href="mailto:reizen@trailtribe.be">reizen@trailtribe.be</a>.
+        </p>
+        <p>
+            Heb je al een boeking, maar is nog niet alles duidelijk? Stuur je mailtje naar 
+            <a href="mailto:boekingen@trailtribe.be">boekingen@trailtribe.be</a>.
+        </p>
+        <div class="info-box">
+            Ten laatste 3 weken voor het vertrek van je trip ontvang je van ons een check-in mail met een link naar de brochure met daarin alle vertrekinformatie: vertreklocatie, vertrekuur, vluchtdetails, bagage-info, je reisleider…
+        </div>
+    </div>
+
+    <div class="contact-method">
+        <h3>📞 Geef ons een belletje</h3>
+        <p>
+            Telefonisch zijn we bereikbaar op het nummer <strong>+32 (0)X 39X 19 X9</strong>. We beantwoorden graag al jouw vragen op werkdagen tussen 9u en 17u.
+        </p>
+    </div>
+
+    <h2>Waar vind je ons op de wereld?</h2>
+    <p>
+        <strong>Trailtribe</strong><br>
+        Tweekerken, 9000 Gent<br>
+        Ondernemingsnummer BE XXX.XXX.XXX
+    </p>
+
+    <div class="disclaimer-section">
+        <h3>Meer informatie over Trailtribe</h3>
+        <p style="font-size: 1.1rem; line-height: 1.8; color: #444; margin-bottom: 20px;">
+            Je wil graag meer informatie over de Trailtribe manier van reizen of mis je nog wat praktische informatie? Lees hier meer info over <a href="{{ url_for('about') }}">Trailtribe</a>.
+        </p>
+        <p>
+            Gerust op reis met Trailtribe: Trailtribe is verzekerd tegen financieel onvermogen.
+        </p>
+        <p>
+            Door contact met Trailtribe op te nemen, ga je akkoord met onze <a href="#">Privacy Policy</a>.
+        </p>
+
+        <h3>Blijf op de hoogte via de nieuwsbrief</h3>
+        <p>
+            Wil je graag op de hoogte gehouden worden over Trailtribe? Schrijf je dan in voor de nieuwsbrief! Je vindt in de e-mail leuke reistips, updates over nieuwe reizen, kortingen, Trailtribe events... Deze nieuwsbrief boordevol reisinspiratie zul je 1 keer per maand in je inbox vinden. Je kunt je inschrijven voor de nieuwsbrief onderaan deze pagina.
+        </p>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -391,6 +391,10 @@ def register_routes(app):
     @app.route('/example-trips')
     def example_trips():
         return render_template('example_trips.html')
+        
+    @app.route('/contact')
+    def contact():
+        return render_template('contact.html')
 
     @app.route('/intake')
     def intake():

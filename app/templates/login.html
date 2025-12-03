@@ -1,30 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div style="width: 100%; min-height: calc(100vh - 80px); display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;">
+<div class="auth-container">
 
-    <div style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); width: 100%; max-width: 400px; text-align: center; border: 1px solid rgba(0,0,0,0.05);">
+    <div class="auth-card">
         
-        <h1 style="color: #007B7F; margin: 0 0 10px 0;">Welkom terug</h1>
-        <p style="color: #888; margin-bottom: 30px; font-size: 0.95rem;">
+        <h1>Welkom terug</h1>
+        <p>
             Log in als reiziger of organisator.
         </p>
 
         <form action="{{ url_for('login') }}" method="post" style="display: flex; flex-direction: column; gap: 20px;">
             
-            <div style="text-align: left;">
-                <label style="font-weight: 600; font-size: 0.9rem; color: #444; display:block; margin-bottom: 8px;">E-mailadres</label>
-                <input type="email" name="email" required placeholder="jouw@email.com" style="width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem; box-sizing: border-box; outline: none;">
+            <div class="auth-input-group">
+                <label>E-mailadres</label>
+                <input type="email" name="email" required placeholder="jouw@email.com" class="auth-input">
             </div>
 
-            <button type="submit" style="background-color: #007B7F; color: white; padding: 15px; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 10px rgba(0,123,127,0.3);">
+            <button type="submit" class="auth-submit-btn">
                 Verder gaan
             </button>
         </form>
 
-        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #f0f0f0; font-size: 0.95rem;">
+        <div class="auth-footer">
             Nog geen account? <br>
-            <a href="{{ url_for('register') }}" style="color: #007B7F; font-weight: bold; text-decoration: none;">Registreer hier als Reiziger of Organisatie</a>
+            <a href="{{ url_for('register') }}">Registreer hier als Reiziger of Organisatie</a>
         </div>
     </div>
 
