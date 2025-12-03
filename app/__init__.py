@@ -17,8 +17,4 @@ def create_app():
     from app.routes import register_routes
     register_routes(app)
 
-    # 5. Tabellen aanmaken als ze niet bestaan
-    with app.app_context():
-        db.create_all()
-
     return app
