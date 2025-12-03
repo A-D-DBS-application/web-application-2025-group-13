@@ -2,6 +2,7 @@ from flask import render_template, request, redirect, url_for, session, flash
 from app import db
 from app.models import User, Organiser, Trip, TravelerProfile, Group, Notification
 from datetime import datetime
+from sqlalchemy.orm import joinedload
 
 
 # ------------------------------------
@@ -802,12 +803,18 @@ def register_routes(app):
             flash('Je hebt geen toegang tot deze pagina.', 'danger')
             return redirect(url_for('home'))
 
-        all_users = User.query.all()
+        # OPTIMALISATIE: Eager loading van profile en groups
+        all_users = User.query.options(
+            joinedload(User.profile),
+            joinedload(User.groups)
+        ).all()
         
         users_with_info = []
         for user in all_users:
-            profile = TravelerProfile.query.filter_by(user_id=user.id).first()
-            group_entry = Group.query.filter_by(user_id=user.id).first()
+            # Gebruik de relaties in plaats van losse queries
+            profile = user.profile
+            # Pak de eerste groep uit de lijst (indien aanwezig)
+            group_entry = user.groups[0] if user.groups else None
             
             status = "Nog Geen Profiel"
             if profile:
