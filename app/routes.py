@@ -1,8 +1,8 @@
-from flask import app, render_template, request, redirect, url_for, session, flash
+from flask import render_template, request, redirect, url_for, session, flash
 from app import db
 from app.models import User, Organiser, Trip, TravelerProfile, Group, Notification
 from datetime import datetime
-import random
+
 
 # ------------------------------------
 # --- HELPER FUNCTIES VOOR ALGORITME ---
