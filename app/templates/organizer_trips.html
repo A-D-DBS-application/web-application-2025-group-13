@@ -21,7 +21,16 @@
         {% set trip = trip_info.trip %}
         {% set border_color = '#28a745' if trip.match_id else '#dc3545' %}
         {% set border_class = 'trip-item-matched' if trip.match_id else 'trip-item-unmatched' %}
-        <div class="trip-item-card {{ border_class }}">
+        
+        <div class="trip-item-card {{ border_class }}" style="position: relative;">
+            
+            <form method="POST" action="{{ url_for('organizer_trips') }}" onsubmit="return confirm('Weet je zeker dat je de reis naar {{ trip.destination }} wilt verwijderen?');" style="position: absolute; top: 15px; right: 15px; z-index: 10;">
+                <input type="hidden" name="delete_trip" value="true">
+                <input type="hidden" name="trip_id" value="{{ trip.id }}">
+                <button type="submit" style="background: white; border: 1px solid #dc3545; border-radius: 50%; width: 35px; height: 35px; color: #dc3545; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1);" title="Verwijder deze reis">
+                    🗑️
+                </button>
+            </form>
             <div class="trip-item-content">
                 <div class="trip-details">
                     <h3>{{ trip.destination }}</h3>
@@ -33,7 +42,7 @@
                         <span>👥 Max. {{ trip.max_spots }} plekken</span>
                     </div>
                 </div>
-                <div class="trip-price-area">
+                <div class="trip-price-area" style="margin-right: 40px;"> 
                     <div class="trip-price">€{{ trip.price | int }}</div>
                     <div class="trip-deposit">Voorschot: €{{ trip.deposit_amount | int }}</div>
                     {% if trip.match_id %}
@@ -49,8 +58,8 @@
             </div>
             
             <div class="trip-more-info">
-                <p>**Beschrijving:** {{ trip.description | default('') | truncate(150, True) }}</p>
-                <p>**Highlights:** {{ trip.activities | default('') | truncate(100, True) }}</p>
+                <p><strong>Beschrijving:</strong> {{ trip.description | default('') | truncate(150, True) }}</p>
+                <p><strong>Highlights:</strong> {{ trip.activities | default('') | truncate(100, True) }}</p>
             </div>
         </div>
         {% else %}
@@ -62,4 +71,3 @@
     </div>
 </div>
 {% endblock %}
-

@@ -1,10 +1,11 @@
-from flask import render_template, request, redirect, url_for, session, flash
+from flask import render_template, request, redirect, url_for, session, flash, Response
 from app import db
 from app.models import User, Organiser, Trip, TravelerProfile, Group, Notification
 from datetime import datetime
 from sqlalchemy.orm import joinedload
+from icalendar import Calendar, Event
 
-# === CONFIGURATIE & LIJSTEN (BEST PRACTICES: SLIDE 7) ===
+# === CONFIGURATIE & LIJSTEN ===
 
 # 1. Reisperiodes
 TRAVEL_PERIODS = [
@@ -217,9 +218,9 @@ def register_routes(app):
         if 'user_id' not in session: return redirect(url_for('login'))
         return render_template('notifications.html', notifications=Notification.query.filter_by(user_id=session['user_id']).order_by(Notification.created_at.desc()).all())
 
-    @app.route('/notifications/mark-read/<int:id>')
-    def mark_notification_read(id):
-        notification = Notification.query.get(id)
+    @app.route('/notifications/mark-read/<int:notif_id>')
+    def mark_notification_read(notif_id):
+        notification = Notification.query.get(notif_id)
         if notification and notification.user_id == session.get('user_id'):
             notification.is_read = True
             db.session.commit()
@@ -353,6 +354,43 @@ def register_routes(app):
                                spots_left=spots_left,
                                my_profile=my_profile)
 
+    # --- NIEUWE ROUTE: ICAL EXPORT ---
+    @app.route('/my-group/calendar')
+    def export_group_calendar():
+        if 'user_id' not in session: return redirect(url_for('login'))
+        
+        # 1. Haal groep en reis op
+        group_entry = Group.query.filter_by(user_id=session['user_id']).first()
+        if not group_entry or not group_entry.match_id:
+            flash("Je zit nog niet in een groep.", "warning")
+            return redirect(url_for('my_group'))
+            
+        trip = Trip.query.filter_by(match_id=group_entry.match_id).first()
+        if not trip:
+            flash("Er is nog geen reis gekoppeld aan jouw groep.", "warning")
+            return redirect(url_for('my_group'))
+            
+        # 2. Maak de iCal aan
+        cal = Calendar()
+        cal.add('prodid', '-//TrailTribe//trailtribe.be//')
+        cal.add('version', '2.0')
+        
+        event = Event()
+        event.add('summary', f"TrailTribe Reis: {trip.destination}")
+        event.add('dtstart', trip.start_date) # SQLAlchemy Date objecten werken prima hier
+        event.add('dtend', trip.end_date)
+        event.add('location', trip.destination)
+        event.add('description', f"Jouw TrailTribe avontuur naar {trip.destination}!\n\nPrijs: €{trip.price}\nActiviteiten: {trip.activities}")
+        
+        cal.add_component(event)
+        
+        # 3. Stuur terug als download
+        return Response(
+            cal.to_ical(),
+            mimetype="text/calendar",
+            headers={"Content-Disposition": f"attachment;filename=trailtribe_{trip.destination}.ics"}
+        )
+
     @app.route('/pay-deposit', methods=['POST'])
     def pay_deposit():
         if 'user_id' in session:
@@ -425,9 +463,29 @@ def register_routes(app):
                 flash(f'Fout bij aanmaken: {e}', 'danger')
         return render_template('organizer_create_trip.html')
 
-    @app.route('/organizer/all-trips')
+    @app.route('/organizer/all-trips', methods=['GET', 'POST'])
+    @app.route('/organizer/all-trips', methods=['GET', 'POST'])
     def organizer_trips():
         if session.get('role') != 'organizer': return redirect(url_for('home'))
+        
+        # --- VERWIJDER LOGICA (AANGEPAST: Iedereen mag verwijderen) ---
+        if request.method == 'POST' and 'delete_trip' in request.form:
+            trip_id = request.form.get('trip_id')
+            trip = Trip.query.get(trip_id)
+            
+            if trip:
+                # Als de reis aan een groep gekoppeld is, de link verbreken
+                groups = Group.query.filter_by(match_id=trip.match_id).all()
+                for member in groups:
+                    create_notification(member.user_id, f"De reis naar {trip.destination} is geannuleerd.")
+                
+                db.session.delete(trip)
+                db.session.commit()
+                flash('Reis succesvol verwijderd.', 'info')
+            else:
+                flash('Reis niet gevonden.', 'warning')
+            
+            return redirect(url_for('organizer_trips'))
         
         trips = Trip.query.options(joinedload(Trip.organiser)).all()
         trips_data = [{'trip': t, 'organizer_name': t.organiser.name if t.organiser else 'Onbekend'} for t in trips]

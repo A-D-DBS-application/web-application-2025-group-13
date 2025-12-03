@@ -25,11 +25,19 @@
                                     📅 {{ trip.start_date }} t/m {{ trip.end_date }} <br>
                                     💰 €{{ trip.price }} p.p.
                                 </p>
+                                
+                                <a href="{{ url_for('export_group_calendar') }}" style="display: inline-block; margin-top: 10px; background-color: #f8f9fa; color: #333; padding: 6px 12px; border-radius: 20px; text-decoration: none; font-size: 0.85rem; border: 1px solid #ddd; font-weight: bold; transition: background 0.2s;">
+                                    📅 Zet in mijn agenda
+                                </a>
+
                             </div>
                         </div>
                         
                         <div class="trip-payment-area">
-                            <div class="spots-counter" style="color: {% if spots_left <= 3 %}#dc3545{% else %}#155724{% endif %};">
+                            
+                            {% set text_color = '#dc3545' if spots_left <= 3 else '#155724' %}
+                            
+                            <div class="spots-counter" style="color: {{ text_color }};">
                                 Nog {{ spots_left }} plekken!
                             </div>
 
@@ -145,4 +153,3 @@
 
 </div>
 {% endblock %}
-
