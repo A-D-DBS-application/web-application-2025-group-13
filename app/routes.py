@@ -319,7 +319,11 @@ def register_routes(app):
                 })
         
         matches.sort(key=lambda x: x['score'], reverse=True)
-        return render_template('match.html', matches=matches, my_profile=my_profile)
+        
+        # Toon alleen de top 10 matches
+        top_matches = matches[:10]
+        
+        return render_template('match.html', matches=top_matches, my_profile=my_profile)
 
     @app.route('/my-group')
     def my_group():
@@ -331,13 +335,18 @@ def register_routes(app):
         if not my_group_entry: 
             return render_template('my_group.html', group=None, my_profile=my_profile)
             
-        group_entries = Group.query.filter_by(match_id=my_group_entry.match_id).all()
-        members = []
+        # OPTIMALISATIE: Eager loading van User en Profile via de Group relatie
+        # We halen de Group entries op, en laden direct de gekoppelde User EN diens Profile
+        group_entries = Group.query.options(
+            joinedload(Group.user).joinedload(User.profile)
+        ).filter_by(match_id=my_group_entry.match_id).all()
         
+        members = []
         for entry in group_entries:
-            user = User.query.get(entry.user_id)
-            profile = TravelerProfile.query.filter_by(user_id=entry.user_id).first()
-            members.append({'user': user, 'profile': profile})
+            # Geen extra queries meer nodig hier!
+            # Check of profile bestaat om errors te voorkomen
+            profile = entry.user.profile if entry.user else None
+            members.append({'user': entry.user, 'profile': profile})
             
         trip = Trip.query.filter_by(match_id=my_group_entry.match_id).first()
         spots_left = 0
