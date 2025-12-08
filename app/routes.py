@@ -692,7 +692,7 @@ def register_routes(app):
             user = User.query.filter_by(email=email).first()
             if user:
                 session.update({'user_id': user.id, 'name': user.name, 'role': 'traveller'})
-                flash(f'Welkom terug, {user.name}!', 'success')
+                flash(f'Welkom, {user.name}!', 'success')
                 return redirect(url_for('home'))
             
             organizer = Organiser.query.filter_by(email=email).first()
