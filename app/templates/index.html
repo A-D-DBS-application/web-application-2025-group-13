@@ -7,7 +7,9 @@
             <h1>Vind jouw reisgroep,<br>start je avontuur.</h1>
             <p>Reizen op basis van wie jij bent. De perfecte match, de perfecte trip.</p>
             <div>
-                <a href="{{ url_for('intake') }}" class="cta-button">Start Intake</a>
+                {% if session.get('role') != 'organizer' %}
+                    <a href="{{ url_for('intake') }}" class="cta-button">Start Intake</a>
+                {% endif %}
                 <a href="{{ url_for('example_trips') }}" class="secondary-button">Bekijk voorbeeldreizen</a>
             </div>
         </div>

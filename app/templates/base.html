@@ -15,7 +15,9 @@
         </a>
 
         <div class="nav-links">
-            <a href="{{ url_for('intake') }}" class="nav-link">Start Intake</a>
+            {% if session.get('role') != 'organizer' %}
+                <a href="{{ url_for('intake') }}" class="nav-link">Start Intake</a>
+            {% endif %}
             {% if session.get('role') == 'traveller' %}
                 <a href="{{ url_for('my_group') }}" class="nav-link">Mijn Groep</a>
             {% endif %}

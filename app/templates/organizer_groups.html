@@ -116,16 +116,20 @@
                         </form>
                     {% endif %}
                     
-                    <form method="POST" action="{{ url_for('organizer_groups') }}" class="add-member-form">
+                    <form method="POST" action="{{ url_for('organizer_groups') }}" class="add-member-form" style="display: flex; flex-direction: column; gap: 8px;">
                         <input type="hidden" name="add_member" value="true">
                         <input type="hidden" name="group_id" value="{{ group_id }}">
-                        <select name="user_id" required class="add-member-select" style="border: 1px solid #17a2b8;">
-                            <option value="" disabled selected>+ Voeg reiziger toe...</option>
-                            {% for u in unassigned_users %}
-                                <option value="{{ u.id }}">{{ u.name }} ({{ u.email }})</option>
-                            {% endfor %}
-                        </select>
-                        <button type="submit" class="add-member-btn" style="background: #17a2b8;">Toevoegen</button>
+                        
+                        <!-- Searchable Input -->
+                        <input list="all_users_list" 
+                               placeholder="🔍 Zoek naam..." 
+                               class="add-member-select" 
+                               style="border: 1px solid #17a2b8; width: 100%; padding: 8px; box-sizing: border-box;"
+                               onchange="updateHiddenId(this, '{{ group_id }}')">
+                        
+                        <input type="hidden" name="user_id" id="user_id_input_{{ group_id }}" required>
+                        
+                        <button type="submit" class="add-member-btn" style="background: #17a2b8; width: 100%;">Toevoegen</button>
                     </form>
                 </div>
             </div>
@@ -138,4 +142,28 @@
         </div>
     {% endif %}
 </div>
+
+<!-- Datalist for Searchable Users -->
+<datalist id="all_users_list">
+    {% for u in unassigned_users %}
+        <option data-id="{{ u.id }}" value="{{ u.name }} ({{ u.email }})"></option>
+    {% endfor %}
+</datalist>
+
+<script>
+function updateHiddenId(input, groupId) {
+    const datalist = document.getElementById('all_users_list');
+    const hiddenInput = document.getElementById('user_id_input_' + groupId);
+    const val = input.value;
+    
+    // Find the option with the matching value
+    const options = datalist.options;
+    for (let i = 0; i < options.length; i++) {
+        if (options[i].value === val) {
+            hiddenInput.value = options[i].getAttribute('data-id');
+            break;
+        }
+    }
+}
+</script>
 {% endblock %}

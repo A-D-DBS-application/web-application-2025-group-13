@@ -576,25 +576,81 @@ def register_routes(app):
                 
             return redirect(url_for('organizer_groups'))
 
-        # GET Request
+        # GET Request - OPTIMIZED
+        # 1. Fetch all groups with users and profiles in ONE query
+        all_group_entries = Group.query.options(
+            joinedload(Group.user).joinedload(User.profile)
+        ).all()
+        
         groups = {}
-        for member in Group.query.all():
-            if member.match_id not in groups: 
-                groups[member.match_id] = []
+        group_profiles = {}
+        
+        for entry in all_group_entries:
+            mid = entry.match_id
+            if mid not in groups:
+                groups[mid] = []
+                group_profiles[mid] = []
             
-            user = User.query.get(member.user_id)
-            user.group_status = member.payment_status 
-            user.group_confirmed = member.confirmed
-            groups[member.match_id].append(user)
+            user = entry.user
+            # Set extra attributes for template
+            user.group_status = entry.payment_status
+            user.group_confirmed = entry.confirmed
+            
+            groups[mid].append(user)
+            if user.profile:
+                group_profiles[mid].append(user.profile)
+
+        # 2. Calculate vibes and stats in memory
+        group_vibes = {}
+        group_stats = {}
+        
+        for mid, profiles in group_profiles.items():
+            # Vibe Calculation (Inline optimized)
+            tags = []
+            if not profiles:
+                tags = ["Lege Groep"]
+            else:
+                def avg(attr): 
+                    v = [getattr(p, attr, 3) for p in profiles if getattr(p, attr, None) is not None]
+                    return sum(v)/len(v) if v else 0
+                
+                if avg('party_animal') >= 3.8: tags.append("🎉 Party Squad")
+                if avg('culture_interest') >= 3.8: tags.append("🏛️ Cultuur Lovers")
+                if avg('nature_lover') >= 3.8: tags.append("🌲 Natuur Vrienden")
+                if avg('adventure_level') >= 3.8: tags.append("🧗 Avonturiers")
+                if avg('budget_max') < 800: tags.append("💰 Budget Reizigers")
+                ages = [p.age for p in profiles if p.age]
+                if ages and (sum(ages)/len(ages)) < 25: tags.append("🎓 Jongeren")
+                if not tags: tags.append("⚖️ Gebalanceerde Groep")
+            group_vibes[mid] = tags
+            
+            # Stats Calculation (Inline optimized)
+            if not profiles:
+                group_stats[mid] = None
+            else:
+                ages = [p.age for p in profiles if p.age]
+                mins = [p.budget_min for p in profiles if p.budget_min]
+                maxs = [p.budget_max for p in profiles if p.budget_max]
+                scores = {q['id']: sum(getattr(p, q['id'], 0) or 0 for p in profiles) for q in VIBE_QUESTIONS}
+                
+                group_stats[mid] = {
+                    'age_range': f"{min(ages)}-{max(ages)}" if ages else "?",
+                    'budget_range': f"€{max(mins)}-€{min(maxs)}" if mins and maxs and max(mins) <= min(maxs) else "Krap budget",
+                    'top_interests': [k.replace('_', ' ').title() for k, v in sorted(scores.items(), key=lambda x: x[1], reverse=True)[:3]]
+                }
 
         assigned_trips = {t.match_id: t for t in Trip.query.filter(Trip.match_id.isnot(None)).all()}
         
+        # 3. Fetch unassigned users efficiently
+        grouped_user_ids = [entry.user_id for entry in all_group_entries]
+        unassigned_users = User.query.filter(User.id.notin_(grouped_user_ids)).all()
+        
         return render_template('organizer_groups.html', 
                                groups=groups, 
-                               group_vibes={k: calculate_group_vibe(k) for k in groups},
-                               group_stats={k: get_group_stats(k) for k in groups},
+                               group_vibes=group_vibes,
+                               group_stats=group_stats,
                                trips=Trip.query.filter(Trip.match_id.is_(None)).all(),
-                               unassigned_users=User.query.filter(User.id.notin_([g.user_id for g in Group.query.all()])).all(),
+                               unassigned_users=unassigned_users,
                                assigned_trips=assigned_trips)
 
     @app.route('/organizer/remove_member/<int:user_id>', methods=['POST'])
