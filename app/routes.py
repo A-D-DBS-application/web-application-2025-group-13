@@ -16,26 +16,25 @@ TRAVEL_PERIODS = [
     {"name": "Flexibel", "icon": "🔄"}
 ]
 
-# 2. Vibe Check Vragen
 VIBE_QUESTIONS = [
-    {"id": "adventure_level",  "text": "Hoe avontuurlijk ben je op reis?", "min": "😌 Liever rustig", "max": "🔥 Zoek avontuur"},
-    {"id": "beach_person",     "text": "Zon & Strand of Schaduw?", "min": "🚫 Geen zand", "max": "🏖️ Bakken"},
-    {"id": "culture_interest", "text": "Interesse in cultuur?", "min": "🥱 Saai", "max": "🏛️ Museumrat"},
-    {"id": "party_animal",     "text": "Uitgaan?", "min": "🍵 Thee & Boek", "max": "🎉 Tot het gaatje"},
-    {"id": "nature_lover",     "text": "Natuur?", "min": "🏙️ Asfalt", "max": "🌲 Into the Wild"},
-    {"id": "luxury_comfort",   "text": "Comfort?", "min": "⛺ Basic", "max": "💎 Luxe"},
-    {"id": "morning_person",   "text": "Ritme?", "min": "😴 Snooze", "max": "🌅 Vroege vogel"},
-    {"id": "planning_freak",   "text": "Planning?", "min": "📋 Alles vast", "max": "🍃 Go with flow"},
-    {"id": "foodie_level",     "text": "Eten?", "min": "🥪 Brandstof", "max": "🍜 Genieten"},
-    {"id": "sporty_spice",     "text": "Activiteit?", "min": "🛗 Lift nemen", "max": "🏃‍♂️ Berg op"},
-    {"id": "chaos_tolerance",  "text": "Chaos?", "min": "🤯 Stress", "max": "🧘 Zen"},
-    {"id": "city_trip",        "text": "Citytrips?", "min": "🏙️ Mwah", "max": "😍 Ja graag"},
-    {"id": "road_trip",        "text": "Reizen?", "min": "✈️ Vliegen", "max": "🚐 Roadtrip"},
-    {"id": "backpacking",      "text": "Bagage?", "min": "🧳 Koffer", "max": "🎒 Rugzak"},
-    {"id": "local_contact",    "text": "Locals?", "min": "🫧 Bubbel", "max": "🌍 Connecten"},
-    {"id": "digital_detox",    "text": "Internet?", "min": "📱 Nodig", "max": "📵 Offline"}
-]
 
+    {"id": "adventure_level","text": "Hoe avontuurlijk ben je op reis?","min": "😌 Liever rustig","max": "🔥 Zoek avontuur"},
+    {"id": "beach_person","text": "Het is een warme vakantiedag. Kies je een terras in de schaduw met een drankje, of lig je de hele dag op het strand?","min": "🚫 Geen zand","max": "🏖️ Bakken"},
+    {"id": "culture_interest","text": "Je bent in een nieuwe stad en hebt enkele uren vrij. Waar trek je automatisch naartoe?","min": "🥱 Gewoon rondslenteren","max": "🏛️ Musea & cultuur"},
+    {"id": "party_animal","text": "Je bent op reis en het is avond. Kies je eerder voor een rustige plek of beland je in een club en dans je tot sluitingstijd?","min": "🍵 Thee & Boek","max": "🎉 Tot het gaatje"},
+    {"id": "nature_lover","text": "Bij het plannen van een trip: wat spreekt je instinctief het meest aan?","min": "🏙️ Stad & beton","max": "🌲 Bergen, bossen & natuur"},
+    {"id": "luxury_comfort","text": "Na een lange dag op reis, wat maakt jou écht gelukkig?","min": "⛺ Simpel bed & klaar","max": "💎 Comfort & luxe"},
+    {"id": "morning_person","text": "De wekker gaat op vakantie. Druk jij liever op snooze of ben je degene die voor de zon opstaat om alles uit de dag te halen?","min": "😴 Snooze","max": "🌅 Vroege vogel"},
+    {"id": "planning_freak","text": "Hoe ziet jouw ideale reisplanning eruit?","min": "📋 Alles vastgelegd","max": "🍃 We zien wel waar we uitkomen"},
+    {"id": "foodie_level","text": "Wat betekent eten voor jou tijdens het reizen?","min": "🥪 Gewoon nodig","max": "🍜 Hoogtepunt van de dag"},
+    {"id": "sporty_spice","text": "Je wilt een perfecte zonsondergang spot bereiken. Wat doe je?","min": "🛗 Lift nemen","max": "🏃‍♂️ Berg op"},
+    {"id": "chaos_tolerance","text": "Plannen veranderen plots op reis. Hoe reageer je?","min": "🤯 Stress","max": "🧘 Komt wel goed"},
+    {"id": "city_trip","text": "Wat is jouw gevoel bij citytrips?","min": "🏙️ Mwah","max": "😍 Altijd goed"},
+    {"id": "road_trip","text": "Je gaat op reis maar het is 20 uur rijden met de auto. Wat zou je eerder doen?","min": "✈️ Vliegen","max": "🚐 Roadtrip"},
+    {"id": "backpacking","text": "Hoe reis jij het liefst?","min": "🧳 Alles netjes mee","max": "🎒 Zo licht mogelijk"},
+    {"id": "local_contact","text": "Blijf je liever in je eigen bubbel, of zoek je actief contact met locals om hun cultuur echt te leren kennen?","min": "🫧 Bubbel","max": "🌍 Connecten"},
+    {"id": "digital_detox","text": "Tijdens een tweedaagse hike heb je geen bereik. Zoek je actief naar signaal of ga je helemaal offline?","min": "📱 Internet nodig","max": "📵 Offline"}
+]
 # =========================================================
 # === HELPER FUNCTIES (LOGICA) ===
 # =========================================================
