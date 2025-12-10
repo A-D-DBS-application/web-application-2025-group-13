@@ -52,7 +52,6 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initial call om de UI correct te zetten bij laden
         updateRoleUI(document.querySelector('input[name="role"]:checked'));
     });
 
@@ -61,11 +60,9 @@
         const cardOrganizer = document.getElementById('card-organizer');
         const nameLabel = document.getElementById('nameLabel');
 
-        // Reset classes
         cardTraveller.classList.remove('active');
         cardOrganizer.classList.remove('active');
         
-        // Apply active class and update label
         if (radio.value === 'traveller') {
             cardTraveller.classList.add('active');
             nameLabel.innerText = "Naam";

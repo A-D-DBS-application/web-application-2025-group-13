@@ -2,7 +2,6 @@
 
 {% block styles %}
 <style>
-    /* CSS classes voor de status labels */
     .tag-green  { background-color: #d4edda; color: #155724; }
     .tag-blue   { background-color: #cff4fc; color: #055160; }
     .tag-red    { background-color: #f8d7da; color: #842029; }
@@ -44,7 +43,6 @@
                     <td class="user-email"><a href="mailto:{{ user_info.user.email }}">{{ user_info.user.email }}</a></td>
                     <td>{{ user_info.profile.age if user_info.profile else 'N/A' }}</td>
                     <td>
-                        {# 1. Bepaal welke class we moeten gebruiken #}
                         {% set tag_class = 'tag-yellow' %}
                         
                         {% if 'Bevestigd' in user_info.status %}
@@ -55,7 +53,6 @@
                             {% set tag_class = 'tag-red' %}
                         {% endif %}
 
-                        {# 2. Gebruik de class in de HTML (Geen style attribuut meer!) #}
                         <span class="user-status-tag {{ tag_class }}">
                             {{ user_info.status }}
                         </span>

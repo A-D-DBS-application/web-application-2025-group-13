@@ -120,7 +120,6 @@
                         <input type="hidden" name="add_member" value="true">
                         <input type="hidden" name="group_id" value="{{ group_id }}">
                         
-                        <!-- Searchable Input -->
                         <input list="all_users_list" 
                                placeholder="🔍 Zoek naam..." 
                                class="add-member-select" 
@@ -143,7 +142,6 @@
     {% endif %}
 </div>
 
-<!-- Datalist for Searchable Users -->
 <datalist id="all_users_list">
     {% for u in unassigned_users %}
         <option data-id="{{ u.id }}" value="{{ u.name }} ({{ u.email }})"></option>
@@ -156,7 +154,6 @@ function updateHiddenId(input, groupId) {
     const hiddenInput = document.getElementById('user_id_input_' + groupId);
     const val = input.value;
     
-    // Find the option with the matching value
     const options = datalist.options;
     for (let i = 0; i < options.length; i++) {
         if (options[i].value === val) {

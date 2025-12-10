@@ -82,7 +82,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('intakeForm');
     
     form.addEventListener('submit', function(e) {
-        // Validatie voor budget
         const minBudgetEl = document.querySelector('[name="budget_min"]');
         const maxBudgetEl = document.querySelector('[name="budget_max"]');
         
@@ -103,7 +102,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Validatie voor periodes
         const periods = document.querySelectorAll('input[name="period"]:checked');
         if (periods.length === 0) {
             e.preventDefault();

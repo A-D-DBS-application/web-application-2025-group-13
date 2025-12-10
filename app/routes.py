@@ -5,9 +5,6 @@ from datetime import datetime
 from sqlalchemy.orm import joinedload
 from icalendar import Calendar, Event
 
-# === CONFIGURATIE & LIJSTEN ===
-
-# 1. Reisperiodes
 TRAVEL_PERIODS = [
     {"name": "Winter (dec-feb)", "icon": "❄️"},
     {"name": "Lente (mrt-mei)", "icon": "🌸"},
@@ -17,7 +14,6 @@ TRAVEL_PERIODS = [
 ]
 
 VIBE_QUESTIONS = [
-
     {"id": "adventure_level","text": "Hoe avontuurlijk ben je op reis?","min": "😌 Liever rustig","max": "🔥 Zoek avontuur"},
     {"id": "beach_person","text": "Het is een warme vakantiedag. Kies je een terras in de schaduw met een drankje, of lig je de hele dag op het strand?","min": "🚫 Geen zand","max": "🏖️ Bakken"},
     {"id": "culture_interest","text": "Je bent in een nieuwe stad en hebt enkele uren vrij. Waar trek je automatisch naartoe?","min": "🥱 Gewoon rondslenteren","max": "🏛️ Musea & cultuur"},
@@ -35,41 +31,32 @@ VIBE_QUESTIONS = [
     {"id": "local_contact","text": "Blijf je liever in je eigen bubbel, of zoek je actief contact met locals om hun cultuur echt te leren kennen?","min": "🫧 Bubbel","max": "🌍 Connecten"},
     {"id": "digital_detox","text": "Tijdens een tweedaagse hike heb je geen bereik. Zoek je actief naar signaal of ga je helemaal offline?","min": "📱 Internet nodig","max": "📵 Offline"}
 ]
-# =========================================================
-# === HELPER FUNCTIES (LOGICA) ===
-# =========================================================
 
 def get_intake_data_from_request():
-    """Haalt formulierdata op en zet dit om naar een dictionary."""
     def get_int(name, default=3):
         try: return int(request.form.get(name, default))
         except (ValueError, TypeError): return default
 
-    # Basisgegevens
     data = {
         'age': get_int('age', 18),
         'budget_min': get_int('budget_min', 0),
         'budget_max': get_int('budget_max', 0),
         'travel_period': ', '.join(request.form.getlist('period')),
-        # Defaults
         'social_battery': 3, 'leader_role': 3, 'talkative': 3, 'sustainability': 3
     }
 
-    # Dynamisch Vibe Vragen toevoegen (Slimme loop!)
     for q in VIBE_QUESTIONS:
         data[q['id']] = get_int(q['id'])
 
     return data
 
 def calculate_match_score(profile1, profile2):
-    """Algoritme: 30% Logistiek (Harde eisen) + 70% Vibe (Interesses)."""
     def get_val(obj, attr, default=3):
         val = getattr(obj, attr, None)
         return val if val is not None else default
 
     logistics_score = 0
     
-    # 1. Leeftijd (Max 10 jaar verschil) - Harde eis
     if abs(get_val(profile1, 'age') - get_val(profile2, 'age')) > 10: return -1
     
     diff = abs(get_val(profile1, 'age') - get_val(profile2, 'age'))
@@ -77,26 +64,21 @@ def calculate_match_score(profile1, profile2):
     elif diff <= 5: logistics_score += 7
     elif diff <= 8: logistics_score += 4
     
-    # 2. Budget (Overlap check) - Harde eis
     b_max1, b_min1 = get_val(profile1, 'budget_max'), get_val(profile1, 'budget_min')
     b_max2, b_min2 = get_val(profile2, 'budget_max'), get_val(profile2, 'budget_min')
     if (b_max1 < b_min2 or b_max2 < b_min1): return -1 
     logistics_score += 10
         
-    # 3. Periode (Overlap check)
     p1 = set((getattr(profile1, 'travel_period', '') or '').split(', '))
     p2 = set((getattr(profile2, 'travel_period', '') or '').split(', '))
     if 'Flexibel' in p1 or 'Flexibel' in p2 or not p1.isdisjoint(p2): logistics_score += 10
         
-    # 4. Vibe Check (Loop door de lijst heen)
     total_sim, total_weight = 0, 0
-    # Belangrijke vragen wegen zwaarder
     important_ids = ['adventure_level', 'culture_interest', 'nature_lover', 'luxury_comfort']
     
     for q in VIBE_QUESTIONS:
         fid = q['id']
         weight = 1.5 if fid in important_ids else 1.0
-        # Verschil tussen 0 (identiek) en 4 (totaal anders)
         diff = abs(get_val(profile1, fid) - get_val(profile2, fid))
         similarity = 1 - (diff / 4)
         
@@ -106,7 +88,6 @@ def calculate_match_score(profile1, profile2):
     return int(logistics_score + ((total_sim / total_weight) * 70))
 
 def calculate_group_vibe(match_id):
-    """Berekent tags zoals 'Party Squad' op basis van groepsgemiddelde."""
     uids = [g.user_id for g in Group.query.filter_by(match_id=match_id).all()]
     profs = TravelerProfile.query.filter(TravelerProfile.user_id.in_(uids)).all()
     if not profs: return ["Lege Groep"]
@@ -128,7 +109,6 @@ def calculate_group_vibe(match_id):
     return tags if tags else ["⚖️ Gebalanceerde Groep"]
 
 def get_group_stats(match_id):
-    """Verzamelt statistieken voor het organizer dashboard."""
     uids = [g.user_id for g in Group.query.filter_by(match_id=match_id).all()]
     profs = TravelerProfile.query.filter(TravelerProfile.user_id.in_(uids)).all()
     if not profs: return None
@@ -137,7 +117,6 @@ def get_group_stats(match_id):
     mins = [p.budget_min for p in profs if p.budget_min]
     maxs = [p.budget_max for p in profs if p.budget_max]
     
-    # Bereken top interesses dynamisch
     scores = {q['id']: sum(getattr(p, q['id'], 0) or 0 for p in profs) for q in VIBE_QUESTIONS}
     
     return {
@@ -151,7 +130,6 @@ def create_notification(uid, msg):
     except: pass
 
 def create_automatic_groups():
-    """Greedy algoritme voor groepsvorming."""
     grouped = [g.user_id for g in Group.query.all()]
     available = TravelerProfile.query.filter(TravelerProfile.user_id.notin_(grouped), TravelerProfile.is_active == True).all()
     if not available: return
@@ -159,13 +137,12 @@ def create_automatic_groups():
     last = Group.query.order_by(Group.match_id.desc()).first()
     new_id = (last.match_id + 1) if last and last.match_id else 1
     
-    members = [available.pop(0)] # Seed user
+    members = [available.pop(0)] 
     grp_min, grp_max = members[0].budget_min, members[0].budget_max
 
     while len(members) < 20 and available:
         candidates = []
         for c in available:
-            # Check overlap
             p1, p2 = set((members[0].travel_period or '').split(', ')), set((c.travel_period or '').split(', '))
             n_min, n_max = max(grp_min, c.budget_min), min(grp_max, c.budget_max)
             
@@ -186,15 +163,10 @@ def create_automatic_groups():
         create_notification(m.user_id, f"Je zit in Groep #{new_id}!")
     db.session.commit()
 
-# =========================================================
-# === APP ROUTES ===
-# =========================================================
-
 def register_routes(app):
     
     @app.context_processor
     def inject_vars():
-        """Zorgt dat de lijsten beschikbaar zijn in ALLE templates (Intake & Edit)."""
         unread_count = 0
         if session.get('role') == 'traveller':
             unread_count = Notification.query.filter_by(user_id=session.get('user_id'), is_read=False).count()
@@ -211,7 +183,6 @@ def register_routes(app):
             return redirect(url_for('organizer_dashboard'))
         return render_template('index.html')
 
-    # --- Notification Routes ---
     @app.route('/notifications')
     def notifications():
         if 'user_id' not in session: return redirect(url_for('login'))
@@ -233,7 +204,6 @@ def register_routes(app):
             db.session.commit()
         return redirect(url_for('notifications'))
 
-    # --- Static Pages ---
     @app.route('/about')
     def about(): return render_template('about.html')
     @app.route('/example-trips')
@@ -241,18 +211,16 @@ def register_routes(app):
     @app.route('/contact')
     def contact(): return render_template('contact.html')
 
-    # --- INTAKE & MATCHING ---
     @app.route('/intake')
     def intake():
         if 'user_id' not in session or session.get('role') == 'organizer':
             flash('Login vereist.', 'warning'); return redirect(url_for('login'))
         
-        # Bestaat profiel? -> Overzicht. Zo niet -> Formulier
         existing = TravelerProfile.query.filter_by(user_id=session['user_id']).first()
         if existing:
             return render_template('intake_overview.html', user=User.query.get(session['user_id']), profile=existing)
         
-        return render_template('intake.html', profile=None) # Lijsten komen nu via context_processor
+        return render_template('intake.html', profile=None) 
     
     @app.route('/edit-intake')
     def edit_intake():
@@ -265,7 +233,6 @@ def register_routes(app):
         try:
             data = get_intake_data_from_request()
             
-            # Buddy logic
             email = request.form.get('buddy_email', '').strip()
             if email:
                 buddy = User.query.filter_by(email=email).first()
@@ -278,7 +245,6 @@ def register_routes(app):
                 else: 
                     flash('Buddy niet gevonden.', 'warning')
 
-            # Save logic
             existing = TravelerProfile.query.filter_by(user_id=session['user_id']).first()
             if existing:
                 for key, value in data.items():
@@ -319,7 +285,6 @@ def register_routes(app):
         
         matches.sort(key=lambda x: x['score'], reverse=True)
         
-        # Toon alleen de top 10 matches
         top_matches = matches[:10]
         
         return render_template('match.html', matches=top_matches, my_profile=my_profile)
@@ -334,16 +299,12 @@ def register_routes(app):
         if not my_group_entry: 
             return render_template('my_group.html', group=None, my_profile=my_profile)
             
-        # OPTIMALISATIE: Eager loading van User en Profile via de Group relatie
-        # We halen de Group entries op, en laden direct de gekoppelde User EN diens Profile
         group_entries = Group.query.options(
             joinedload(Group.user).joinedload(User.profile)
         ).filter_by(match_id=my_group_entry.match_id).all()
         
         members = []
         for entry in group_entries:
-            # Geen extra queries meer nodig hier!
-            # Check of profile bestaat om errors te voorkomen
             profile = entry.user.profile if entry.user else None
             members.append({'user': entry.user, 'profile': profile})
             
@@ -362,12 +323,10 @@ def register_routes(app):
                                spots_left=spots_left,
                                my_profile=my_profile)
 
-    # --- NIEUWE ROUTE: ICAL EXPORT ---
     @app.route('/my-group/calendar')
     def export_group_calendar():
         if 'user_id' not in session: return redirect(url_for('login'))
         
-        # 1. Haal groep en reis op
         group_entry = Group.query.filter_by(user_id=session['user_id']).first()
         if not group_entry or not group_entry.match_id:
             flash("Je zit nog niet in een groep.", "warning")
@@ -378,21 +337,19 @@ def register_routes(app):
             flash("Er is nog geen reis gekoppeld aan jouw groep.", "warning")
             return redirect(url_for('my_group'))
             
-        # 2. Maak de iCal aan
         cal = Calendar()
         cal.add('prodid', '-//TrailTribe//trailtribe.be//')
         cal.add('version', '2.0')
         
         event = Event()
         event.add('summary', f"TrailTribe Reis: {trip.destination}")
-        event.add('dtstart', trip.start_date) # SQLAlchemy Date objecten werken prima hier
+        event.add('dtstart', trip.start_date)
         event.add('dtend', trip.end_date)
         event.add('location', trip.destination)
         event.add('description', f"Jouw TrailTribe avontuur naar {trip.destination}!\n\nPrijs: €{trip.price}\nActiviteiten: {trip.activities}")
         
         cal.add_component(event)
         
-        # 3. Stuur terug als download
         return Response(
             cal.to_ical(),
             mimetype="text/calendar",
@@ -433,7 +390,6 @@ def register_routes(app):
                 flash('Status aangepast.', 'success')
         return redirect(url_for('my_group'))
 
-    # --- ORGANIZER ROUTES ---
     @app.route('/organizer/dashboard')
     def organizer_dashboard():
         if session.get('role') != 'organizer': return redirect(url_for('home'))
@@ -476,13 +432,11 @@ def register_routes(app):
     def organizer_trips():
         if session.get('role') != 'organizer': return redirect(url_for('home'))
         
-        # --- VERWIJDER LOGICA (AANGEPAST: Iedereen mag verwijderen) ---
         if request.method == 'POST' and 'delete_trip' in request.form:
             trip_id = request.form.get('trip_id')
             trip = Trip.query.get(trip_id)
             
             if trip:
-                # Als de reis aan een groep gekoppeld is, de link verbreken
                 groups = Group.query.filter_by(match_id=trip.match_id).all()
                 for member in groups:
                     create_notification(member.user_id, f"De reis naar {trip.destination} is geannuleerd.")
@@ -523,12 +477,10 @@ def register_routes(app):
         if session.get('role') != 'organizer': return redirect(url_for('home'))
         
         if request.method == 'POST':
-            # Actie 1: Genereer groepen
             if 'generate_groups' in request.form:
                 create_automatic_groups()
                 flash('Groepen gegenereerd!', 'success')
             
-            # Actie 2: Reis koppelen
             elif 'assign_trip' in request.form:
                 group_id = request.form['group_id']
                 trip_id = request.form['trip_id']
@@ -537,14 +489,12 @@ def register_routes(app):
                 if trip and not trip.match_id and not Trip.query.filter_by(match_id=group_id).first():
                     trip.match_id = int(group_id)
                     db.session.commit()
-                    # Notificatie
                     for member in Group.query.filter_by(match_id=group_id).all():
                         create_notification(member.user_id, f"Bestemming bekend: {trip.destination}!")
                     flash('Reis succesvol gekoppeld!', 'success')
                 else: 
                     flash('Kan reis niet koppelen.', 'warning')
 
-            # Actie 3: Lid toevoegen
             elif 'add_member' in request.form:
                 user_id = request.form['user_id']
                 group_id = request.form['group_id']
@@ -557,7 +507,6 @@ def register_routes(app):
                 else:
                     flash('Gebruiker zit al in een groep.', 'warning')
 
-            # Actie 4: Groep verwijderen
             elif 'delete_group' in request.form:
                 group_id = request.form['group_id']
                 
@@ -575,8 +524,6 @@ def register_routes(app):
                 
             return redirect(url_for('organizer_groups'))
 
-        # GET Request - OPTIMIZED
-        # 1. Fetch all groups with users and profiles in ONE query
         all_group_entries = Group.query.options(
             joinedload(Group.user).joinedload(User.profile)
         ).all()
@@ -591,7 +538,6 @@ def register_routes(app):
                 group_profiles[mid] = []
             
             user = entry.user
-            # Set extra attributes for template
             user.group_status = entry.payment_status
             user.group_confirmed = entry.confirmed
             
@@ -599,12 +545,10 @@ def register_routes(app):
             if user.profile:
                 group_profiles[mid].append(user.profile)
 
-        # 2. Calculate vibes and stats in memory
         group_vibes = {}
         group_stats = {}
         
         for mid, profiles in group_profiles.items():
-            # Vibe Calculation (Inline optimized)
             tags = []
             if not profiles:
                 tags = ["Lege Groep"]
@@ -623,7 +567,6 @@ def register_routes(app):
                 if not tags: tags.append("⚖️ Gebalanceerde Groep")
             group_vibes[mid] = tags
             
-            # Stats Calculation (Inline optimized)
             if not profiles:
                 group_stats[mid] = None
             else:
@@ -640,7 +583,6 @@ def register_routes(app):
 
         assigned_trips = {t.match_id: t for t in Trip.query.filter(Trip.match_id.isnot(None)).all()}
         
-        # 3. Fetch unassigned users efficiently
         grouped_user_ids = [entry.user_id for entry in all_group_entries]
         unassigned_users = User.query.filter(User.id.notin_(grouped_user_ids)).all()
         
@@ -665,7 +607,6 @@ def register_routes(app):
             flash('Lid verwijderd.', 'info')
         return redirect(url_for('organizer_groups'))
 
-    # --- AUTHENTICATIE ---
     @app.route('/register', methods=['GET', 'POST'])
     def register():
         if request.method == 'POST':
