@@ -14,6 +14,11 @@ feedback opnames:
 https://www.kapwing.com/w/oqHk9SxT_x
 https://youtu.be/u1UgIJUXfa4
 
+Extra info: 
+
+Bij het starten van de website krijgt u de keuze om te registreren als organisator of reiziger. Het is echter niet de bedoeling dat elke gebruiker zich zomaar als organisator kan aanmelden. Deze functionaliteit kan in de toekomst verder verfijnd worden, maar aangezien dit voor Toon en zijn doel met deze site voldoende was, hebben wij dit voorlopig zo gelaten.
+
+
 DDL: 
 
 
