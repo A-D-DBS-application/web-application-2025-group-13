@@ -17,6 +17,7 @@ https://youtu.be/u1UgIJUXfa4
 DDL: 
 
 
+
 Table user {
   id integer [pk, increment]
   created_at datetime [default: `now()`]
