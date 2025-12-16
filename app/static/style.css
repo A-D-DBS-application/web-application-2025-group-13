@@ -1,10 +1,4 @@
-/*
-==================================================
-TRAILTRIBE HOOFD STIJLBLAD
-==================================================
-*/
-
-/* --- ALGEMENE STIJL (MODERN & SCHOON) --- */
+/*  ALGEMENE STIJL  */
 :root {
     --primary: #007B7F;
     --primary-dark: #005f62;
@@ -16,7 +10,7 @@ TRAILTRIBE HOOFD STIJLBLAD
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
-    padding-top: 80px; /* Ruimte voor de fixed navbar */
+    padding-top: 80px; 
     background-color: var(--bg-color);
     color: var(--text-dark);
     min-height: 100vh;
@@ -26,7 +20,7 @@ body {
 
 /* --- NAVBAR styling --- */
 nav {
-    background-color: white; /* Wit oogt frisser dan donkergroen voor de hele balk */
+    background-color: white; 
     height: 80px;
     width: 100%;
     position: fixed;
@@ -35,12 +29,11 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 5%; /* Zorgt dat content niet tegen de rand plakt */
+    padding: 0 5%; 
     box-sizing: border-box;
-    box-shadow: 0 2px 15px rgba(0,0,0,0.05); /* Subtiele schaduw */
+    box-shadow: 0 2px 15px rgba(0,0,0,0.05); 
 }
 
-/* Het Logo */
 .nav-brand {
     font-size: 1.6rem;
     font-weight: 800;
@@ -52,7 +45,6 @@ nav {
     gap: 8px;
 }
 
-/* De Links */
 .nav-links {
     display: flex;
     align-items: center;
@@ -100,15 +92,7 @@ nav {
 .alert-danger { background-color: #f8d7da; color: #842029; border: 1px solid #f5c6cb; }
 .alert-info { background-color: #cff4fc; color: #055160; border: 1px solid #b6effb; }
 
-
-/*
-==================================================
-SECTIE SPECIFIEKE STIJLEN
-==================================================
-*/
-
 /* --- ABOUT.HTML --- */
-/* Container stijl (Consistent met de rest van de site) */
 .about-container {
     background-color: white;
     border-radius: 20px;
@@ -459,12 +443,10 @@ SECTIE SPECIFIEKE STIJLEN
 
 
 /* --- INDEX.HTML --- */
-/* HERO SECTIE */
 .hero {
     position: relative;
     height: 500px;
     width: 100%;
-    /* Een mooie reisfoto */
     background-image: url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=2000&q=80');
     background-size: cover;
     background-position: center;
@@ -478,7 +460,7 @@ SECTIE SPECIFIEKE STIJLEN
 
 .hero::before {
     content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.3); /* Iets donkerder voor leesbaarheid */
+    background: rgba(0, 0, 0, 0.3); 
 }
 
 .hero-content {
@@ -528,7 +510,7 @@ SECTIE SPECIFIEKE STIJLEN
 
 /* HOE HET WERKT (Verticaal Design) */
 .section-container {
-    max-width: 800px; /* Iets smaller voor verticale lijst */
+    max-width: 800px; 
     margin: 0 auto 80px auto;
     padding: 0 20px;
 }
@@ -539,7 +521,7 @@ SECTIE SPECIFIEKE STIJLEN
 
 .steps-stack {
     display: flex;
-    flex-direction: column; /* Zorgt dat ze onder elkaar komen */
+    flex-direction: column; 
     gap: 30px;
 }
 
@@ -550,9 +532,7 @@ SECTIE SPECIFIEKE STIJLEN
     box-shadow: 0 5px 20px rgba(0,0,0,0.05);
     transition: transform 0.3s;
     border: 1px solid rgba(0,0,0,0.03);
-    
-    /* Flexbox om icoon naast tekst te zetten */
-    display: flex; 
+        display: flex; 
     align-items: center;
     text-align: left; 
     gap: 25px;
@@ -620,7 +600,7 @@ SECTIE SPECIFIEKE STIJLEN
     overflow-x: auto;
     gap: 30px;
     margin-top: 40px;
-    padding-bottom: 20px; /* Ruimte voor scrollbar */
+    padding-bottom: 20px; 
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
 }
@@ -1146,7 +1126,6 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .stat {
-    /* HERSTEL: Semi-transparant wit over de groene achtergrond (Wazige look) */
     background: rgba(255, 255, 255, 0.15) !important; 
     color: white !important;
     
@@ -1157,7 +1136,6 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .stat-label {
-    /* Labels zijn nu 0.8rem en volledig wit */
     font-size: 0.8rem !important; 
     opacity: 1 !important;
     font-weight: 400 !important;
@@ -1165,9 +1143,8 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .stat-value {
-    /* Aangepast: Nog kleiner en semi-vet */
-    font-size: 1.0rem !important; /* Verlaagd */
-    font-weight: 500 !important; /* Semi-vet */
+    font-size: 1.0rem !important; 
+    font-weight: 500 !important; 
     color: white !important;
 }
 
