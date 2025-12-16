@@ -1,5 +1,32 @@
 from app import db
 
+TRAVEL_PERIODS = [
+    {"name": "Winter (dec-feb)", "icon": "❄️"},
+    {"name": "Lente (mrt-mei)", "icon": "🌸"},
+    {"name": "Zomer (jun-aug)", "icon": "☀️"},
+    {"name": "Herfst (sep-nov)", "icon": "🍂"},
+    {"name": "Flexibel", "icon": "🔄"}
+]
+
+VIBE_QUESTIONS = [
+    {"id": "adventure_level","text": "Hoe avontuurlijk ben je op reis?","min": "😌 Liever rustig","max": "🔥 Zoek avontuur"},
+    {"id": "beach_person","text": "Het is een warme vakantiedag. Kies je een terras in de schaduw met een drankje, of lig je de hele dag op het strand?","min": "🚫 Geen zand","max": "🏖️ Bakken"},
+    {"id": "culture_interest","text": "Je bent in een nieuwe stad en hebt enkele uren vrij. Waar trek je automatisch naartoe?","min": "🥱 Gewoon rondslenteren","max": "🏛️ Musea & cultuur"},
+    {"id": "party_animal","text": "Je bent op reis en het is avond. Kies je eerder voor een rustige plek of beland je in een club en dans je tot sluitingstijd?","min": "🍵 Thee & Boek","max": "🎉 Tot het gaatje"},
+    {"id": "nature_lover","text": "Bij het plannen van een trip: wat spreekt je instinctief het meest aan?","min": "🏙️ Stad & beton","max": "🌲 Bergen, bossen & natuur"},
+    {"id": "luxury_comfort","text": "Na een lange dag op reis, wat maakt jou écht gelukkig?","min": "⛺ Simpel bed & klaar","max": "💎 Comfort & luxe"},
+    {"id": "morning_person","text": "De wekker gaat op vakantie. Druk jij liever op snooze of ben je degene die voor de zon opstaat om alles uit de dag te halen?","min": "😴 Snooze","max": "🌅 Vroege vogel"},
+    {"id": "planning_freak","text": "Hoe ziet jouw ideale reisplanning eruit?","min": "📋 Alles vastgelegd","max": "🍃 We zien wel waar we uitkomen"},
+    {"id": "foodie_level","text": "Wat betekent eten voor jou tijdens het reizen?","min": "🥪 Gewoon nodig","max": "🍜 Hoogtepunt van de dag"},
+    {"id": "sporty_spice","text": "Je wilt een perfecte zonsondergang spot bereiken. Wat doe je?","min": "🛗 Lift nemen","max": "🏃‍♂️ Berg op"},
+    {"id": "chaos_tolerance","text": "Plannen veranderen plots op reis. Hoe reageer je?","min": "🤯 Stress","max": "🧘 Komt wel goed"},
+    {"id": "city_trip","text": "Wat is jouw gevoel bij citytrips?","min": "🏙️ Mwah","max": "😍 Altijd goed"},
+    {"id": "road_trip","text": "Je gaat op reis maar het is 20 uur rijden met de auto. Wat zou je eerder doen?","min": "✈️ Vliegen","max": "🚐 Roadtrip"},
+    {"id": "backpacking","text": "Hoe reis jij het liefst?","min": "🧳 Alles netjes mee","max": "🎒 Zo licht mogelijk"},
+    {"id": "local_contact","text": "Blijf je liever in je eigen bubbel, of zoek je actief contact met locals om hun cultuur echt te leren kennen?","min": "🫧 Bubbel","max": "🌍 Connecten"},
+    {"id": "digital_detox","text": "Tijdens een tweedaagse hike heb je geen bereik. Zoek je actief naar signaal of ga je helemaal offline?","min": "📱 Internet nodig","max": "📵 Offline"}
+]
+
 class User(db.Model):
     __tablename__ = 'user'
     
