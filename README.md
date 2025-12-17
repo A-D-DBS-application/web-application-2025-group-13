@@ -1,5 +1,7 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/DxqGQVx4)
 
+Om de app te kunnen runnen is het mogelijk dat je dingen gaat moeten downloaden, alles wat je moet installeren staat bij requirements.txt maar het kan zijn dat dit al geinstalleerd is en dan kan je dit dus overslaan. om de website lokaal te runnen, ga je naar document run.py en druk je op het 'run' tekentje vanboven, de schuine driehoek. eens dat je dit doet gaat er wat gebeuren in de terminal en ga je een link zien met einde 5000. Daat moet je samen met control op klikken en dan ga je automatisch naar de website.
+
 
 LOVABLE APP PROTOTYPE:
 https://lovable.dev/projects/51ca8f5e-67dd-4f38-b5bf-bab8bfd5ed94
