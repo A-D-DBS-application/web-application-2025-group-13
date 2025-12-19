@@ -187,3 +187,6 @@ Table traveler_profile {
   talkative integer [not null, default: 3]
   sustainability integer [not null, default: 3]
 }
+
+Demo is te vinden in de Powerpoint.
+
