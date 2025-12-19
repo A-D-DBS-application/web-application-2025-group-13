@@ -66,6 +66,9 @@ Het is momenteel mogelijk dat elke gebruiker zich als organisator registreert. D
 
 5. Online versies (Render)
 
+!!!!LET OP GEBRUIK DE LAATSTE RENDER LINK OM DE FINALE VERSIE TE ZIEN!!!!
+DIT IS DE LAATSTE FINALE VERSIE: https://web-application-2025-group-13-8.onrender.com/ 
+
 De applicatie is ook online beschikbaar via Render:
 	•	Eerste versie:
 https://web-application-2025-group-13-2.onrender.com
